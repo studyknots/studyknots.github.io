@@ -42,9 +42,25 @@ const config: Config = {
     image: 'img/studyknots-social.png',
 
     metadata: [
-      {name: 'keywords', content: 'bitcoin knots, study knots, bitcoin node, full node, bitcoin core alternative'},
-      {name: 'description', content: 'Study Knots - Learn about Bitcoin Knots, the enhanced Bitcoin Core derivative with additional features and policy options.'},
+      // Basic meta
+      {name: 'keywords', content: 'bitcoin knots, bitcoin node, full node, bitcoin core alternative, luke dashjr, op_return, mempool policy'},
+      {name: 'author', content: 'Study Knots'},
+
+      // Open Graph
       {property: 'og:type', content: 'website'},
+      {property: 'og:site_name', content: 'Study Knots'},
+      {property: 'og:title', content: 'Study Knots - Learn Bitcoin Knots'},
+      {property: 'og:description', content: 'The comprehensive guide to Bitcoin Knots. Understand the enhanced Bitcoin Core derivative powering 21% of the network.'},
+      {property: 'og:image', content: 'https://studyknots.com/img/studyknots-social.png'},
+      {property: 'og:image:width', content: '1200'},
+      {property: 'og:image:height', content: '630'},
+      {property: 'og:url', content: 'https://studyknots.com'},
+
+      // Twitter Card
+      {name: 'twitter:card', content: 'summary_large_image'},
+      {name: 'twitter:title', content: 'Study Knots - Learn Bitcoin Knots'},
+      {name: 'twitter:description', content: 'The comprehensive guide to Bitcoin Knots. 200+ patches, policy control, and the OP_RETURN controversy explained.'},
+      {name: 'twitter:image', content: 'https://studyknots.com/img/studyknots-social.png'},
     ],
 
     colorMode: {

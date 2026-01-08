@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3d7a8c"/>
+      <stop offset="100%" style="stop-color:#4A90A4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative pattern -->
+  <g opacity="0.1">
+    <circle cx="100" cy="100" r="200" fill="none" stroke="#fff" stroke-width="2"/>
+    <circle cx="1100" cy="530" r="250" fill="none" stroke="#fff" stroke-width="2"/>
+    <circle cx="900" cy="50" r="150" fill="none" stroke="#fff" stroke-width="2"/>
+  </g>
+
+  <!-- Logo circle -->
+  <circle cx="600" cy="200" r="80" fill="#fff"/>
+  <text x="600" y="230" text-anchor="middle" fill="#4A90A4" font-family="Arial, sans-serif" font-weight="bold" font-size="80">K</text>
+
+  <!-- Title -->
+  <text x="600" y="340" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-weight="bold" font-size="72">Study Knots</text>
+
+  <!-- Tagline -->
+  <text x="600" y="400" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="32" opacity="0.9">Untangle the differences. Learn Bitcoin Knots.</text>
+
+  <!-- Description -->
+  <text x="600" y="480" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="24" opacity="0.8">The comprehensive guide to Bitcoin Knots</text>
+  <text x="600" y="515" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="24" opacity="0.8">Enhanced Bitcoin Core with 200+ patches</text>
+
+  <!-- URL -->
+  <text x="600" y="590" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="28" opacity="0.7">studyknots.com</text>
+</svg>
