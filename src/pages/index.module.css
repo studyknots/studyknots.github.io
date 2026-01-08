@@ -20,6 +20,54 @@
   flex-wrap: wrap;
 }
 
+.controversyBanner {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+}
+
+.controversyContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.controversyText h2 {
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.controversyText p {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.controversyButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .controversyContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .controversyText p {
+    max-width: 100%;
+  }
+
+  .controversyButtons {
+    justify-content: center;
+  }
+}
+
 .statsSection {
   padding: 3rem 0;
   background: var(--ifm-background-surface-color);

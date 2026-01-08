@@ -37,17 +37,47 @@ function HomepageHeader() {
   );
 }
 
+function ControversyBanner() {
+  return (
+    <section className={styles.controversyBanner}>
+      <div className="container">
+        <div className={styles.controversyContent}>
+          <div className={styles.controversyText}>
+            <Heading as="h2">The OP_RETURN Controversy</Heading>
+            <p>
+              Bitcoin Core v30 removed OP_RETURN limits. Nick Szabo broke 5 years of silence to warn about it.
+              Learn why 21% of nodes switched to Knots.
+            </p>
+          </div>
+          <div className={styles.controversyButtons}>
+            <Link
+              className="button button--primary button--lg"
+              to="/guides/op-return-controversy">
+              Read the Full Story
+            </Link>
+            <Link
+              className="button button--secondary button--lg"
+              to="/architecture/code-analysis">
+              Debunking the FUD
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function StatsSection() {
   return (
     <section className={styles.statsSection}>
       <div className="container">
         <div className="stats-container">
           <div className="stat-item">
-            <span className="stat-number">200+</span>
-            <span className="stat-label">Patches</span>
+            <span className="stat-number">21%</span>
+            <span className="stat-label">Of All Nodes</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">10+</span>
+            <span className="stat-number">14+</span>
             <span className="stat-label">Years Active</span>
           </div>
           <div className="stat-item">
@@ -56,7 +86,7 @@ function StatsSection() {
           </div>
           <div className="stat-item">
             <span className="stat-number">100%</span>
-            <span className="stat-label">Compatible</span>
+            <span className="stat-label">Consensus Compatible</span>
           </div>
         </div>
       </div>
@@ -290,6 +320,7 @@ export default function Home(): ReactNode {
       description="Study Knots - The comprehensive guide to understanding Bitcoin Knots, an enhanced Bitcoin Core derivative.">
       <HomepageHeader />
       <main>
+        <ControversyBanner />
         <StatsSection />
         <HomepageFeatures />
         <ComparisonSection />
