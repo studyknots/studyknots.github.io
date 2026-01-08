@@ -80,6 +80,7 @@ const sidebars: SidebarsConfig = {
         'architecture/build-system',
         'architecture/code-analysis',
         'architecture/consensus-adjacent-code',
+        'architecture/code-review',
       ],
     },
     {
