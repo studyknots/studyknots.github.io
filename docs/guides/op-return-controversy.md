@@ -506,6 +506,24 @@ Bitcoin Knots exists because some users believe defaults matter, purpose matters
 - [Transaction Filtering](/patches/policy/transaction-filtering) — How filtering works
 - [Mempool Policies](/patches/policy/mempool-policies) — Detailed policy configuration
 
+## Related Material: A Note on "Educational" Resources
+
+Several resources emerged during this debate claiming to provide objective education. One example is the Delving Bitcoin post "[A Comprehensive OP_RETURN Limits Q&A Resource to Combat Misinformation](https://delvingbitcoin.org/t/a-comprehensive-op-return-limits-q-a-resource-to-combat-misinformation/1689)" (May 2025).
+
+**Issues with framing:**
+- The title presupposes critics are spreading "misinformation" rather than legitimate concerns
+- Questions primarily answered by a single Core contributor (Murch)
+- Weighted by "tips received" (popularity) rather than substance
+- The Citrea corporate project that prompted the change is framed as a victim of policy, not a company whose design choices drove the change
+
+**What's not addressed:**
+- The governance process failure (merged without consensus)
+- That defaults matter (most users don't change them)
+- Nick Szabo's asymmetric costs argument (node operators bear costs, miners profit)
+- Ava Chow's own stated standard being inverted
+
+When evaluating resources on this topic, consider: Does the title presuppose an answer? Who is providing the responses? What counterarguments are missing?
+
 ## Sources
 
 ### Primary Sources
