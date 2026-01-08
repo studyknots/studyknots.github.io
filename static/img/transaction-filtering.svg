@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="txGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6BADC0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4A90A4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="filterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90A4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3D7A8C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="passGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#28a745;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e7e34;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="rejectGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc3545;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#bd2130;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" rx="12" fill="url(#bgGrad)"/>
+
+  <!-- Title -->
+  <text x="400" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#2d3748" text-anchor="middle">Bitcoin Knots Transaction Filtering</text>
+
+  <!-- Incoming Transaction -->
+  <rect x="320" y="55" width="160" height="50" rx="8" fill="url(#txGrad)" filter="url(#shadow)"/>
+  <text x="400" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">📨 Transaction</text>
+
+  <!-- Arrow down -->
+  <path d="M400 105 L400 125" stroke="#4A90A4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4A90A4"/>
+    </marker>
+  </defs>
+
+  <!-- Filter 1: rejectparasites -->
+  <rect x="250" y="130" width="300" height="55" rx="8" fill="url(#filterGrad)" filter="url(#shadow)"/>
+  <text x="400" y="152" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">rejectparasites=1</text>
+  <text x="400" y="172" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9e4ec" text-anchor="middle">Filters CAT21 spam transactions</text>
+
+  <!-- Reject arrow 1 -->
+  <path d="M550 157 L620 157" stroke="#dc3545" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+  <rect x="625" y="142" width="100" height="30" rx="6" fill="url(#rejectGrad)"/>
+  <text x="675" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#fff" text-anchor="middle">❌ CAT21</text>
+
+  <!-- Arrow down -->
+  <path d="M400 185 L400 205" stroke="#4A90A4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Filter 2: rejecttokens -->
+  <rect x="250" y="210" width="300" height="55" rx="8" fill="url(#filterGrad)" filter="url(#shadow)"/>
+  <text x="400" y="232" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">rejecttokens=1</text>
+  <text x="400" y="252" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9e4ec" text-anchor="middle">Filters Runes (OP_13) and OLGA spam</text>
+
+  <!-- Reject arrow 2 -->
+  <path d="M550 237 L620 237" stroke="#dc3545" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+  <rect x="625" y="222" width="100" height="30" rx="6" fill="url(#rejectGrad)"/>
+  <text x="675" y="242" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#fff" text-anchor="middle">❌ Runes</text>
+
+  <!-- Arrow down -->
+  <path d="M400 265 L400 285" stroke="#4A90A4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Filter 3: datacarriersize -->
+  <rect x="250" y="290" width="300" height="55" rx="8" fill="url(#filterGrad)" filter="url(#shadow)"/>
+  <text x="400" y="312" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">datacarriersize=83</text>
+  <text x="400" y="332" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9e4ec" text-anchor="middle">Limits OP_RETURN data to 83 bytes</text>
+
+  <!-- Reject arrow 3 -->
+  <path d="M550 317 L620 317" stroke="#dc3545" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+  <rect x="625" y="302" width="100" height="30" rx="6" fill="url(#rejectGrad)"/>
+  <text x="675" y="322" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#fff" text-anchor="middle">❌ Large data</text>
+
+  <!-- Arrow down -->
+  <path d="M400 345 L400 365" stroke="#4A90A4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Filter 4: permitbaremultisig -->
+  <rect x="250" y="370" width="300" height="55" rx="8" fill="url(#filterGrad)" filter="url(#shadow)"/>
+  <text x="400" y="392" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">permitbaremultisig=0</text>
+  <text x="400" y="412" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9e4ec" text-anchor="middle">Blocks bare multisig (Stamps abuse)</text>
+
+  <!-- Reject arrow 4 -->
+  <path d="M550 397 L620 397" stroke="#dc3545" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+  <rect x="625" y="382" width="100" height="30" rx="6" fill="url(#rejectGrad)"/>
+  <text x="675" y="402" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#fff" text-anchor="middle">❌ Stamps</text>
+
+  <!-- Arrow down -->
+  <path d="M400 425 L400 445" stroke="#28a745" stroke-width="2" fill="none" marker-end="url(#arrowheadGreen)"/>
+  <defs>
+    <marker id="arrowheadGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#28a745"/>
+    </marker>
+  </defs>
+
+  <!-- Pass: Mempool -->
+  <rect x="300" y="450" width="200" height="40" rx="8" fill="url(#passGrad)" filter="url(#shadow)"/>
+  <text x="400" y="476" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">✅ Added to Mempool</text>
+
+  <!-- Side notes -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#6c757d">
+    <text x="75" y="157">Default: ON</text>
+    <text x="75" y="237">Default: OFF</text>
+    <text x="75" y="317">Default: 83</text>
+    <text x="75" y="397">Default: OFF</text>
+  </g>
+
+  <!-- Legend -->
+  <rect x="30" y="450" width="180" height="40" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+  <text x="45" y="468" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#495057">Policy only — doesn't affect</text>
+  <text x="45" y="480" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#495057">which blocks you accept</text>
+</svg>
