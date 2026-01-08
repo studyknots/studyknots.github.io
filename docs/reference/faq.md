@@ -38,7 +38,7 @@ As of late 2025, Bitcoin Knots powers approximately **21% of all Bitcoin nodes**
 
 ### What about the "40,000 lines of unreviewed code" claim?
 
-This claim is misleading. Here's the actual data (v29.2 vs Core v29.0):
+The ~40,000 lines figure is roughly accurate when counting insertions (~36k). The more important question is **what do those lines do?** Here's the breakdown (v29.2 vs Core v29.0):
 
 | Category | Insertions | Deletions | Net | Risk Level |
 |----------|------------|-----------|-----|------------|
@@ -52,10 +52,10 @@ This claim is misleading. Here's the actual data (v29.2 vs Core v29.0):
 | **Total** | **36,438** | **15,294** | **~21,144** | |
 
 **Key facts:**
-- Net change is ~21,000 lines, not 40,000
 - ~70% is GUI, tests, and docs (zero consensus risk)
 - ~25% is wallet, RPC, policy (affects your node only)
-- Only ~5% (~950 lines) touches validation/script code
+- Only ~4% (~1,400 lines) is consensus-adjacent
+- **0% changes consensus rules** — Knots validates identically to Core
 
 **What's in the "consensus-adjacent" code?**
 - `bitcoinconsensus`: **Restored Core code** removed in v28 — already reviewed
@@ -386,4 +386,4 @@ Knots maintains configurable limits. See [OP_RETURN Controversy](/guides/op-retu
 - [Differences from Core](/getting-started/differences-from-core) — Detailed comparison
 - [Troubleshooting](/guides/troubleshooting) — Problem solving
 - [Configuration Options](/reference/configuration-options) — All settings
-- [Code Analysis](/architecture/code-analysis) — FUD debunking
+- [Code Analysis](/architecture/code-analysis) — Detailed code breakdown
