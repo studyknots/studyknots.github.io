@@ -78,6 +78,7 @@ const sidebars: SidebarsConfig = {
         'architecture/codebase-structure',
         'architecture/patch-management',
         'architecture/build-system',
+        'architecture/code-analysis',
       ],
     },
     {
@@ -90,6 +91,8 @@ const sidebars: SidebarsConfig = {
         'guides/wallet-management',
         'guides/configuration',
         'guides/troubleshooting',
+        'guides/op-return-controversy',
+        'guides/creating-a-fork',
       ],
     },
     {
