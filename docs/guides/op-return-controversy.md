@@ -206,13 +206,109 @@ The PR was closed with NACKs from maintainers achow101 and glozow, with argument
 
 Critics noted that "node operators can configure" ignores that **defaults matter** — most users run defaults.
 
+## The Governance Failure
+
+Perhaps the most damning aspect of this controversy isn't the technical change itself — it's **how** it was merged.
+
+### The Standard They Abandoned
+
+In December 2023, Bitcoin Core maintainer **Ava Chow** (achow101) articulated the project's supposed standard for controversial changes:
+
+> "If it is controversial, then we don't touch it. If it is controversial, then someone else thinks that not merging it is critical for the longevity of the network."
+>
+> "The default state is the status quo. If you want to make a change, you must convince everyone that it is a good idea."
+
+This is textbook open-source governance: **controversial changes don't get merged without rough consensus**. There's no urgency — you wait for another release cycle until consensus emerges.
+
+### The Standard They Applied
+
+In 2025, this standard was inverted:
+
+- **PR #32406** (change the status quo): Merged despite vocal opposition, with critics' comments deleted or hidden
+- **PR #34214** (restore the status quo): NACKed by the same maintainers, including Ava Chow herself
+
+The hypocrisy is stark: "convince everyone" was required to *restore* the decade-old default, but not to *change* it.
+
+### "No Clear Consensus"
+
+Multiple engineers pointed this out directly:
+
+> "There was no clear consensus on this, and therefore should have been never merged! This is a disgraceful precedent."
+> — Juan David Diaz, software engineer
+
+> "There is no consensus for this change."
+> — GitHub commenter
+
+The normal FOSS process — hold controversial changes for another release — was abandoned. There was no urgency. The 80-byte limit had worked for a decade.
+
+## Community Response
+
+The backlash was swift and came from prominent voices across the Bitcoin ecosystem:
+
+### Samson Mow (JAN3 CEO, former Blockstream CSO)
+
+> "If you are really such a talented developer, then how come you are completely incapable of convincing people that your changes are good?"
+
+Mow called Bitcoin Core "a risk to Bitcoin" and urged users to "refuse to upgrade and stay on 29.0 or run Knots."
+
+### Jimmy Song (Bitcoin Developer & Educator)
+
+> "The idea that spam is difficult to define, and because of this ambiguity, we shouldn't be making any distinctions at all in the software, is a time-wasting argument from fiat politics where you pretend not to know the obvious."
+
+Song accused Core developers of using "fiat mentality" — pretending not to understand obvious distinctions to avoid making judgments.
+
+### Matt Kratter (Bitcoin Commentator)
+
+> "You ignore community consensus, you lose trust. Since Bitcoin Core's OP_RETURN fiasco, Bitcoin Knots has surged from 2% to 11% of nodes. That's what happens when contentious changes are rammed through."
+
+> "In 1-3 years from now, expect Bitcoin Core's market share to have fallen to 20-30%."
+
+> "If you did it because you believe that Bitcoin is money and not an arbitrary file storage network, then run Bitcoin Knots."
+
+### Jason Hughes (Ocean Mining VP of Engineering)
+
+> "Bitcoin Core developers are about to merge a change that turns Bitcoin into a worthless altcoin, and no one seems to care to do anything about it. I've voiced objections, lost sleep over this, and despite clear community rejection of the PR it's moving."
+
+> "This is far more than a small technical change. This is a fundamental change to the nature of what the Bitcoin network itself is in its entirety."
+
+### The Dissenting Voice: Adam Back
+
+Notably, **Adam Back** (Blockstream CEO, Hashcash inventor) broke from other critics:
+
+> "i will be running bitcoin v30"
+
+Back argued that "filters don't fix anything empirically" — though this contradicts the observable 850% growth in Knots nodes suggesting many operators disagree.
+
 ## The Fallout
 
-The controversy had significant consequences:
+The controversy had significant consequences on both sides:
+
+### Personal Attacks
 
 - **Gloria Zhao** deleted her Twitter account in May 2025 following sustained personal attacks
+- During a livestream, one critic attacked her credentials and suggested her romantic relationship with another developer was why she had GitHub commit access
 - A contributor posted a public script designed to auto-ban Bitcoin Knots nodes
-- The community split deepened between "purists" and "permissives"
+
+### The "Knotzis" Slur
+
+In August 2025, some Core supporters began calling Knots users **"Knotzis"** — a portmanteau of "Knots" and "Nazis." Other documented behavior from Core-aligned developers:
+
+- **Antoine Poinsot** called Knots users "filteroors" and branded any network they might fork "Bitcoin Brain Knots"
+- **Peter Todd** claimed Knots nodes accomplish "nothing" and mocked node operators for falling for an "advertisement scam"
+- **Sergi Delgado** (Chaincode Labs) proposed a joke fork called "Bitcoin Unknotted" and replied to mentions of Luke Dashjr with memes mocking his Catholic faith
+- Another supporter laughed "Knotzis in shambles" while posting charts
+
+This rhetoric — comparing users who prefer conservative defaults to Nazis — represents a breakdown in professional discourse.
+
+### Chaincode Labs Influence
+
+Many critics pointed to **Chaincode Labs** as a driving force behind the OP_RETURN changes. Chaincode is a well-funded Bitcoin development company and educational hub based in NYC. Critics argue their wealth and influence over developer careers creates concerning incentive structures.
+
+### The Community Split
+
+The community divided sharply between:
+- **"Purists"**: Bitcoin is money, defaults matter, relay policy shapes miner behavior
+- **"Permissives"**: Software should be neutral, market forces are sufficient, filtering is futile
 
 ## Bitcoin Knots: A Different Philosophy
 
@@ -304,3 +400,12 @@ Bitcoin Knots exists because some users believe defaults matter, purpose matters
 - [OP_RETURN Attack Surface Analysis](https://opreturns.github.io/surface/) — Technical demonstration of the "Gallery vs. Drawer" problem
 - [Response to Pieter Wuille's StackExchange Answer](https://delvingbitcoin.org/t/response-to-pieter-wuilles-stackexchange-answer-re-nuking-the-opreturn-filter/1991) — Delving Bitcoin discussion
 - [Bitcoin Optech Newsletter #352](https://bitcoinops.org/en/newsletters/2025/05/02/) — Technical summary of the debate
+
+### Community Voices
+
+- [Samson Mow warns Bitcoin Core is a "risk to Bitcoin"](https://www.tokenpost.com/news/people/15761)
+- [Jimmy Song slams Bitcoin Core devs for 'fiat' mentality](https://cointelegraph.com/news/jimmy-song-slams-bitcoin-core-fiat-mentality-op-return)
+- [Jason Hughes warns of "worthless altcoin"](https://x.com/wk057/status/1917235710781690171)
+- [Matt Kratter on Core's market share decline](https://x.com/mattkratter/status/1932129897486668180)
+- [Bitcoin Core devs call dissidents 'Knotzis'](https://protos.com/bitcoin-core-devs-call-dissidents-knotzis-find-bug-in-their-software/)
+- [Ava Chow on controversial changes (2023)](https://x.com/achow101/status/1735353097474048477) — "If it is controversial, then we don't touch it"
