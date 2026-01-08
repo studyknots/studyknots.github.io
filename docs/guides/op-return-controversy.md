@@ -356,6 +356,14 @@ Song accused Core developers of using "fiat mentality" — pretending not to und
 
 > "This is far more than a small technical change. This is a fundamental change to the nature of what the Bitcoin network itself is in its entirety."
 
+### Bob Burnett on Gatekeeping
+
+**Bob Burnett** (Barefoot Mining CEO, Ocean board member) pushed back on the "only contributors matter" framing:
+
+> "If guys like Samson and I (or you) can't even weigh-in with an opinion to be considered, then the system is seriously, seriously broken."
+
+Burnett distinguishes between "hashers" (who lease hashpower to pools) and "miners" (who construct block templates). He argues most public mining companies are hashers, not miners — and the actual miners have different incentives than Core developers assume.
+
 ### The Dissenting Voice: Adam Back
 
 Notably, **Adam Back** (Blockstream CEO, Hashcash inventor) broke from other critics:
