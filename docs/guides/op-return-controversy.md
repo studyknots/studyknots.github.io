@@ -63,11 +63,30 @@ This growth threatens decentralization by making it more expensive to run a node
 > "I am talking about very real laws in very real jurisdictions."
 > — Nick Szabo
 
-### 4. The "Spam Filter" Doesn't Protect Nodes
+### 4. The "Gallery vs. Drawer" Problem
+
+A key technical distinction often missed: OP_RETURN data isn't just *stored* — it's **explicitly designed for retrieval and display**.
+
+| Method | Analogy | Accessibility |
+|--------|---------|---------------|
+| OP_RETURN | **Public gallery** | Self-extracting, standard APIs expose it directly |
+| Witness/P2SH | Hidden drawer | Requires specialized tools to reconstruct |
+
+As demonstrated by the [OP_RETURN Attack Surface Analysis](https://opreturns.github.io/surface/):
+
+- The `asm` field embeds data URIs directly after `OP_RETURN`
+- Any HTTP-capable client can fetch, parse, and render the content instantly
+- Standard RPC/REST APIs expose this data without specialized tools
+- Node operators become **de facto content hosts** when exposing RPC endpoints
+- Moderation is "impossible without protocol changes"
+
+This is why the "data gets stored anyway" argument misses the point — it's not about *what* is stored, but how easily it's **surfaced**. OP_RETURN creates a public gallery; other methods hide data in drawers.
+
+### 5. The "Spam Filter" Doesn't Protect Nodes
 
 Szabo pointed out a fundamental flaw in the pro-change argument: network fees protect **miners** (who receive them) but provide no protection for **node operators** (who bear costs without compensation). Increasing OP_RETURN allowances worsens this imbalance.
 
-### 5. Undermines Bitcoin's Value Proposition
+### 6. Undermines Bitcoin's Value Proposition
 
 **Jimmy Song** warned the change would worsen UTXO bloat by enabling more on-chain spam. **Jason Hughes** warned it could turn Bitcoin into a "worthless altcoin" by prioritizing non-monetary use cases.
 
@@ -169,3 +188,4 @@ Bitcoin Knots exists because some users believe defaults matter, purpose matters
 - [Defending Bitcoin's 80-Byte OP_RETURN Limit](https://bitcoin.university/bitcoin-op_return/)
 - [The Drama Surrounding Bitcoin Core 30](https://thebitcoinmanual.com/articles/drama-btc-core-30/)
 - [Bitcoin's OP_RETURN Saga](https://satscryption.substack.com/p/bitcoins-op_return-saga)
+- [OP_RETURN Attack Surface Analysis](https://opreturns.github.io/surface/) — Technical demonstration of the "Gallery vs. Drawer" problem
