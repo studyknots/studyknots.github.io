@@ -203,7 +203,7 @@ bitcoin-cli getnettotals
 - **8+ outbound connections** — Good peer diversity
 - **Some inbound connections** — Ports open, helping network
 - **Mixed network types** — IPv4/IPv6/Tor diversity
-- **Low ping times** — <200ms typically
+- **Low ping times** — under 200ms typically
 - **Steady traffic** — Not stuck or stalled
 
 ### Warning Signs
