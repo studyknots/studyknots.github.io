@@ -20,9 +20,10 @@ rejecttokens=1
 
 ### Reject Parasites
 
-Filters inscription and ordinal transactions:
+Filters inscription and ordinal transactions. **Enabled by default in Bitcoin Knots:**
 
 ```ini title="bitcoin.conf"
+# On by default in Knots - disable if you want Core behavior
 rejectparasites=1
 ```
 

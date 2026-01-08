@@ -8,11 +8,17 @@ description: How to download and install Bitcoin Knots
 
 This guide covers downloading and installing Bitcoin Knots on various platforms.
 
+## Current Release
+
+**Version:** 29.2.knots20251110
+**Release Date:** November 10, 2025
+**Based on:** Bitcoin Core 29.2
+
 ## Download
 
 Official releases are available at:
 
-**[bitcoinknots.org/files/29.x/](https://bitcoinknots.org/files/29.x/29.2.knots20251110/)**
+**[bitcoinknots.org/files/29.x/29.2.knots20251110/](https://bitcoinknots.org/files/29.x/29.2.knots20251110/)**
 
 ### Available Packages
 
@@ -21,7 +27,7 @@ Official releases are available at:
 | Linux (x86_64) | `bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz` | Most common |
 | Linux (ARM64) | `bitcoin-29.2.knots20251110-aarch64-linux-gnu.tar.gz` | Raspberry Pi 4+ |
 | macOS (Intel) | `bitcoin-29.2.knots20251110-x86_64-apple-darwin.tar.gz` | Intel Macs |
-| macOS (Apple Silicon) | `bitcoin-29.2.knots20251110-arm64-apple-darwin.tar.gz` | M1/M2/M3 Macs |
+| macOS (Apple Silicon) | `bitcoin-29.2.knots20251110-arm64-apple-darwin.tar.gz` | M1/M2/M3/M4 Macs |
 | Windows | `bitcoin-29.2.knots20251110-win64-setup.exe` | Installer |
 
 ## Verify Downloads
@@ -37,7 +43,7 @@ sha256sum -c SHA256SUMS 2>/dev/null | grep bitcoin-29.2.knots20251110-x86_64-lin
 ```
 
 :::warning Security
-Only download Bitcoin Knots from the official website. Verify signatures when available.
+Only download Bitcoin Knots from the official website (bitcoinknots.org). Verify checksums before running.
 :::
 
 ## Linux Installation
@@ -57,6 +63,11 @@ sudo install -m 0755 -o root -g root -t /usr/local/bin bitcoin-29.2.knots2025111
 ```bash
 cd bitcoin-29.2.knots20251110/bin
 ./bitcoind --version
+```
+
+Expected output:
+```
+Bitcoin Knots version v29.2.knots20251110
 ```
 
 ## macOS Installation
@@ -91,21 +102,22 @@ For advanced users who want to compile from source:
 # Clone the repository
 git clone https://github.com/bitcoinknots/bitcoin.git
 cd bitcoin
-git checkout 29.x-knots
+git checkout v29.2.knots20251110
 
 # Install dependencies (Debian/Ubuntu)
-sudo apt-get install build-essential libtool autotools-dev automake pkg-config \
-  bsdmainutils python3 libssl-dev libevent-dev libboost-dev libboost-system-dev \
-  libboost-filesystem-dev libboost-test-dev libsqlite3-dev
+sudo apt-get install build-essential cmake pkg-config bsdmainutils \
+  python3 libssl-dev libevent-dev libboost-dev libsqlite3-dev
 
-# Build
-./autogen.sh
-./configure
+# Build with CMake (v29+)
+mkdir build && cd build
+cmake ..
 make -j$(nproc)
 sudo make install
 ```
 
-See [Building Bitcoin Core](https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md) for detailed instructions (applicable to Knots).
+:::tip Build System Change
+Bitcoin Knots v29+ uses CMake instead of Autotools. Minimum CMake version: 3.22.
+:::
 
 ## Data Directory
 
@@ -118,10 +130,28 @@ Bitcoin Knots uses the same data directory as Bitcoin Core:
 | Windows | `%APPDATA%\Bitcoin\` |
 
 :::tip Upgrading from Bitcoin Core
-Bitcoin Knots can use your existing Bitcoin Core data directory. Simply point it to the same location.
+Bitcoin Knots can use your existing Bitcoin Core data directory. Simply point it to the same location — no migration needed.
 :::
+
+## Compatibility
+
+**Supported Operating Systems:**
+- Linux kernel-based systems
+- macOS 13+ (Ventura and later)
+- Windows 10+
+
+Running on unsupported systems is not recommended.
+
+## Recent Version History
+
+| Version | Date | Notes |
+|---------|------|-------|
+| v29.2.knots20251110 | Nov 10, 2025 | CVE-2025-46598 fix, datacarriersize default increased |
+| v29.1.knots20250903 | Sep 3, 2025 | Ephemeral anchors, CMake migration, NAT-PMP default |
+| v28.1.knots20250305 | Mar 5, 2025 | Previous stable |
+| v27.1.knots20240801 | Aug 1, 2024 | Long-term support |
 
 ## Next Steps
 
-- [Quick Start Guide](/getting-started/quick-start) - Run your first node
-- [Configuration Options](/reference/configuration-options) - Customize your setup
+- [Quick Start Guide](/getting-started/quick-start) — Run your first node
+- [Configuration Options](/reference/configuration-options) — Customize your setup

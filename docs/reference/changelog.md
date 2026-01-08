@@ -54,9 +54,58 @@ Thanks to all contributors including:
 
 ---
 
-## Version 29.1.knotsYYYYMMDD
+## Version 29.1.knots20250903
 
-*Previous releases follow similar format*
+**Released:** September 3, 2025
+
+### Highlights
+
+- CMake build system migration (replaces Autotools)
+- NAT-PMP enabled by default
+- Ephemeral anchor support (`-permitephemeral`)
+- Software expiry warnings for node updates
+
+### Changes
+
+#### Build System
+- Migrated from Autotools to CMake (minimum CMake 3.22)
+- Improved cross-compilation support
+
+#### Policy
+- Added ephemeral anchor output support
+- New `-permitephemeral` option for configuring ephemeral outputs
+
+#### Networking
+- NAT-PMP now enabled by default for easier connectivity
+- Improved peer identification for LibreRelay and Utreexo nodes
+
+#### GUI
+- Enhanced mempool statistics display
+- Improved dark mode consistency
+
+---
+
+## Version 28.1.knots20250305
+
+**Released:** March 5, 2025
+
+### Highlights
+
+- Based on Bitcoin Core 28.1
+- Enhanced transaction filtering options
+- Improved BIP-322 message signing
+
+---
+
+## Version 27.1.knots20240801
+
+**Released:** August 1, 2024
+
+### Highlights
+
+- Long-term support release
+- Stable foundation for production deployments
+- Full legacy wallet support maintained
 
 ---
 
