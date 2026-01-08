@@ -21,7 +21,7 @@ The name "Knots" has dual meaning — it references both the merging/tying toget
 - **2025**: Adoption surged 638% as debates over OP_RETURN limits intensified
 - **November 2025**: Current release v29.2.knots20251110
 
-As of mid-2025, Bitcoin Knots powers over 13% of all Bitcoin nodes — a significant share of the network's infrastructure.
+As of late 2025, Bitcoin Knots powers approximately 21% of all Bitcoin nodes — a significant share of the network's infrastructure.
 
 ## What Makes Knots Different?
 
