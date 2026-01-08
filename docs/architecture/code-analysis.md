@@ -224,6 +224,7 @@ The question isn't whether to trust 40,000 lines blindly. It's whether you trust
 
 ## See Also
 
+- [Consensus-Adjacent Code Deep Dive](/architecture/consensus-adjacent-code) — Detailed examination of the ~4%
 - [FAQ: Is Knots safe?](/reference/faq#is-bitcoin-knots-safe-to-use)
 - [Patches Overview](/patches/overview)
 - [Differences from Core](/getting-started/differences-from-core)

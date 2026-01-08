@@ -79,6 +79,7 @@ const sidebars: SidebarsConfig = {
         'architecture/patch-management',
         'architecture/build-system',
         'architecture/code-analysis',
+        'architecture/consensus-adjacent-code',
       ],
     },
     {
