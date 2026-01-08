@@ -6,7 +6,21 @@ description: Understanding the Bitcoin Core v30 debate and why Bitcoin Knots tak
 
 # The OP_RETURN Controversy
 
-In 2025, Bitcoin experienced its most contentious debate since the 2017 block size wars. At the center: Bitcoin Core v30's decision to remove the long-standing 80-byte limit on OP_RETURN data. This page explains the controversy, the arguments on both sides, and how Bitcoin Knots provides an alternative approach.
+In 2025, Bitcoin experienced its most contentious debate since the 2017 block size wars. At the center: Bitcoin Core v30's decision to remove the long-standing 80-byte limit on OP_RETURN data.
+
+:::info This Is Not "Drama"
+A common deflection frames this debate as tribal conflict — "two sides" fighting, personalities clashing, community "drama." This framing serves to exhaust observers and avoid engaging with substance.
+
+**The actual issues are technical and procedural:**
+- Does relay policy affect what gets mined? (Yes — miners mine what they see in mempools)
+- Was the governance process followed? (No — the change was merged without rough consensus)
+- Who bears the costs? (Node operators, not miners who profit from fees)
+- What was Satoshi's design philosophy? (Explicitly against arbitrary data storage)
+
+These arguments were **answered** (a statement was released) but never **addressed** (the counterarguments weren't engaged). This page documents what actually happened.
+:::
+
+This page explains the controversy, the substantive arguments, and how Bitcoin Knots provides an alternative approach.
 
 ## Background: What is OP_RETURN?
 
@@ -304,11 +318,18 @@ This rhetoric — comparing users who prefer conservative defaults to Nazis — 
 
 Many critics pointed to **Chaincode Labs** as a driving force behind the OP_RETURN changes. Chaincode is a well-funded Bitcoin development company and educational hub based in NYC. Critics argue their wealth and influence over developer careers creates concerning incentive structures.
 
-### The Community Split
+### The Substantive Divide
 
-The community divided sharply between:
-- **"Purists"**: Bitcoin is money, defaults matter, relay policy shapes miner behavior
-- **"Permissives"**: Software should be neutral, market forces are sufficient, filtering is futile
+The debate is often framed as tribal ("purists vs permissives") but the actual divide is about **unanswered technical questions**:
+
+| Question | Critics' Position | Core's Response |
+|----------|------------------|-----------------|
+| Does relay policy affect mining? | Yes — miners mine what they see | Assertion: "miners mine it anyway" |
+| Should defaults express values? | Yes — most users run defaults | Assertion: "neutrality" is correct |
+| Who bears costs? | Node operators (unfairly) | Not addressed |
+| Was process followed? | No — merged without consensus | Not addressed |
+
+The "tribal" framing benefits those who'd rather not engage these substantive points.
 
 ## Bitcoin Knots: A Different Philosophy
 
