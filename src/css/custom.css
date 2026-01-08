@@ -218,13 +218,26 @@ table tr:nth-child(even) {
 }
 
 .button--secondary {
-  border: 2px solid var(--ifm-color-primary);
-  color: var(--ifm-color-primary);
-  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
   font-weight: 500;
 }
 
 .button--secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+  color: #fff;
+}
+
+/* Secondary button on light backgrounds */
+.button--secondary.button--outline {
+  border: 2px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  background: transparent;
+}
+
+.button--secondary.button--outline:hover {
   background-color: rgba(74, 144, 164, 0.1);
   border-color: var(--ifm-color-primary);
   color: var(--ifm-color-primary);
