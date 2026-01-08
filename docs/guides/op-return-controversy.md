@@ -32,6 +32,32 @@ This page explains the controversy, the substantive arguments, and how Bitcoin K
 
 The limit was a deliberate policy choice: Bitcoin is for peer-to-peer electronic cash, not arbitrary data storage.
 
+## Historical Context: The 2014 OP_RETURN Wars
+
+The 2025 controversy isn't new — OP_RETURN limits have been contentious since introduction.
+
+### The Original Compromise (2014)
+
+OP_RETURN was added in Bitcoin Core v0.9.0 (March 2014) as a **harm reduction measure**. Before it existed, people embedded data using fake addresses that bloated the UTXO set permanently. OP_RETURN gave them a prunable alternative.
+
+The limit was initially **80 bytes**, then reduced to **40 bytes** just before release after developer debate.
+
+### Luke Dashjr's Original Rationale
+
+Luke Dashjr explained why the limit was reduced:
+
+> "Too many people were getting the impression that OP_RETURN was a feature meant to be used. **It was never intended as such**, only a way to 'leave the windows unlocked so we don't need to replace the glass when someone breaks in' — that is, to reduce the damage caused by people abusing Bitcoin."
+
+On why 40 bytes was sufficient:
+
+> "You get 32 bytes for a hash, plus 8 bytes for some kind of unique identifier."
+
+### The 2015 Increase
+
+In July 2015 (v0.11.0), the limit was raised back to 80 bytes after the ecosystem adapted without catastrophe. The pull request noted: "We have now been running with 40 bytes for about 9 months, and nothing catastrophic happened."
+
+This history matters: the limit was **always contested**, never a settled norm that v30 casually updated.
+
 ## What Changed in Core v30
 
 Bitcoin Core v30, released in October 2025, made significant policy changes:
@@ -220,6 +246,51 @@ The PR was closed with NACKs from maintainers achow101 and glozow, with argument
 
 Critics noted that "node operators can configure" ignores that **defaults matter** — most users run defaults.
 
+## The Technical War: Libre Relay vs Garbageman
+
+Beyond the policy debate, an active technical conflict is underway between software projects.
+
+### Libre Relay
+
+**Peter Todd's Libre Relay** is a modified Bitcoin Core that bypasses all OP_RETURN limits. Its slogan: *"Eliminate paternalism in Bitcoin Core's relay policy."*
+
+Libre Relay nodes preferentially peer with each other to form a parallel relay network that propagates large data transactions. This is the infrastructure that makes "miners will mine it anyway" partially true — but only because this bypass exists.
+
+### Garbageman
+
+**Chris Guida's Garbageman** (created at a hackathon) counters Libre Relay by having Knots nodes impersonate Libre Relay nodes. When Libre Relay nodes connect, expecting a friendly peer, the Garbageman node accepts the "spam" transactions — then discards them instead of relaying.
+
+~3,000 Bitcoin Knots nodes are running Garbageman, effectively sybil-attacking the Libre Relay network.
+
+### Todd's Response
+
+Peter Todd called Garbageman a "sybil attack" and proposed a punishment mechanism to detect and counter these nodes by measuring total fees relayed.
+
+This isn't just a policy debate — it's an active software conflict with both sides deploying countermeasures.
+
+## BIP-110: The Soft Fork Response
+
+Some developers argued that policy-level changes weren't enough — **consensus-level restrictions** were needed. The result is **BIP-110** (originally called BIP-444), a temporary soft fork proposal.
+
+### Quick Summary
+
+- **Author**: Dathon Ohm (pseudonymous); Luke Dashjr supports but denies authorship
+- **Mechanism**: UASF (User-Activated Soft Fork) requiring 55% miner support
+- **Duration**: ~1 year, then auto-expires
+- **Effect**: Seven consensus rules restricting data storage methods
+- **Status**: RC2 released January 3, 2026; minimal miner signaling so far
+
+### Controversy
+
+- **Peter Todd** embedded the entire BIP text on-chain to prove it's bypassable
+- **BitMEX Research** argued it creates perverse incentives for CSAM-based attacks
+- **Alex Thorn** (Galaxy Digital) called it "an attack on Bitcoin"
+- RC1 had failing tests; developers warned against running it
+
+:::tip Full Analysis
+See **[BIP-110: The Reduced Data Soft Fork](/guides/bip-110)** for complete details on the seven consensus rules, activation timeline, arguments for and against, and current status.
+:::
+
 ## The Governance Failure
 
 Perhaps the most damning aspect of this controversy isn't the technical change itself — it's **how** it was merged.
@@ -317,6 +388,24 @@ This rhetoric — comparing users who prefer conservative defaults to Nazis — 
 ### Chaincode Labs Influence
 
 Many critics pointed to **Chaincode Labs** as a driving force behind the OP_RETURN changes. Chaincode is a well-funded Bitcoin development company and educational hub based in NYC. Critics argue their wealth and influence over developer careers creates concerning incentive structures.
+
+### Manufactured Consensus: A Case Study
+
+Media coverage of this controversy often framed critics' concerns as overblown. A revealing example is the October 2025 Protos article headlined **"Lawyers call Bitcoin Core v30 CSAM concerns 'overblown'"**.
+
+Reading the actual lawyer quotes tells a different story:
+
+| Lawyer | What the headline implies | What they actually said |
+|--------|--------------------------|------------------------|
+| **Unnamed lawyer** | Concerns overblown | Called it **"a huge concern"** — would make it "possible for a single bad actor to render the Bitcoin blockchain legally unhostable" |
+| **Gabriel Shapiro** | Dismissed risk | Acknowledged **"some plausibility"** to Knots' concerns |
+| **Patrick Gruhn** | No real issue | Warned **"regulatory optics deserve attention"** — narrative could increase legal pressure |
+| **Julian Fahrer** | Legal risk minimal | Warned politicians could **"weaponize the narrative regardless of reality"** |
+| **Yaël Ossowski** | FUD | Acknowledged **"the fringe case exists"** |
+
+The technique: frame "low practical likelihood" as "overblown," bury the dissenting quote ("a huge concern"), and let the headline do the work — knowing most readers won't read past it.
+
+This is how consensus gets manufactured: not by addressing arguments, but by controlling framing. The article technically contains the facts; the spin is in what gets emphasized.
 
 ### The Substantive Divide
 

@@ -94,6 +94,7 @@ const sidebars: SidebarsConfig = {
         'guides/configuration',
         'guides/troubleshooting',
         'guides/op-return-controversy',
+        'guides/bip-110',
         'guides/creating-a-fork',
       ],
     },
