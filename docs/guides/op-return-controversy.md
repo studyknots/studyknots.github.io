@@ -24,13 +24,21 @@ Bitcoin Core v30, released in October 2025, made significant policy changes:
 
 | Change | Before (v29) | After (v30) |
 |--------|--------------|-------------|
-| OP_RETURN size limit | 80 bytes | ~100,000 bytes (effectively unlimited) |
+| OP_RETURN size limit | 80 bytes | ~100,000 bytes |
 | OP_RETURN outputs per tx | 1 | Multiple allowed |
 | Default relay policy | Conservative | Permissive |
 
 The change was merged in June 2025 via [PR #32406](https://github.com/bitcoin/bitcoin/pull/32406) by maintainer Gloria Zhao, despite vocal opposition from many community members.
 
 ## The Case Against (Why Critics Say It's Harmful)
+
+### Satoshi's Warning (2010)
+
+Before examining the current debate, it's worth noting that Satoshi Nakamoto himself warned against storing arbitrary data on the blockchain. In an [October 2010 BitcoinTalk post](https://satoshi.nakamotoinstitute.org/posts/bitcointalk/threads/239/), responding to a suggestion about adding messages to transactions:
+
+> "It would be unwise to have permanently recorded plaintext messages for everyone to see. **It would be an accident waiting to happen.** If there's going to be a message system, it should be a separate system parallel to the bitcoin network. Messages should not be recorded in the block chain."
+
+This wasn't about technical limitations — it was a design philosophy: the blockchain is for financial transactions, not arbitrary data storage.
 
 ### 1. Bitcoin's Purpose is Money, Not Data Storage
 
@@ -103,6 +111,100 @@ Proponents of the change argue:
 3. **Two-tier system**: The 80-byte limit only applied to relay policy — miners already accepted larger OP_RETURN via direct submission, favoring actors with miner connections
 
 4. **Neutrality**: Software should be neutral about transaction content; market forces (fees) will naturally limit abuse
+
+## The Two PRs: What Actually Happened
+
+The OP_RETURN changes in Core v30 emerged from two competing pull requests in April-May 2025:
+
+### PR #32359 — The Failed Approach
+
+[PR #32359](https://github.com/bitcoin/bitcoin/pull/32359) by Peter Todd proposed removing limits entirely **and** removing the configuration options. Key details:
+
+- Todd was reportedly asked to open it by an active Core developer
+- The stated motivation: entities like Citrea were using **unprunable outputs** instead of OP_RETURN due to size limits, causing worse UTXO bloat
+- The PR would have removed user choice entirely
+- Closed on May 12, 2025 by Gloria Zhao with the note: "there seems to be consensus around leaving the config options in place"
+
+### PR #32406 — The Merged Approach
+
+[PR #32406](https://github.com/bitcoin/bitcoin/pull/32406) by Gregory Sanders (instagibbs) took a different tack:
+
+- Uncapped the default (80 bytes → ~100KB)
+- **Kept** configuration options (`-datacarriersize`, `-datacarrier`)
+- Marked these options as **deprecated** (scheduled for future removal)
+- Allowed multiple OP_RETURN outputs per transaction
+- Merged by Gloria Zhao, shipped in Core v30.0
+
+The distinction matters: PR #32406 preserved user choice (for now), but by marking options "deprecated," signaled intent to eventually remove them — achieving #32359's goal through gradual deprecation.
+
+## The Bitcoin Core Statement
+
+On June 6, 2025, Bitcoin Core published a statement titled "[Bitcoin Core development and transaction relay policy](https://bitcoincore.org/en/2025/06/06/relay-statement/)" signed by 31 contributors including Pieter Wuille (sipa), Gloria Zhao, Ava Chow, and Gregory Sanders.
+
+### Key Claims
+
+The statement argued:
+
+1. **"Knowingly refusing to relay transactions that miners would include in blocks anyway forces users into alternate communication channels"**
+2. Developers should "have a realistic idea of what will end up in the next block"
+3. Bitcoin functions as "censorship-resistant infrastructure"
+4. Policy should not attempt "to intervene between consenting transaction creators and miners"
+
+### Problems With This Reasoning
+
+The statement conflates several distinct concepts:
+
+#### 1. Relay Policy ≠ Censorship
+
+Nodes choosing not to relay certain transactions is **resource management**, not censorship. Every node operator has the right to decide what their hardware processes. The statement frames this choice as somehow improper.
+
+#### 2. The "Miners Will Mine It Anyway" Fallacy
+
+This argument is circular:
+- Miners mine transactions they see in mempools
+- If most nodes don't relay spam, miners see less of it
+- Therefore, relay policy **does** affect what gets mined
+
+The statement assumes the conclusion (spam gets mined regardless) to justify the premise (relay policy doesn't matter).
+
+#### 3. Asymmetric Costs Ignored
+
+As Nick Szabo pointed out, miners receive fees while node operators bear storage/bandwidth costs without compensation. The statement ignores this fundamental asymmetry when arguing fees provide "sufficient" protection.
+
+#### 4. Changed Positions
+
+Notably, Pieter Wuille (sipa) previously supported OP_RETURN limits. In a [Delving Bitcoin discussion](https://delvingbitcoin.org/t/response-to-pieter-wuilles-stackexchange-answer-re-nuking-the-opreturn-filter/1991/11), he acknowledged his position had evolved:
+
+> "The reasons for discouragement have changed. I believe that historically...there was much more potential harm to the ecosystem from data storage."
+
+This framing — that circumstances changed rather than the policy being wrong — sidesteps the question of whether the original limit was sound policy that should have been maintained.
+
+#### 5. "Neutrality" as Ideology
+
+The claim that software should be "neutral" is itself a value judgment. Bitcoin Knots takes the opposite view: defaults should embody judgments about Bitcoin's purpose. Both are valid positions — but claiming one is "neutral" while the other is "ideological" is misleading.
+
+## The Restoration Attempts
+
+Following the v30 release, several attempts were made to restore the previous behavior:
+
+### Issue #33619 — Revert Request
+
+[Issue #33619](https://github.com/bitcoin/bitcoin/issues/33619) requested reverting the OP_RETURN policy changes. It was quickly closed as a duplicate.
+
+### PR #33453 — Deprecation Reversal
+
+This PR successfully **removed the deprecation warnings** from the configuration options, representing a partial victory for critics. Users can still configure limits without seeing deprecation messages.
+
+### PR #34214 — Restore 80-Byte Default
+
+[PR #34214](https://github.com/bitcoin/bitcoin/pull/34214) in late 2025 attempted to restore the 80-byte default. It cited Nick Szabo's warnings as "new information" that wasn't available during the original debate.
+
+The PR was closed with NACKs from maintainers achow101 and glozow, with arguments that:
+- The debate had been settled
+- Node operators can configure their own limits
+- The change would be "going backwards"
+
+Critics noted that "node operators can configure" ignores that **defaults matter** — most users run defaults.
 
 ## The Fallout
 
@@ -182,6 +284,17 @@ Bitcoin Knots exists because some users believe defaults matter, purpose matters
 
 ## Sources
 
+### Primary Sources
+
+- [Satoshi on blockchain messages (2010)](https://satoshi.nakamotoinstitute.org/posts/bitcointalk/threads/239/) — "It would be an accident waiting to happen"
+- [PR #32359](https://github.com/bitcoin/bitcoin/pull/32359) — Peter Todd's original PR (closed)
+- [PR #32406](https://github.com/bitcoin/bitcoin/pull/32406) — Gregory Sanders' PR (merged)
+- [PR #34214](https://github.com/bitcoin/bitcoin/pull/34214) — Restoration attempt (closed)
+- [Issue #33619](https://github.com/bitcoin/bitcoin/issues/33619) — Revert request (closed)
+- [Bitcoin Core Relay Statement](https://bitcoincore.org/en/2025/06/06/relay-statement/) — The official statement signed by 31 developers
+
+### Analysis & Commentary
+
 - [Bitcoin Core v30 sparks OP_RETURN limit controversy](https://en.cryptonomist.ch/2025/10/13/bitcoin-core-update-v30-op-return-limit-controversy/)
 - [Nick Szabo Breaks His Silence](https://www.cointribune.com/en/nick-szabo-breaks-his-silence-and-criticizes-the-controversial-bitcoin-core-update/)
 - [Bitcoin Core v30 Release Guide](https://yellow.com/research/bitcoin-core-v30-release-guide-opreturn-changes-wallet-updates-and-network-impact)
@@ -189,3 +302,5 @@ Bitcoin Knots exists because some users believe defaults matter, purpose matters
 - [The Drama Surrounding Bitcoin Core 30](https://thebitcoinmanual.com/articles/drama-btc-core-30/)
 - [Bitcoin's OP_RETURN Saga](https://satscryption.substack.com/p/bitcoins-op_return-saga)
 - [OP_RETURN Attack Surface Analysis](https://opreturns.github.io/surface/) — Technical demonstration of the "Gallery vs. Drawer" problem
+- [Response to Pieter Wuille's StackExchange Answer](https://delvingbitcoin.org/t/response-to-pieter-wuilles-stackexchange-answer-re-nuking-the-opreturn-filter/1991) — Delving Bitcoin discussion
+- [Bitcoin Optech Newsletter #352](https://bitcoinops.org/en/newsletters/2025/05/02/) — Technical summary of the debate
