@@ -70,6 +70,10 @@ Bitcoin Knots takes a more conservative approach than Bitcoin Core regarding blo
 3. **User Choice**: Provides configuration options so users can decide their own policies
 4. **Feature Inclusion**: Includes useful features that Core hasn't prioritized or has removed
 
+:::tip The OP_RETURN Controversy
+The philosophical differences between Knots and Core came to a head in 2025 with Bitcoin Core v30's controversial removal of OP_RETURN limits. Nick Szabo, Jimmy Song, and Luke Dashjr were among the prominent voices opposing the change. [Read the full story →](/guides/op-return-controversy)
+:::
+
 ## Notable Features
 
 | Feature | Description |

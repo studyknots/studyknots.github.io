@@ -184,6 +184,7 @@ See [Contributing Guide](/reference/contributing) for details.
 
 ## See Also
 
+- [The OP_RETURN Controversy](/guides/op-return-controversy) - Why these patches matter
 - [Policy Patches](/patches/policy/mempool-policies) - Detailed policy documentation
 - [Wallet Features](/patches/wallet/legacy-wallet) - Wallet enhancements
 - [Configuration Reference](/reference/configuration-options) - All options
