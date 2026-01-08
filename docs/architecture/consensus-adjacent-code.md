@@ -215,27 +215,47 @@ Knots maintains this compatibility.
 
 Understanding how validation works helps assess risk:
 
+```mermaid
+flowchart TD
+    TX[/"📨 Transaction Arrives"/]
+
+    subgraph POLICY["🔧 POLICY CHECKS (mempool)"]
+        direction TB
+        P1["rejectparasites"]
+        P2["rejecttokens"]
+        P3["datacarriersize"]
+        P4["other policy options"]
+    end
+
+    PROPAGATE["📡 Propagated to peers"]
+    MINER["⛏️ Miner includes in block"]
+
+    subgraph CONSENSUS["🔒 CONSENSUS CHECKS (block validation)"]
+        direction TB
+        C1["CheckBlock()"]
+        C2["ContextualCheckBlock()"]
+        C3["ConnectBlock()"]
+    end
+
+    CHAIN[("⛓️ Block added to chain")]
+
+    TX --> POLICY
+    POLICY -->|"Accepted to mempool"| PROPAGATE
+    POLICY -.->|"Rejected by policy"| REJECT["❌ Not relayed"]
+    PROPAGATE --> MINER
+    MINER --> CONSENSUS
+    CONSENSUS -->|"Valid"| CHAIN
+    CONSENSUS -.->|"Invalid"| INVALID["❌ Block rejected"]
+
+    style POLICY fill:#4A90A4,stroke:#3D7A8C,color:#fff
+    style CONSENSUS fill:#2d5a3d,stroke:#1e3d29,color:#fff
+    style TX fill:#6BADC0,stroke:#5BA0B4,color:#fff
+    style CHAIN fill:#8BC4D4,stroke:#6BADC0,color:#000
 ```
-Transaction arrives
-       ↓
-┌──────────────────┐
-│  POLICY CHECKS   │  ← Knots changes HERE
-│  (mempool)       │    (configurable, your node only)
-└────────┬─────────┘
-         │ If accepted to mempool...
-         ↓
-    Propagated to peers
-         ↓
-    Miner includes in block
-         ↓
-┌──────────────────┐
-│ CONSENSUS CHECKS │  ← Knots does NOT change this
-│ (block validation)│    (must match network)
-└────────┬─────────┘
-         │ If valid...
-         ↓
-    Block added to chain
-```
+
+**Key insight:**
+- **Blue box (Policy)**: Knots changes HERE — configurable, affects your node only
+- **Green box (Consensus)**: Knots does NOT change this — must match network
 
 Knots policy changes only affect the first box. Consensus validation is unchanged.
 
