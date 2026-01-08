@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="majorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90A4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3D7A8C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="minorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5BA0B4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4A90A4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="knotsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6BADC0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5BA0B4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="dateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8BC4D4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6BADC0;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="200" rx="12" fill="url(#bgGrad)"/>
+
+  <!-- Version string container -->
+  <rect x="50" y="30" width="500" height="60" rx="8" fill="#ffffff" filter="url(#shadow)"/>
+
+  <!-- Version segments -->
+  <!-- Major version: 29 -->
+  <rect x="70" y="42" width="50" height="36" rx="6" fill="url(#majorGrad)"/>
+  <text x="95" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">29</text>
+
+  <!-- Dot -->
+  <text x="130" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#6c757d" text-anchor="middle">.</text>
+
+  <!-- Minor version: 2 -->
+  <rect x="145" y="42" width="36" height="36" rx="6" fill="url(#minorGrad)"/>
+  <text x="163" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+
+  <!-- Dot -->
+  <text x="195" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#6c757d" text-anchor="middle">.</text>
+
+  <!-- knots text -->
+  <rect x="210" y="42" width="80" height="36" rx="6" fill="url(#knotsGrad)"/>
+  <text x="250" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">knots</text>
+
+  <!-- Date: 20251110 -->
+  <rect x="300" y="42" width="130" height="36" rx="6" fill="url(#dateGrad)"/>
+  <text x="365" y="67" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">20251110</text>
+
+  <!-- Connector lines -->
+  <line x1="95" y1="78" x2="95" y2="110" stroke="#4A90A4" stroke-width="2" stroke-dasharray="4,2"/>
+  <line x1="163" y1="78" x2="163" y2="130" stroke="#5BA0B4" stroke-width="2" stroke-dasharray="4,2"/>
+  <line x1="250" y1="78" x2="250" y2="150" stroke="#6BADC0" stroke-width="2" stroke-dasharray="4,2"/>
+  <line x1="365" y1="78" x2="365" y2="170" stroke="#8BC4D4" stroke-width="2" stroke-dasharray="4,2"/>
+
+  <!-- Labels -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+    <!-- Major -->
+    <circle cx="95" cy="118" r="8" fill="#4A90A4"/>
+    <text x="110" y="122" fill="#495057" font-weight="500">Major version (matches Core)</text>
+
+    <!-- Minor -->
+    <circle cx="163" cy="138" r="8" fill="#5BA0B4"/>
+    <text x="178" y="142" fill="#495057" font-weight="500">Minor version (matches Core)</text>
+
+    <!-- Knots -->
+    <circle cx="250" cy="158" r="8" fill="#6BADC0"/>
+    <text x="265" y="162" fill="#495057" font-weight="500">Knots identifier</text>
+
+    <!-- Date -->
+    <circle cx="365" cy="178" r="8" fill="#8BC4D4"/>
+    <text x="380" y="182" fill="#495057" font-weight="500">Release date (YYYYMMDD)</text>
+  </g>
+</svg>

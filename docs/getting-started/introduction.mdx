@@ -4,6 +4,8 @@ title: Introduction
 description: What is Bitcoin Knots and why should you use it?
 ---
 
+import ThemedImage from '@theme/ThemedImage';
+
 # Introduction to Bitcoin Knots
 
 Bitcoin Knots is an enhanced derivative of [Bitcoin Core](https://bitcoincore.org), the reference implementation of the Bitcoin protocol. Created and maintained by [Luke Dashjr](https://github.com/luke-jr) since 2011, Bitcoin Knots includes a collection of patches that add features, improve functionality, and provide additional configuration options not available in Bitcoin Core.
@@ -42,13 +44,14 @@ Bitcoin Knots follows identical consensus rules to Bitcoin Core. Running Knots d
 
 Bitcoin Knots versions track Bitcoin Core releases with an additional identifier:
 
-```
-29.2.knots20251110
-│    │         │
-│    │         └── Knots release date (YYYYMMDD)
-│    └── Bitcoin Core minor version
-└── Major version
-```
+<ThemedImage
+  alt="Bitcoin Knots version numbering: 29.2.knots20251110"
+  sources={{
+    light: '/img/version-numbering.svg',
+    dark: '/img/version-numbering-dark.svg',
+  }}
+  style={{maxWidth: '100%', margin: '1.5rem 0'}}
+/>
 
 ## Who Is This For?
 
