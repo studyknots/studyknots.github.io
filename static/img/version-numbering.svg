@@ -76,6 +76,6 @@
 
     <!-- Date -->
     <circle cx="365" cy="178" r="8" fill="#8BC4D4"/>
-    <text x="380" y="182" fill="#495057" font-weight="500">Release date (YYYYMMDD)</text>
+    <text x="380" y="182" fill="#495057" font-weight="500">Features list date (YYYYMMDD)</text>
   </g>
 </svg>

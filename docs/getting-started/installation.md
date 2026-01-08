@@ -32,18 +32,116 @@ Official releases are available at:
 
 ## Verify Downloads
 
-Always verify the integrity of your download:
+**Always verify both the checksum AND the GPG signature** of your download. This ensures the files haven't been tampered with and actually come from Luke Dashjr.
+
+### Step 1: Download Verification Files
 
 ```bash
-# Download the SHA256SUMS file
+# Download the checksum and signature files
 wget https://bitcoinknots.org/files/29.x/29.2.knots20251110/SHA256SUMS
+wget https://bitcoinknots.org/files/29.x/29.2.knots20251110/SHA256SUMS.asc
+```
 
-# Verify your download
+### Step 2: Verify GPG Signature
+
+First, import Luke Dashjr's GPG key:
+
+```bash
+# Import Luke's key from a keyserver
+gpg --keyserver hkps://keys.openpgp.org --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+
+# Or from the SKS keyserver pool
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+```
+
+**Luke Dashjr's key fingerprint:**
+```
+E463 A93F 5F31 17EE DE6C  7316 BD02 9424 21F4 889F
+```
+
+You can also find the key at:
+- [keys.openpgp.org](https://keys.openpgp.org/search?q=luke%40dashjr.org)
+- Luke's personal website
+- Bitcoin Core's [trusted-keys](https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys) (Luke is a Core contributor)
+
+Verify the signature:
+
+```bash
+gpg --verify SHA256SUMS.asc SHA256SUMS
+```
+
+**Expected output:**
+```
+gpg: Signature made [date]
+gpg:                using RSA key E463A93F5F3117EEDE6C7316BD02942421F4889F
+gpg: Good signature from "Luke Dashjr <luke@dashjr.org>"
+```
+
+:::warning Check the key fingerprint
+Don't just look for "Good signature" — verify the key fingerprint matches. A malicious key could also produce a "good" signature.
+:::
+
+### Step 3: Verify Checksum
+
+```bash
+# Verify your download matches the checksum
 sha256sum -c SHA256SUMS 2>/dev/null | grep bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz
 ```
 
-:::warning Security
-Only download Bitcoin Knots from the official website (bitcoinknots.org). Verify checksums before running.
+**Expected output:**
+```
+bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz: OK
+```
+
+### Web of Trust
+
+For additional verification, Luke's key is signed by several well-known Bitcoin developers. You can view the key's signatures:
+
+```bash
+gpg --list-sigs 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+```
+
+### Quick Verification Script
+
+```bash
+#!/bin/bash
+# verify-knots.sh - Verify Bitcoin Knots download
+
+VERSION="29.2.knots20251110"
+FILE="bitcoin-${VERSION}-x86_64-linux-gnu.tar.gz"
+LUKE_KEY="E463A93F5F3117EEDE6C7316BD02942421F4889F"
+
+# Download verification files
+wget -q "https://bitcoinknots.org/files/29.x/${VERSION}/SHA256SUMS"
+wget -q "https://bitcoinknots.org/files/29.x/${VERSION}/SHA256SUMS.asc"
+
+# Import key if needed
+gpg --list-keys "$LUKE_KEY" &>/dev/null || \
+  gpg --keyserver hkps://keys.openpgp.org --recv-keys "$LUKE_KEY"
+
+# Verify signature
+echo "Verifying GPG signature..."
+if gpg --verify SHA256SUMS.asc SHA256SUMS 2>&1 | grep -q "Good signature"; then
+  echo "✓ GPG signature valid"
+else
+  echo "✗ GPG signature INVALID - DO NOT USE"
+  exit 1
+fi
+
+# Verify checksum
+echo "Verifying checksum..."
+if sha256sum -c SHA256SUMS 2>/dev/null | grep -q "${FILE}: OK"; then
+  echo "✓ Checksum valid"
+else
+  echo "✗ Checksum INVALID - DO NOT USE"
+  exit 1
+fi
+
+echo "✓ Verification complete - safe to install"
+```
+
+:::danger Never Skip Verification
+Bitcoin software controls your money. A compromised binary could steal your funds. Always verify both the GPG signature AND checksum before installing.
 :::
 
 ## Linux Installation

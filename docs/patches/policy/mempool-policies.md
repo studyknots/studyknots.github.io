@@ -31,15 +31,15 @@ rejecttokens=1
 
 This filters transactions that appear to be BRC-20 or similar token transfers.
 
-### Reject Parasites (Inscriptions)
+### Reject Parasites (CAT21)
 
-Filter inscription/ordinal transactions:
+Filter CAT21 spam transactions:
 
 ```ini title="bitcoin.conf"
 rejectparasites=1
 ```
 
-This filters transactions that embed large amounts of arbitrary data via witness.
+Note: This option specifically targets CAT21 spam, not inscriptions or ordinals in general.
 
 ### Combined Filtering
 

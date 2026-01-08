@@ -155,12 +155,12 @@ Always verify signatures when downloading.
 
 ### What does `rejectparasites` do?
 
-It filters inscription/ordinal transactions from your mempool. This:
+It filters CAT21 spam transactions from your mempool. This:
 - Reduces your mempool churn
 - Saves bandwidth
 - Doesn't affect what blocks you accept
 
-Transactions can still be mined by others and your node accepts all valid blocks.
+Note: `rejectparasites` specifically targets CAT21 spam, not inscriptions or ordinals in general. Transactions can still be mined by others and your node accepts all valid blocks.
 
 ### What's a good `datacarriersize` setting?
 
@@ -194,7 +194,7 @@ Potentially yes, but:
 
 ### What are "parasites" and "tokens"?
 
-- **Parasites** (`rejectparasites`): Inscription/ordinal transactions using witness data tricks
+- **Parasites** (`rejectparasites`): CAT21 spam transactions
 - **Tokens** (`rejecttokens`): Runes protocol transactions using OP_RETURN with OP_13
 
 Both are "data storage" uses of Bitcoin that some consider spam.

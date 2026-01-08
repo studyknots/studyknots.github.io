@@ -29,15 +29,15 @@ The differences are in:
 | `datacarriersize` | Fixed 80 bytes | Configurable (default 83) |
 | `datacarriercost` | N/A | Configurable weight multiplier |
 | `rejecttokens` | N/A | Filter BRC-20/token transactions |
-| `rejectparasites` | N/A | Filter inscription transactions |
+| `rejectparasites` | N/A | Filter CAT21 spam transactions |
 | `bytespersigopstrict` | N/A | Stricter sigops enforcement |
 | `dustdynamic` | N/A | Dynamic dust threshold |
 | `permitbarepubkey` | N/A | Bare pubkey output policy |
 
-### Example: Filtering Inscriptions
+### Example: Filtering Spam
 
 ```ini title="bitcoin.conf"
-# Reject inscription/ordinal transactions
+# Reject CAT21 spam and Runes tokens
 rejectparasites=1
 rejecttokens=1
 

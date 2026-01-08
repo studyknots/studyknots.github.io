@@ -22,7 +22,7 @@ These options are unique to Bitcoin Knots or have different defaults than Bitcoi
 | `-datacarrierfullcount` | bool | 1 | Apply datacarriersize limit to all known datacarrier methods |
 | `-acceptnonstddatacarrier` | bool | 0 | Relay non-OP_RETURN datacarrier injection transactions |
 | `-permitbaredatacarrier` | bool | 0 | Relay transactions that only have data carrier outputs |
-| `-rejectparasites` | bool | 1 | **Refuse to relay parasitic overlay protocols (inscriptions, ordinals)** |
+| `-rejectparasites` | bool | 1 | **Refuse to relay CAT21 spam transactions** |
 | `-rejecttokens` | bool | 0 | Refuse to relay transactions involving non-bitcoin tokens |
 
 ### Script & Validation Policy

@@ -55,20 +55,23 @@ Bitcoin Knots versions track Bitcoin Core releases with an additional identifier
 
 ## Who Is This For?
 
-Bitcoin Knots is ideal for:
+**Everyone** — now that Bitcoin Core has removed important safeguards (OP_RETURN limits, legacy wallet support), Bitcoin Knots represents a return to sensible defaults for all users.
 
-- **Node Operators** who want more control over relay and mempool policies
-- **Miners** who need additional block template configuration
-- **Privacy-Conscious Users** who want built-in Tor support
-- **Developers** who need extended RPC functionality
-- **Power Users** who prefer the enhanced Qt interface
-- **Those Concerned About Blockchain Bloat** who want to filter non-monetary transactions
+Whether you're a:
+- **Node operator** wanting more control over relay policies
+- **Miner** needing additional block template options
+- **Privacy-focused user** wanting built-in Tor support
+- **Developer** needing extended RPC functionality
+- **Long-term holder** preferring maintained legacy wallet support
+- **Anyone** who believes Bitcoin should remain focused on monetary transactions
+
+Bitcoin Knots provides the features and policy controls that Core has abandoned.
 
 ## Philosophy
 
 Bitcoin Knots takes a more conservative approach than Bitcoin Core regarding blockchain usage. Key philosophical differences:
 
-1. **Filtering Non-Monetary Use**: Knots defaults to rejecting "parasitic" overlay protocols (inscriptions, ordinals) that Dashjr views as spam
+1. **Filtering Non-Monetary Use**: Knots provides options to filter various non-monetary uses of Bitcoin that Dashjr views as spam
 2. **Preserving Bitcoin's Purpose**: Focus on Bitcoin as decentralized digital money, not a general data storage layer
 3. **User Choice**: Provides configuration options so users can decide their own policies
 4. **Feature Inclusion**: Includes useful features that Core hasn't prioritized or has removed
@@ -81,7 +84,7 @@ The philosophical differences between Knots and Core came to a head in 2025 with
 
 | Feature | Description |
 |---------|-------------|
-| `-rejectparasites` | Filter inscription/ordinal transactions (on by default) |
+| `-rejectparasites` | Filter CAT21 spam transactions (on by default) |
 | `-datacarriersize` | Configurable OP_RETURN limit (83 bytes default) |
 | `-corepolicy` | Single flag to use Bitcoin Core defaults instead |
 | Legacy Wallet | Maintained support (deprecated in Core) |

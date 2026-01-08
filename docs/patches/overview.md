@@ -19,7 +19,7 @@ Control what transactions your node relays and accepts into its mempool.
 | Patch | Purpose | Config Option |
 |-------|---------|---------------|
 | `rejecttokens` | Filter BRC-20/token transactions | `rejecttokens=1` (off by default) |
-| `rejectparasites` | Filter inscription transactions | `rejectparasites=1` **(on by default)** |
+| `rejectparasites` | Filter CAT21 spam transactions | `rejectparasites=1` **(on by default)** |
 | `dustdynamic` | Dynamic dust threshold | `dustdynamic=1` |
 | `datacarriercost` | Weight OP_RETURN data | `datacarriercost=<n>` |
 | `bytespersigopstrict` | Stricter sigops limits | `bytespersigopstrict=1` |

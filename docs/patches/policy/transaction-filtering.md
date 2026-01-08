@@ -110,7 +110,7 @@ This is why `permitbaremultisig=0` is particularly important.
 
 | Option | Default (Knots) | Effect |
 |--------|-----------------|--------|
-| `rejectparasites` | **1** (on) | Filters inscriptions/ordinals |
+| `rejectparasites` | **1** (on) | Filters CAT21 spam |
 | `rejecttokens` | 0 (off) | Filters Runes |
 | `datacarriersize` | 83 | Max OP_RETURN bytes |
 | `datacarriercost` | 1 | Weight multiplier for data |
@@ -123,17 +123,17 @@ This is why `permitbaremultisig=0` is particularly important.
 
 #### rejectparasites
 
-Filters inscription and ordinal transactions. **Enabled by default in Knots.**
+Filters CAT21 spam transactions. **Enabled by default in Knots.**
 
 ```ini title="bitcoin.conf"
-# Default in Knots - filters inscriptions
+# Default in Knots - filters CAT21 spam
 rejectparasites=1
 
-# Disable to allow inscriptions (Core behavior)
+# Disable filtering
 rejectparasites=0
 ```
 
-This detects the `OP_FALSE OP_IF ... OP_ENDIF` envelope pattern used by inscriptions.
+Note: This option specifically targets CAT21 spam, not inscriptions or ordinals in general.
 
 #### rejecttokens
 

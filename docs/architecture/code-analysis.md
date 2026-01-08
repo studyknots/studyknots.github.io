@@ -152,7 +152,7 @@ Primarily:
 Many Knots additions are **policy options** — they control what your node relays, not what it considers valid.
 
 Example: `-rejectparasites=1`
-- Your node won't **relay** inscription transactions
+- Your node won't **relay** CAT21 spam transactions
 - Your node **will accept blocks** containing them
 - Other nodes can still relay them
 - Miners can still mine them
@@ -168,9 +168,10 @@ When evaluating the ~40k lines:
 - He authored BIP 22/23 (mining protocols used by pools)
 - He's a Bitcoin Core contributor, not an outsider
 
-**Consider what got reviewed:**
+**Consider the "unreviewed" claim:**
 - Many Knots patches are rejected Core PRs — they were reviewed, just not merged
 - Restored code (libconsensus, UPnP) was reviewed when originally in Core
+- Code has been reviewed post-merge by others (albeit poorly documented)
 - The 21% of nodes running Knots provides real-world testing
 
 **Consider what's configurable:**
