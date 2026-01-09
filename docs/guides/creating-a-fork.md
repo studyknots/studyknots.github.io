@@ -615,7 +615,7 @@ After going through this process, you might appreciate why Bitcoin Knots exists:
 
 | DIY Fork | Bitcoin Knots |
 |----------|---------------|
-| You maintain it | Luke Dashjr maintains it |
+| You maintain it | Community maintained (led by Luke Dashjr, longest-active Core contributor) |
 | You handle security updates | Tracks Core security fixes |
 | Single policy change | Many useful options |
 | Your testing only | Community tested |
