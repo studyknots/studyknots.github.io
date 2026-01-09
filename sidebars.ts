@@ -106,6 +106,7 @@ const sidebars: SidebarsConfig = {
         'reference/rpc',
         'reference/configuration-options',
         'reference/cli-commands',
+        'reference/resources',
         'reference/faq',
         'reference/contributing',
         'reference/changelog',
