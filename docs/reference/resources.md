@@ -53,7 +53,7 @@ Knots adoption increased significantly following the OP_RETURN controversy in mi
 
 | Explorer | Notes |
 |----------|-------|
-| [mempool.space](https://mempool.space) | Open source, self-hostable |
+| [mempool.guide](https://mempool.guide) | Community block explorer |
 | [blockstream.info](https://blockstream.info) | Blockstream's explorer |
 
 ## See Also
