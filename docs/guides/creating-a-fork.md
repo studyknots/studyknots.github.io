@@ -8,6 +8,73 @@ description: How to create a minimal Bitcoin Core fork with custom policy settin
 
 You don't have to accept every decision made by Bitcoin Core developers. Bitcoin is open source software — you can modify it to match your preferences. This guide shows how to create a minimal fork with a single policy change: restoring the original OP_RETURN data carrier size limit.
 
+## Why Implementation Diversity Matters
+
+Bitcoin's security model assumes no single entity controls the network. But what about the *software* that runs the network?
+
+### The Current State
+
+<div className="implementation-chart">
+  <div className="chart-container">
+    <div className="pie-chart">
+      <div className="slice core" style={{background: 'conic-gradient(#f7931a 0% 78%, #4a90a4 78% 100%)'}}></div>
+    </div>
+    <div className="chart-legend">
+      <div className="legend-item"><span className="dot core"></span> Bitcoin Core: ~78%</div>
+      <div className="legend-item"><span className="dot knots"></span> Bitcoin Knots: ~21%</div>
+      <div className="legend-item"><span className="dot other"></span> All others: ~1%</div>
+    </div>
+  </div>
+  <p className="chart-source">As of January 2026 · Live data: <a href="https://coin.dance/nodes">coin.dance/nodes</a></p>
+</div>
+
+This is a **monoculture problem**. When ~99% of nodes run code from two closely-related implementations:
+
+- A single bug could affect almost the entire network
+- Governance becomes centralized in a small group of maintainers
+- Alternative views on policy get marginalized
+- Users have limited real choice
+
+### The Case for More Implementations
+
+Every additional implementation strengthens Bitcoin:
+
+| More Implementations | Benefit |
+|---------------------|---------|
+| More codebases | Bugs in one don't affect all |
+| More maintainers | No single point of capture |
+| More policy options | Users get real choices |
+| More review | Different eyes catch different issues |
+
+**Your fork could become the third slice on that pie chart.**
+
+Even if only 1% of nodes run your implementation, that's:
+- ~200+ nodes worldwide
+- Independent verification of consensus rules
+- A credible alternative if Core/Knots go astray
+
+## Two Paths: Personal or Public
+
+This guide works for both goals:
+
+### Path A: Personal Fork
+- Run your own policies
+- Understand exactly what your node does
+- Learn how Bitcoin works at the code level
+- No need to maintain for others
+
+### Path B: Public Implementation
+- Distribute your fork for others to run
+- Build a community around your vision
+- Become a slice on the pie chart
+- Commit to ongoing maintenance and security updates
+
+:::tip Start Personal, Go Public Later
+Most successful implementations started as personal projects. Build something you want to run yourself first.
+:::
+
+---
+
 ## Why Fork?
 
 ### The Scenario

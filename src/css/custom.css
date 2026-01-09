@@ -402,3 +402,78 @@ html {
     display: none;
   }
 }
+
+/* Implementation diversity pie chart */
+.implementation-chart {
+  max-width: 400px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.pie-chart {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #f7931a 0% 78%,
+    #4a90a4 78% 99.5%,
+    #888 99.5% 100%
+  );
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.chart-legend {
+  text-align: left;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.legend-item .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-item .dot.core {
+  background: #f7931a;
+}
+
+.legend-item .dot.knots {
+  background: #4a90a4;
+}
+
+.legend-item .dot.other {
+  background: #888;
+}
+
+.chart-source {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--ifm-font-color-secondary);
+}
+
+.chart-source a {
+  color: var(--ifm-color-primary);
+}
+
+@media (max-width: 500px) {
+  .chart-container {
+    flex-direction: column;
+  }
+}
