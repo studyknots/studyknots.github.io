@@ -14,6 +14,7 @@ Useful tools for monitoring the Bitcoin network and Knots adoption.
 |----------|-------------|
 | [Coin Dance Nodes](https://coin.dance/nodes) | Live node counts by implementation (Core vs Knots) |
 | [Bitnodes](https://bitnodes.io/nodes/) | Searchable node explorer with version filtering |
+| [Bitbo Dashboard](https://bitbo.io) | Real-time Bitcoin stats, hash rate, fees, and network data |
 | [Clark Moody Dashboard](https://bitcoin.clarkmoody.com/dashboard/) | Real-time Bitcoin network metrics |
 | [The Bitcoin Portal](https://thebitcoinportal.com/) | Network statistics and node data |
 
