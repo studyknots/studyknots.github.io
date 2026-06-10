@@ -78,7 +78,7 @@ Additional fields:
 - `misbehaving_score`: Peer misbehavior score
 - `last_block_announcement`: Time of last block announcement
 
-## fundraw
+## fundrawtransaction
 
 Enhanced with `min_conf` option:
 

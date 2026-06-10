@@ -338,7 +338,7 @@ rpcallowip=10.0.0.5/32
 **For remote access, use SSH tunnel instead:**
 ```bash
 ssh -L 8332:localhost:8332 user@node-server
-bitcoin-cli -rpcconnect=127.0.0.1 getinfo
+bitcoin-cli -rpcconnect=127.0.0.1 -getinfo
 ```
 
 ## Wallet Issues
@@ -394,7 +394,7 @@ bitcoin-cli testmempoolaccept '["0200000001..."]'
 | "min relay fee not met" | Fee too low | Bump fee or wait |
 | "insufficient fee" | Below mempool minimum | Increase fee rate |
 | "non-final" | Timelock not reached | Wait for block height/time |
-| "mempool full" | Low-fee during congestion | Increase fee |
+| "mempool full" | Low fee during congestion | Increase fee |
 | "txn-mempool-conflict" | Double spend in mempool | One version already there |
 
 **Knots filtering considerations:**

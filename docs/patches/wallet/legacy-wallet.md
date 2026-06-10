@@ -104,7 +104,7 @@ bitcoin-cli -rpcwallet=mylegacy migratewallet
 :::warning Migration Notes
 - Creates a new descriptor wallet
 - Old wallet becomes read-only backup
-- Watchonly items go to separate watchonly wallet
+- Watchonly items go to a separate watchonly wallet
 - **Make a backup before migrating**
 :::
 

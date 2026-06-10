@@ -274,7 +274,7 @@ argsman.AddArg("-datacarriersize",
 
 Create a file documenting what you changed:
 
-```bash
+````bash
 cat > doc/my-policy-changes.md << 'EOF'
 # My Policy Fork Changes
 
@@ -330,7 +330,7 @@ To update this fork when Core releases a new version:
 4. Rebuild and test
 
 EOF
-```
+````
 
 ## Step 6: Commit Your Changes
 

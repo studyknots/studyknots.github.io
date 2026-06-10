@@ -153,7 +153,7 @@ onlynet=onion
 :::warning Tor-Only Tradeoffs
 - Slower initial sync (Tor bandwidth limited)
 - Fewer available peers
-- Potential for Sybil attacks if attacker controls many onion nodes
+- Potential for Sybil attacks if an attacker controls many onion nodes
 - Consider starting with clearnet sync, then switching to Tor-only
 :::
 
