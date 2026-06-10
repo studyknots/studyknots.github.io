@@ -29,7 +29,7 @@ src/
 ├── crypto/              # Cryptographic primitives
 ├── index/               # Block and tx indexes
 ├── interfaces/          # Interface definitions
-├── kernel/              # Libbitcoinkernel
+├── kernel/              # libbitcoinkernel
 ├── net/                 # Networking code
 ├── node/                # Node-specific code
 ├── policy/              # Mempool policy

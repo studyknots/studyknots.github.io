@@ -22,7 +22,7 @@ Luke Dashjr (luke-jr), one of the earliest Bitcoin developers (involved since 20
 
 ### Why is it called "Knots"?
 
-The name has dual meaning:
+The name has a dual meaning:
 - **Technical**: References the merging/tying together of code branches and patches
 - **Personal**: A reference to a biblical passage significant to Dashjr's faith
 

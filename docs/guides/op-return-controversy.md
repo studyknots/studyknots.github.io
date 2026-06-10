@@ -34,7 +34,7 @@ The limit was a deliberate policy choice: Bitcoin is for peer-to-peer electronic
 
 ## Historical Context: The 2014 OP_RETURN Wars
 
-The 2025 controversy isn't new — OP_RETURN limits have been contentious since introduction.
+The 2025 controversy isn't new — OP_RETURN limits have been contentious since their introduction.
 
 ### The Original Compromise (2014)
 
