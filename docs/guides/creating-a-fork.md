@@ -79,7 +79,7 @@ Most successful implementations started as personal projects. Build something yo
 
 ### The Scenario
 
-Bitcoin Core v30 removed the standardness limit on OP_RETURN outputs. Previously, the default was 80 bytes. Now there's effectively no limit enforced at the policy level.
+Bitcoin Core v30 effectively removed the standardness limit on OP_RETURN outputs. Previously, the default `datacarriersize` was 83 bytes (80 bytes of data plus script overhead). In v30 the default jumped to 100,000 bytes, so there's effectively no limit enforced at the policy level.
 
 You might:
 - Disagree with this change
@@ -129,7 +129,7 @@ You'll need:
 **Ubuntu/Debian:**
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
+sudo apt-get install -y build-essential cmake pkgconf python3
 sudo apt-get install -y libevent-dev libboost-dev libsqlite3-dev
 sudo apt-get install -y libminiupnpc-dev libnatpmp-dev libzmq3-dev
 # For GUI (optional)
@@ -353,39 +353,34 @@ Rationale: [Your reason]"
 
 ## Step 7: Build Your Fork
 
-### Generate Build System
-
-```bash
-# Run autogen (creates configure script)
-./autogen.sh
-```
-
 ### Configure
 
+Bitcoin Core uses CMake (since v29; there is no `./configure` in a v30 checkout):
+
 ```bash
-# Basic build (no GUI)
-./configure --disable-gui --disable-tests --disable-bench
+# Basic build (no GUI, no tests or benchmarks)
+cmake -B build -DBUILD_TESTS=OFF -DBUILD_BENCH=OFF
 
 # With GUI
-./configure --with-gui=qt5
+cmake -B build -DBUILD_GUI=ON
 
 # See all options
-./configure --help
+cmake -B build -LH
 ```
 
 **Recommended for first build:**
 ```bash
-./configure --disable-tests --disable-bench --with-gui=no
+cmake -B build -DBUILD_TESTS=OFF -DBUILD_BENCH=OFF
 ```
 
 ### Compile
 
 ```bash
 # Use all CPU cores
-make -j$(nproc)
+cmake --build build -j$(nproc)
 
 # Or specify core count
-make -j4
+cmake --build build -j4
 ```
 
 This takes 30-90 minutes depending on your hardware.
@@ -394,13 +389,13 @@ This takes 30-90 minutes depending on your hardware.
 
 ```bash
 # Check the binary exists
-ls -la src/bitcoind src/bitcoin-cli
+ls -la build/bin/bitcoind build/bin/bitcoin-cli
 
 # Check version
-./src/bitcoind --version
+./build/bin/bitcoind --version
 
 # Verify your change is present
-./src/bitcoind -help | grep datacarriersize
+./build/bin/bitcoind -help | grep datacarriersize
 ```
 
 ## Step 8: Test Your Fork
@@ -447,15 +442,15 @@ rm -rf /tmp/bitcoin-test
 ### Run Automated Tests (Optional but Recommended)
 
 ```bash
-# Rebuild with tests enabled
-./configure --enable-tests
-make -j$(nproc)
+# Rebuild with tests enabled (tests are on by default)
+cmake -B build
+cmake --build build -j$(nproc)
 
 # Run unit tests
-make check
+ctest --test-dir build
 
 # Run specific policy tests
-./test/functional/mempool_datacarrier.py
+build/test/functional/mempool_datacarrier.py
 ```
 
 ## Step 9: Install Your Fork
@@ -463,7 +458,7 @@ make check
 ### Option A: Install System-Wide
 
 ```bash
-sudo make install
+sudo cmake --install build
 ```
 
 This installs to `/usr/local/bin/`. Your system's `bitcoind` is now your fork.
@@ -472,20 +467,20 @@ This installs to `/usr/local/bin/`. Your system's `bitcoind` is now your fork.
 
 ```bash
 # Add to your PATH
-export PATH="$HOME/bitcoin-dev/bitcoin/src:$PATH"
+export PATH="$HOME/bitcoin-dev/bitcoin/build/bin:$PATH"
 
 # Or create aliases
-alias bitcoind-custom="$HOME/bitcoin-dev/bitcoin/src/bitcoind"
-alias bitcoin-cli-custom="$HOME/bitcoin-dev/bitcoin/src/bitcoin-cli"
+alias bitcoind-custom="$HOME/bitcoin-dev/bitcoin/build/bin/bitcoind"
+alias bitcoin-cli-custom="$HOME/bitcoin-dev/bitcoin/build/bin/bitcoin-cli"
 ```
 
 ### Option C: Parallel Installation
 
 ```bash
 # Install with a different prefix
-./configure --prefix=$HOME/bitcoin-custom
-make -j$(nproc)
-make install
+cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/bitcoin-custom
+cmake --build build -j$(nproc)
+cmake --install build
 
 # Run with explicit path
 ~/bitcoin-custom/bin/bitcoind
@@ -518,10 +513,9 @@ git merge v30.1
 # The conflict will likely be straightforward - just keep your value
 
 # Rebuild
-make clean
-./autogen.sh
-./configure [your options]
-make -j$(nproc)
+rm -rf build
+cmake -B build [your options]
+cmake --build build -j$(nproc)
 ```
 
 ### Tracking Changes
@@ -548,11 +542,11 @@ EOF
 
 If you want to make additional changes, follow the same pattern:
 
-### Example: Also Restore Dust Limit
+### Example: Raise the Dust Limit
 
 ```cpp title="src/policy/policy.h"
-// Restore stricter dust limit
-static constexpr CAmount DUST_RELAY_TX_FEE = 3000; // sat/kvB
+// Raise dust limit above the default of 3000
+static constexpr CAmount DUST_RELAY_TX_FEE = 10000; // sat/kvB
 ```
 
 ### Example: Disable OP_RETURN by Default
@@ -615,7 +609,7 @@ After going through this process, you might appreciate why Bitcoin Knots exists:
 
 | DIY Fork | Bitcoin Knots |
 |----------|---------------|
-| You maintain it | Community maintained (led by Luke Dashjr, longest-active Core contributor) |
+| You maintain it | Maintained by lead maintainer Luke Dashjr with community contributors |
 | You handle security updates | Tracks Core security fixes |
 | Single policy change | Many useful options |
 | Your testing only | Community tested |

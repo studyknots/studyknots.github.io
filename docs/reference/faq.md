@@ -24,13 +24,13 @@ Luke Dashjr (luke-jr), one of the earliest Bitcoin developers (involved since 20
 
 The name has a dual meaning:
 - **Technical**: References the merging/tying together of code branches and patches
-- **Personal**: A reference to a biblical passage significant to Dashjr's faith
+- **Personal**: Reportedly a reference to the "whip of knots" Jesus used to expel the money changers from the Temple (John 2:15) — Dashjr is Catholic
 
 The project was originally called "Bitcoin LJR" before being renamed.
 
 ### How popular is Bitcoin Knots?
 
-As of late 2025, Bitcoin Knots powers approximately **21% of all Bitcoin nodes** — a significant portion of the network. Adoption surged 850% in 2024-2025, largely driven by the OP_RETURN controversy and Core v30's removal of data limits.
+As of mid-2026, Bitcoin Knots powers approximately **23% of all Bitcoin nodes** (~5,400 nodes per coin.dance) — a significant portion of the network. Adoption surged 850% during 2025, largely driven by the OP_RETURN controversy and Core v30's removal of data limits.
 
 ---
 
@@ -49,6 +49,7 @@ The ~40,000 lines figure is roughly accurate when counting insertions (~36k). Th
 | RPC | 2,238 | 277 | +1,961 | **Low** - API commands |
 | Policy | 770 | 72 | +698 | **Low** - relay, not consensus |
 | Validation/Script | 1,256 | 306 | +950 | **Review below** |
+| Other (net, init, util, depends, misc) | 5,087 | 129 | +4,958 | **Low** |
 | **Total** | **36,438** | **15,294** | **~21,144** | |
 
 **Key facts:**
@@ -216,13 +217,13 @@ Yes. Both descriptor and legacy wallets are compatible.
 
 ### What is `sweepprivkeys`?
 
-A Knots command to import a private key and immediately send funds to a new address in one atomic operation. Safer than `importprivkey` because:
+A Knots command to sweep funds from a private key into your wallet in one atomic operation. Safer than `importprivkey` because:
 - The imported key isn't stored in your wallet
-- Funds move to an address only you control
+- Funds move to a fresh address only you control
 - Original key exposure doesn't matter after sweep
 
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q_your_address"
+bitcoin-cli sweepprivkeys '{"privkeys": ["5KJvs..."]}'
 ```
 
 ### What is Codex32?
@@ -253,7 +254,7 @@ No. Knots doesn't modify the mining algorithm or proof-of-work. It only affects 
 
 ### What mining pool uses Knots?
 
-[Ocean](https://ocean.xyz/), co-founded by Luke Dashjr, runs Bitcoin Knots. It's backed by Jack Dorsey and reportedly processed $500M+ in mining.
+[Ocean](https://ocean.xyz/), co-founded by Luke Dashjr, runs Bitcoin Knots. It's backed by a $6.2M seed round led by Jack Dorsey, and Tether directs hashrate to it as part of its ~$500M mining expansion.
 
 ---
 
@@ -372,7 +373,7 @@ No. Filtering is:
 
 ### What's the OP_RETURN controversy?
 
-In 2025, Bitcoin Core v30 removed the 80-byte limit on OP_RETURN data. Critics (including Nick Szabo, who broke 5 years of silence) warned this:
+In 2025, Bitcoin Core v30 effectively removed the limit on OP_RETURN data. Critics (including Nick Szabo, who broke five years of silence on X to comment) warned this:
 - Increases attack surface for data storage abuse
 - Changes Bitcoin's character from money to data layer
 - Was done without broad community consensus

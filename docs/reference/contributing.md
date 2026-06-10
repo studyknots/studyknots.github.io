@@ -37,8 +37,10 @@ Help translate the interface (when Transifex access is restored).
 
 ### 1. Fork the Repository
 
+Fork [bitcoinknots/bitcoin](https://github.com/bitcoinknots/bitcoin) on GitHub, then clone your fork:
+
 ```bash
-git clone https://github.com/bitcoinknots/bitcoin.git
+git clone https://github.com/<your-username>/bitcoin.git
 cd bitcoin
 git remote add upstream https://github.com/bitcoinknots/bitcoin.git
 ```
@@ -57,8 +59,8 @@ Follow the coding style of the existing codebase.
 ### 4. Test
 
 ```bash
-make check
-./test/functional/test_runner.py
+ctest --test-dir build
+build/test/functional/test_runner.py
 ```
 
 ### 5. Commit

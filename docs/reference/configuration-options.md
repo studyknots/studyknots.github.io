@@ -156,7 +156,7 @@ These options exist in both Core and Knots.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `-softwareexpiry` | bool | 1 | Enable expiry warnings (4-week warning, alerts at expiry) |
+| `-softwareexpiry` | timestamp | ~2 years after release | Stop working after this POSIX timestamp (0 = never; warnings begin 4 weeks before) |
 
 ---
 

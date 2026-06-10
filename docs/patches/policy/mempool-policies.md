@@ -21,19 +21,19 @@ Policy rules are **local to your node**. They don't affect consensus validation.
 
 ## Transaction Filtering
 
-### Reject Tokens (BRC-20, etc.)
+### Reject Tokens (Runes, Stamps)
 
-Filter transactions related to token protocols that use inscriptions:
+Filter transactions related to token protocols (off by default):
 
 ```ini title="bitcoin.conf"
 rejecttokens=1
 ```
 
-This filters transactions that appear to be BRC-20 or similar token transfers.
+This filters Runes transactions (OP_RETURN outputs starting with OP_13) and OLGA/Bitcoin Stamps data encoding. Note that BRC-20 tokens live in witness inscriptions and are not matched by this option — they are constrained by the data carrier limits instead.
 
 ### Reject Parasites (CAT21)
 
-Filter CAT21 spam transactions:
+Filter CAT21 spam transactions (on by default):
 
 ```ini title="bitcoin.conf"
 rejectparasites=1
@@ -58,8 +58,9 @@ datacarriersize=42
 Control the maximum size of OP_RETURN outputs:
 
 ```ini title="bitcoin.conf"
-# Bitcoin Core default: 80 bytes
-# Knots default: 83 bytes (for legacy protocol compatibility)
+# Bitcoin Core default: 83 bytes through v29 (80 bytes of data
+# plus overhead); raised to 100,000 bytes in Core v30
+# Knots default: 83 bytes (historically 42; raised in 29.2)
 # Recommended for filtering: 42 bytes
 
 datacarriersize=42
@@ -89,10 +90,11 @@ This adjusts the dust threshold based on current fee conditions rather than usin
 
 ### Custom Dust Limit
 
-Set a specific dust limit (in satoshis):
+Set the fee rate used to calculate the dust threshold:
 
 ```ini title="bitcoin.conf"
-dustrelayfee=3000
+# Fee rate in BTC per kvB (0.00003 = 3000 sat/kvB, the default)
+dustrelayfee=0.00003
 ```
 
 ## Sigops Policies
@@ -107,10 +109,11 @@ bytespersigop=20
 
 ### Strict Sigops Enforcement
 
-Enable stricter sigops enforcement:
+Set the minimum bytes per sigop in transactions relayed and mined (a Knots-only option; Core has only `bytespersigop`):
 
 ```ini title="bitcoin.conf"
-bytespersigopstrict=1
+# Minimum bytes per sigop (default: 20)
+bytespersigopstrict=20
 ```
 
 ## Script Policies
@@ -138,8 +141,14 @@ permitbarepubkey=0
 Configure Replace-By-Fee behavior:
 
 ```ini title="bitcoin.conf"
-# Options: 0=never, 1=optin, 2=always
+# Boolean: full RBF on (1, Knots default) or off (0)
 mempoolfullrbf=1
+
+# Knots also has a finer-grained option:
+# 0 = disable RBF entirely
+# fee,optin = honour the RBF opt-in signal
+# fee,-optin = always allow replacement, aka full RBF (default)
+mempoolreplacement=fee,-optin
 ```
 
 ### TRUC Transaction Options
@@ -172,7 +181,7 @@ rejectparasites=1
 datacarriersize=42
 
 # Conservative policies
-bytespersigopstrict=1
+bytespersigopstrict=20
 permitbarepubkey=0
 ```
 

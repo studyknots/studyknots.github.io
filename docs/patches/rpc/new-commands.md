@@ -10,12 +10,12 @@ Bitcoin Knots includes several RPC commands not available in Bitcoin Core.
 
 ## Mempool Commands
 
-### listmempooltxs
+### listmempooltransactions
 
-List transactions in the mempool with filtering options:
+List transactions in the mempool, optionally starting from a given mempool sequence number:
 
 ```bash
-bitcoin-cli listmempooltxs
+bitcoin-cli listmempooltransactions
 ```
 
 ### getmempoolinfo (Enhanced)
@@ -30,20 +30,22 @@ bitcoin-cli getmempoolinfo
 
 ### getblocklocations
 
-Get the file locations of a block:
+Get the file locations of one or more blocks (experimental; unavailable on pruned nodes):
 
 ```bash
-bitcoin-cli getblocklocations "blockhash"
+bitcoin-cli getblocklocations "blockhash" 1
 ```
 
-Returns:
+Returns an array, one entry per block:
 ```json
-{
-  "file": 1234,
-  "pos": 567890,
-  "undo_file": 1234,
-  "undo_pos": 123456
-}
+[
+  {
+    "file": 1234,
+    "data": 567890,
+    "undo": 123456,
+    "prev": "blockhash"
+  }
+]
 ```
 
 ### getblockfileinfo
@@ -58,10 +60,10 @@ bitcoin-cli getblockfileinfo 1234
 
 ### sweepprivkeys
 
-Import and sweep private keys:
+Sweep funds from private keys into the currently loaded wallet (a fresh address is reserved automatically; there is no destination parameter):
 
 ```bash
-bitcoin-cli sweepprivkeys '["privkey1"]' "destination"
+bitcoin-cli sweepprivkeys '{"privkeys": ["privkey1"]}'
 ```
 
 ### dumpmasterprivkey

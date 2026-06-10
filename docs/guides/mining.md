@@ -220,10 +220,9 @@ maxmempool=1000
 ### Solo Mining (Testnet)
 
 ```ini title="bitcoin.conf"
-# Testnet solo mining
+# Testnet node for solo mining
 testnet=1
 server=1
-gen=1
 ```
 
 ```bash

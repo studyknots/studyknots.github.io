@@ -108,8 +108,7 @@ This growth threatens decentralization by making it more expensive to run a node
 - **Visibility problem**: OP_RETURN data is standardized and directly readable, making it more visible to "lawyers, judges, and jurors" than hidden data
 - **No removal option**: Unlike forum operators, node operators cannot simply remove offending data
 
-> "I am talking about very real laws in very real jurisdictions."
-> — Nick Szabo
+Szabo emphasized that he was talking about real laws in real jurisdictions, not hypothetical risks.
 
 ### 4. The "Gallery vs. Drawer" Problem
 
@@ -237,7 +236,7 @@ This PR successfully **removed the deprecation warnings** from the configuration
 
 ### PR #34214 — Restore 80-Byte Default
 
-[PR #34214](https://github.com/bitcoin/bitcoin/pull/34214) in late 2025 attempted to restore the 80-byte default. It cited Nick Szabo's warnings as "new information" that wasn't available during the original debate.
+[PR #34214](https://github.com/bitcoin/bitcoin/pull/34214), opened in January 2026, attempted to restore the 80-byte default. It cited Nick Szabo's warnings as "new information" that wasn't available during the original debate.
 
 The PR was closed with NACKs from maintainers achow101 and glozow, with arguments that:
 - The debate had been settled

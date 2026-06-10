@@ -24,35 +24,40 @@ Sweeping is safer because:
 
 ### Basic Sweep
 
+The command takes a single options object. Funds are swept to a freshly reserved address in the currently loaded wallet — there is no destination parameter (it isn't safe to sweep-and-send in a single action):
+
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"]' "bc1q..."
+bitcoin-cli sweepprivkeys '{"privkeys": ["5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"]}'
 ```
 
 ### Multiple Keys
 
 ```bash
-bitcoin-cli sweepprivkeys '["key1", "key2", "key3"]' "bc1qyouraddress..."
+bitcoin-cli sweepprivkeys '{"privkeys": ["key1", "key2", "key3"]}'
 ```
 
-### With Custom Fee Rate
+### With a Label
 
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..." 10
+bitcoin-cli sweepprivkeys '{"privkeys": ["5KJvs..."], "label": "paper wallet sweep"}'
 ```
 
 ## Parameters
 
-| Parameter | Type | Required | Description |
+A single `options` object:
+
+| Field | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `privkeys` | array | Yes | Array of WIF-encoded private keys |
-| `destination` | string | Yes | Address to receive swept funds |
-| `fee_rate` | number | No | Fee rate in sat/vB (default: automatic) |
+| `label` | string | No | Label for the receiving address |
+
+Returns the txid of the sweep transaction.
 
 ## How It Works
 
 1. **UTXO Scan**: Scans the UTXO set for outputs spendable by the provided keys
 2. **Transaction Creation**: Creates a transaction spending all found UTXOs
-3. **Broadcast**: Sends funds to the destination address
+3. **Broadcast**: Sends funds to a newly reserved address in your wallet
 4. **Cleanup**: Keys are not persisted in the wallet
 
 ```
@@ -67,10 +72,9 @@ bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..." 10
 ### Paper Wallet Redemption
 
 ```bash
-# Sweep a paper wallet to your HD wallet
+# Sweep a paper wallet into your loaded wallet
 PAPER_KEY="5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"
-MY_ADDR=$(bitcoin-cli getnewaddress)
-bitcoin-cli sweepprivkeys "[\"$PAPER_KEY\"]" "$MY_ADDR"
+bitcoin-cli sweepprivkeys "{\"privkeys\": [\"$PAPER_KEY\"]}"
 ```
 
 ### Merchant Payment Acceptance
@@ -78,19 +82,20 @@ bitcoin-cli sweepprivkeys "[\"$PAPER_KEY\"]" "$MY_ADDR"
 Merchants can accept payments via typed or scanned private keys:
 
 ```bash
-# Customer provides private key (e.g., from gift card)
-bitcoin-cli sweepprivkeys '["customer_privkey"]' "merchant_address"
+# Customer provides private key (e.g., from gift card);
+# funds are swept into the merchant's loaded wallet
+bitcoin-cli sweepprivkeys '{"privkeys": ["customer_privkey"], "label": "gift card"}'
 ```
 
 ### Consolidating Old Keys
 
 ```bash
-# Sweep multiple old keys to a single new address
-bitcoin-cli sweepprivkeys '[
+# Sweep multiple old keys in one transaction
+bitcoin-cli sweepprivkeys '{"privkeys": [
   "5KJvsngHeMpm...",
   "5HueCGU8rMjx...",
   "5Kb8kLf9zgW..."
-]' "bc1q_consolidation_address"
+]}'
 ```
 
 ## Comparison with Manual Process
@@ -120,7 +125,7 @@ With `sweepprivkeys`:
 
 ```bash
 # One command, key not persisted
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..."
+bitcoin-cli sweepprivkeys '{"privkeys": ["5KJvs..."]}'
 ```
 
 ## Security Considerations
@@ -129,8 +134,8 @@ bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..."
 Once you sweep a key, consider it compromised. Never send new funds to addresses derived from that key.
 :::
 
-:::tip Verify Destination
-Always double-check the destination address before sweeping. There's no undo.
+:::tip Sweep, Then Send
+Funds land in the currently loaded wallet. If you want them elsewhere, sweep first, then send a normal transaction — there's no undo.
 :::
 
 ## Error Handling
@@ -139,7 +144,7 @@ Always double-check the destination address before sweeping. There's no undo.
 |-------|-------|----------|
 | "No UTXOs found" | Key has no funds or already swept | Verify key controls expected address |
 | "Invalid private key" | Wrong format or typo | Use WIF format (starts with 5, K, or L) |
-| "Insufficient fee" | Low fee rate during congestion | Increase fee_rate parameter |
+| "Insufficient fee" | Low fee rate during congestion | Retry when fees subside |
 
 ## Related Commands
 

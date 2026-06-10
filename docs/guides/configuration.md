@@ -97,12 +97,12 @@ datacarriercost=1.0
 # Reject token transactions
 rejecttokens=1
 
-# Reject inscription transactions
+# Reject CAT21 spam transactions
 rejectparasites=1
 
 # Bytes per sigop
 bytespersigop=20
-bytespersigopstrict=1
+bytespersigopstrict=20
 
 # Dust settings
 dustdynamic=1

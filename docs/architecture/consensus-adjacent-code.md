@@ -108,7 +108,7 @@ The `script/` directory contains Bitcoin's Script interpreter. Changes here coul
 | `descriptor.cpp` | Enhanced | More descriptor types |
 | `sign.cpp` | Enhanced | BIP-322 message signing |
 | `signingprovider.cpp` | Enhanced | Codex32 seed support |
-| `interpreter.cpp` | Minimal | Comments only |
+| `interpreter.cpp` | +68/−22 | Sighash caching + optional policy check |
 
 ### Descriptor Enhancements
 
@@ -130,18 +130,18 @@ BIP-322 provides a standard way to sign messages with Bitcoin keys. It's used fo
 
 ### What's NOT Changed
 
-The core Script interpreter (`interpreter.cpp`) has minimal changes:
+The core Script interpreter (`interpreter.cpp`) has modest changes (+68/−22): a `SigHashCache` performance optimization that caches signature hash midstates, and an optional policy-only SIGHASH_ALL check. See the [code review](/architecture/code-review) for the full analysis.
 
 ```bash
 # Check interpreter changes
-git diff FETCH_HEAD..HEAD -- src/script/interpreter.cpp | wc -l
-# Result: Very few lines, mostly comments
+git diff FETCH_HEAD..HEAD -- src/script/interpreter.cpp
 ```
 
 Critical functions remain untouched:
 - `EvalScript()` — Script execution
 - `VerifyScript()` — Script verification
 - Opcode implementations
+- `SignatureHashSchnorr()` — Taproot sighash
 
 ## 3. consensus/ Directory Changes
 
@@ -309,7 +309,7 @@ If you want to commission a professional audit of Knots' consensus-adjacent code
 
 1. The scope is manageable (~1,400 lines)
 2. Focus on `validation.cpp` policy hooks
-3. Verify `interpreter.cpp` is unchanged
+3. Review the `interpreter.cpp` changes (sighash caching and the optional SIGHASH_ALL policy check)
 4. Confirm consensus parameters match Core
 
 ## Verify Everything

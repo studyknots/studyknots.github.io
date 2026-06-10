@@ -28,7 +28,7 @@ Bitcoin Knots respects your system's theme settings:
 - Bitcoin Qt will follow automatically
 
 **macOS:**
-- System Preferences → General → Appearance → Dark
+- System Settings → Appearance → Dark
 - Bitcoin Qt will follow automatically
 
 **Windows 10/11:**

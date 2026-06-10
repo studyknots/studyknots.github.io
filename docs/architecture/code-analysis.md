@@ -78,7 +78,7 @@ This is the code that warrants the most scrutiny. Let's examine it in detail.
 
 | Category | Files | Insertions | Deletions | Notes |
 |----------|-------|------------|-----------|-----|
-| **validation.cpp** | 1 | ~500 | ~150 | Policy hooks, performance |
+| **validation.cpp** | 1 | ~550 | ~200 | Policy hooks, performance |
 | **script/** | 16 | ~500 | ~100 | Descriptors, signing |
 | **consensus/** | 3 | ~150 | ~50 | Mostly comments/structure |
 | **bitcoinconsensus** | 2 | 252 | 0 | Restored Core code |

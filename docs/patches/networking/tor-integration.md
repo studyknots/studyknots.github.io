@@ -243,7 +243,7 @@ This encrypts peer connections, preventing ISPs from inspecting Bitcoin protocol
 | `onion` | proxy | Separate proxy for .onion only |
 | `onlynet` | all | Restrict to specific networks |
 | `listenonion` | 1 | Create onion service |
-| `torcontrol` | none | Tor control port for auth |
+| `torcontrol` | 127.0.0.1:9051 | Tor control host and port |
 | `torpassword` | none | Tor control password |
 | `i2psam` | none | I2P SAM proxy address |
 | `i2pacceptincoming` | 1 | Accept inbound I2P |

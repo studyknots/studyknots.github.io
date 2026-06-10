@@ -6,7 +6,7 @@ description: Building Bitcoin Knots from source
 
 # Build System
 
-Bitcoin Knots uses the same build system as Bitcoin Core, supporting both CMake and Autotools.
+Bitcoin Knots uses the same build system as Bitcoin Core: CMake. The build system was migrated from Autotools to CMake in v29, so there is no `./autogen.sh` or `./configure` in current branches.
 
 ## Quick Build (Linux)
 
@@ -17,52 +17,32 @@ cd bitcoin
 git checkout 29.x-knots
 
 # Install dependencies (Debian/Ubuntu)
-sudo apt-get install build-essential libtool autotools-dev automake \
-  pkg-config bsdmainutils python3 libssl-dev libevent-dev \
-  libboost-dev libsqlite3-dev
+sudo apt-get install build-essential cmake pkgconf python3 \
+  libevent-dev libboost-dev libsqlite3-dev
 
 # For Qt GUI, also install:
 sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev \
   qttools5-dev-tools libqrencode-dev
 
 # Build
-./autogen.sh
-./configure
-make -j$(nproc)
-```
-
-## CMake Build (Preferred for v28+)
-
-```bash
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
+cmake -B build
+cmake --build build -j$(nproc)
 ```
 
 ## Build Options
 
-### Configure Options
-
 ```bash
-# Disable wallet
-./configure --disable-wallet
+# List all options
+cmake -B build -LH
 
-# Disable GUI
-./configure --without-gui
+# Disable wallet
+cmake -B build -DENABLE_WALLET=OFF
+
+# Build the GUI
+cmake -B build -DBUILD_GUI=ON
 
 # Enable debug
-./configure --enable-debug
-
-# Static linking
-./configure --enable-static
-```
-
-### CMake Options
-
-```bash
-cmake -DBUILD_WALLET=OFF ..
-cmake -DBUILD_GUI=OFF ..
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -B build -DCMAKE_BUILD_TYPE=Debug
 ```
 
 ## Dependencies
@@ -73,7 +53,6 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 |------------|---------|
 | Boost | General utilities |
 | libevent | Network events |
-| OpenSSL/LibreSSL | Cryptography |
 
 ### Optional
 
@@ -94,10 +73,10 @@ Using the depends system:
 cd depends
 make HOST=x86_64-w64-mingw32 -j$(nproc)
 
-# Configure with depends
+# Configure with the depends toolchain
 cd ..
-./configure --prefix=$PWD/depends/x86_64-w64-mingw32
-make -j$(nproc)
+cmake -B build --toolchain depends/x86_64-w64-mingw32/toolchain.cmake
+cmake --build build -j$(nproc)
 ```
 
 ## Reproducible Builds (Guix)
@@ -112,13 +91,13 @@ Produces deterministic binaries that can be verified by multiple builders.
 
 ```bash
 # Unit tests
-make check
+ctest --test-dir build
 
 # Functional tests
-./test/functional/test_runner.py
+build/test/functional/test_runner.py
 
 # Specific test
-./test/functional/test_runner.py wallet_basic.py
+build/test/functional/test_runner.py wallet_basic.py
 ```
 
 ## See Also
