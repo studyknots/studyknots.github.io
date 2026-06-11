@@ -13,20 +13,32 @@ Useful tools for monitoring the Bitcoin network and Knots adoption.
 | Resource | Description |
 |----------|-------------|
 | [Coin Dance Nodes](https://coin.dance/nodes) | Live node counts by implementation (Core vs Knots) |
-| [Bitnodes](https://bitnodes.io/nodes/) | Searchable node explorer with version filtering |
+| [BTC Nodes](https://btcnodes.io) | Node explorer with search by version and service flags |
+| [bitnod.es](https://bitnod.es) | BitMEX Research's node crawler, successor to the defunct Bitnodes |
+| [bitdis.org](https://bitdis.org) | Node distribution dashboard: Core vs Knots share, release adoption, and BIP-110 signaling |
 | [Bitbo Dashboard](https://bitbo.io) | Real-time Bitcoin stats, hash rate, fees, and network data |
 | [Clark Moody Dashboard](https://bitcoin.clarkmoody.com/dashboard/) | Real-time Bitcoin network metrics |
 | [The Bitcoin Portal](https://thebitcoinportal.com/) | Network statistics and node data |
 
+:::note
+
+Bitnodes (bitnodes.io), long the standard node explorer, went offline when its domain expired in May 2026. BTC Nodes and bitnod.es cover the same ground.
+
+:::
+
 ### Searching for Specific Versions
 
-On Bitnodes, you can search for specific Knots versions:
+On BTC Nodes, you can search for specific Knots versions by user agent:
 
 ```
 /Satoshi:29.2.0/Knots:20251110/
 ```
 
 This shows all nodes running Knots 29.2.0 (November 2025 release).
+
+### Searching by Service Flags
+
+On BTC Nodes, you can search by service flags to find nodes signaling specific capabilities. For example, [searching for `NODE_REDUCED_DATA`](https://btcnodes.io/nodes/?q=NODE_REDUCED_DATA) lists nodes signaling reduced data relay. bitdis.org presents the same data in a more readable dashboard format.
 
 ## Historical Data
 
