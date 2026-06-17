@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 7
 title: External Resources
 description: Node statistics, dashboards, and monitoring tools
 ---
@@ -48,12 +48,12 @@ On BTC Nodes, you can search by service flags to find nodes signaling specific c
 
 ## Current Adoption
 
-As of early 2025, based on coin.dance data:
+As of mid-2026, based on coin.dance data:
 
-- **Bitcoin Core**: ~18,600 nodes (78%)
-- **Bitcoin Knots**: ~5,100+ nodes (21%+)
+- **Bitcoin Core**: ~18,400 nodes (~77%)
+- **Bitcoin Knots**: ~5,400 nodes (~23%)
 
-Knots adoption increased significantly following the OP_RETURN controversy in mid-2025.
+Knots adoption increased significantly following the OP_RETURN controversy in mid-2025, crossing 20% of the network in September 2025.
 
 ## Official Resources
 

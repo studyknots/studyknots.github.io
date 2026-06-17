@@ -50,12 +50,12 @@ bitcoind -printtoconsole
 **Symptom:** "Error reading configuration file"
 
 ```bash
-# Validate config file (Knots feature)
-bitcoin-cli -testconfig
+# bitcoind refuses to start on a malformed config —
+# the startup error message names the bad line
 
 # Common syntax errors:
 # - Missing quotes around paths with spaces
-# - Using = for boolean options (use option=1 not option=true)
+# - Wrong boolean syntax (use option=1, not option=true)
 # - Invalid option names
 ```
 
@@ -245,11 +245,12 @@ ln -s /new/location/bitcoin ~/.bitcoin
 # Or use -datadir=/new/location
 ```
 
-**Option 3: Use assumeutxo (Knots/Core v29+)**
+**Option 3: Use assumeutxo (mainnet support since Core v28)**
 ```bash
-# Fast-sync using a UTXO snapshot
-# Downloads and validates in background
-bitcoind -loadtxoutset=/path/to/snapshot.dat
+# Fast-sync using a UTXO snapshot, loaded via RPC
+# while bitcoind is running; full validation
+# continues in the background
+bitcoin-cli loadtxoutset /path/to/snapshot.dat
 ```
 
 ### Slow Disk I/O
@@ -364,17 +365,12 @@ bitcoin-cli loadwallet "mylegacywallet"
 
 **Recovery steps:**
 
-1. **Try loading with salvage:**
-   ```bash
-   bitcoin-cli loadwallet "walletname" false true  # load_on_startup=false, salvage=true
-   ```
-
-2. **Use wallet tool (legacy wallets):**
+1. **Use the wallet tool's salvage command (legacy wallets, experimental):**
    ```bash
    bitcoin-wallet -wallet=~/.bitcoin/wallets/mylegacy salvage
    ```
 
-3. **Restore from backup:**
+2. **Restore from backup:**
    ```bash
    cp /backup/wallet.dat ~/.bitcoin/wallets/mylegacy/
    bitcoin-cli loadwallet "mylegacy"
@@ -399,11 +395,15 @@ bitcoin-cli testmempoolaccept '["0200000001..."]'
 
 **Knots filtering considerations:**
 ```bash
-# If you're running Knots with filtering, check if that's the issue:
-bitcoin-cli getmempoolinfo | grep -E "rejectparasites|rejecttokens"
+# Filtering options are startup settings, not RPC fields —
+# check what the node was started with:
+ps aux | grep bitcoind
+grep -E "rejectparasites|rejecttokens|corepolicy" ~/.bitcoin/bitcoin.conf
 
-# Test without filtering
-bitcoin-cli -corepolicy=1 testmempoolaccept '["rawtx"]'
+# Check why a specific transaction is rejected
+bitcoin-cli testmempoolaccept '["rawtx"]'
+
+# To test without filtering, restart bitcoind with -corepolicy=1
 ```
 
 ### Stuck Unconfirmed Transaction

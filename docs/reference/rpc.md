@@ -25,7 +25,7 @@ Bitcoin Knots includes all Bitcoin Core RPC commands plus additional Knots-speci
 |---------|-------------|
 | `getmempoolinfo` | Mempool statistics (enhanced in Knots) |
 | `getrawmempool` | List mempool transactions |
-| `listmempooltxs` | List mempool txs (Knots) |
+| `listmempooltransactions` | List mempool txs (Knots) |
 | `getmempoolentry` | Mempool entry details |
 
 ## Network

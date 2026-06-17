@@ -14,8 +14,8 @@ Bitcoin Core v30 completely removed Berkeley DB legacy wallet support, forcing u
 |---------|----------|-------------|
 | Legacy wallet creation | **Removed** | Supported |
 | Berkeley DB wallets | **Removed** | Supported |
-| `dumpprivkey` RPC | Descriptor only | **Both types** |
-| `importprivkey` RPC | Descriptor only | **Both types** |
+| `dumpprivkey` RPC | **Removed** (was legacy-only) | Supported |
+| `importprivkey` RPC | **Removed** (was legacy-only) | Supported |
 | Direct key management | Limited | **Full** |
 
 Many users need legacy wallets for:
@@ -84,13 +84,15 @@ bitcoin-cli -rpcwallet=mylegacy backupwallet "/path/to/backup.dat"
 
 ## HD Wallet Derivation
 
-Legacy wallets use BIP32/44 derivation paths:
+Legacy HD wallets use a fixed BIP32 keypath scheme (not BIP44):
 
 ```
-m/44'/0'/0'/0/0  # First receiving address
-m/44'/0'/0'/0/1  # Second receiving address
-m/44'/0'/0'/1/0  # First change address
+m/0'/0'/0'  # First external (receiving) key
+m/0'/0'/1'  # Second external key
+m/0'/1'/0'  # First internal (change) key
 ```
+
+BIP44/49/84/86 paths are what descriptor wallets use by default.
 
 ## Migration to Descriptor Wallet
 
@@ -131,8 +133,13 @@ bitcoin-cli createwallet "mydesc" false false "" false true
 | Command | Description |
 |---------|-------------|
 | `dumpmasterprivkey` | Export HD master key (legacy) |
-| `sweepprivkeys` | Import and sweep in one step |
-| `importfromcoldcard` | Import Coldcard wallet |
+| `sweepprivkeys` | Sweep keys into the wallet in one step |
+
+The offline `bitcoin-wallet` tool also gains an experimental `importfromcoldcard` command for creating a wallet from a Coldcard export:
+
+```bash
+bitcoin-wallet -wallet=mycoldcard -dumpfile=coldcard-export.txt importfromcoldcard
+```
 
 ## See Also
 

@@ -26,9 +26,9 @@ The differences are in:
 
 | Feature | Bitcoin Core | Bitcoin Knots |
 |---------|--------------|---------------|
-| `datacarriersize` | Fixed 80 bytes | Configurable (default 83) |
+| `datacarriersize` | Configurable (default 83 through v29; 100,000 in v30) | Configurable (default 83, hard-capped at 83) |
 | `datacarriercost` | N/A | Configurable weight multiplier |
-| `rejecttokens` | N/A | Filter BRC-20/token transactions |
+| `rejecttokens` | N/A | Filter Runes/Stamps token transactions |
 | `rejectparasites` | N/A | Filter CAT21 spam transactions |
 | `bytespersigopstrict` | N/A | Stricter sigops enforcement |
 | `dustdynamic` | N/A | Dynamic dust threshold |
@@ -63,9 +63,9 @@ bitcoin-cli dumpprivkey <address>
 
 | Command | Description |
 |---------|-------------|
-| `sweepprivkeys` | Import and sweep private keys |
+| `sweepprivkeys` | Sweep private keys into the wallet |
 | `dumpmasterprivkey` | Export HD master private key |
-| `signmessagewithprivkey` | BIP-322 enhanced signing |
+| `signmessage` / `verifymessage` | BIP-322 signature support |
 
 ### Codex32 Support
 
@@ -77,10 +77,10 @@ Knots includes Codex32 seed phrase import for hardware wallet recovery.
 
 ```bash
 # List mempool transactions (Knots)
-bitcoin-cli listmempooltxs
+bitcoin-cli listmempooltransactions
 
 # Get block file locations
-bitcoin-cli getblocklocations <blockhash>
+bitcoin-cli getblocklocations <blockhash> 1
 
 # Fee histogram data
 bitcoin-cli getmempoolinfo

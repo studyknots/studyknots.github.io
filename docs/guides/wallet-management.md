@@ -89,7 +89,8 @@ bitcoin-cli -rpcwallet=wallet1 send '{
 ### Sweep Private Keys
 
 ```bash
-bitcoin-cli sweepprivkeys '["5K..."]' "bc1q..."
+# Sweeps to a fresh address in the loaded wallet
+bitcoin-cli sweepprivkeys '{"privkeys": ["5K..."]}'
 ```
 
 ### Dump Master Key (Legacy)

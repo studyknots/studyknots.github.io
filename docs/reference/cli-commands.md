@@ -136,12 +136,14 @@ bitcoin-wallet -wallet=existing info
 bitcoin-wallet -wallet=existing dump
 ```
 
-## Environment Variables
+## Setting the Data Directory
 
-| Variable | Description |
-|----------|-------------|
-| `BITCOIN_DATADIR` | Data directory |
-| `BITCOIN_CLI_ARGS` | Default CLI arguments |
+bitcoind and bitcoin-cli do not read environment variables for configuration; use the `-datadir` option or a config file:
+
+```bash
+bitcoind -datadir=/path/to/datadir
+bitcoin-cli -datadir=/path/to/datadir getblockcount
+```
 
 ## See Also
 

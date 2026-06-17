@@ -19,8 +19,8 @@ Bitcoin Knots provides enhanced control over dust thresholds and fee-related pol
 Set the fee rate used to calculate dust threshold:
 
 ```ini title="bitcoin.conf"
-# Satoshis per 1000 bytes
-dustrelayfee=3000
+# Fee rate in BTC per kvB (0.00003 = 3000 sat/kvB, the default)
+dustrelayfee=0.00003
 ```
 
 ### Dynamic Dust
@@ -40,8 +40,8 @@ With dynamic dust enabled, the threshold adjusts based on mempool conditions.
 Set the minimum fee rate for transaction relay:
 
 ```ini title="bitcoin.conf"
-# Satoshis per 1000 virtual bytes
-minrelaytxfee=1000
+# Fee rate in BTC per kvB (0.00001 = 1000 sat/kvB, the default)
+minrelaytxfee=0.00001
 ```
 
 ### Incremental Relay Fee
@@ -49,7 +49,8 @@ minrelaytxfee=1000
 Fee increment required for RBF replacements:
 
 ```ini title="bitcoin.conf"
-incrementalrelayfee=1000
+# Fee rate in BTC per kvB
+incrementalrelayfee=0.00001
 ```
 
 ### Confirmation Target Default

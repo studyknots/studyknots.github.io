@@ -50,7 +50,7 @@ First, import Luke Dashjr's GPG key:
 # Import Luke's key from a keyserver
 gpg --keyserver hkps://keys.openpgp.org --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
 
-# Or from the SKS keyserver pool
+# Or from Ubuntu's keyserver (run by Canonical)
 gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
 ```
 
@@ -183,7 +183,7 @@ mv bitcoin-29.2.knots20251110 /Applications/Bitcoin-Knots
 ### First Run
 
 macOS will require you to approve the application:
-1. Open System Preferences → Security & Privacy
+1. Open System Settings → Privacy & Security
 2. Click "Open Anyway" for Bitcoin Knots binaries
 
 ## Windows Installation
@@ -203,14 +203,13 @@ cd bitcoin
 git checkout v29.2.knots20251110
 
 # Install dependencies (Debian/Ubuntu)
-sudo apt-get install build-essential cmake pkg-config bsdmainutils \
-  python3 libssl-dev libevent-dev libboost-dev libsqlite3-dev
+sudo apt-get install build-essential cmake pkgconf python3 \
+  libevent-dev libboost-dev libsqlite3-dev
 
 # Build with CMake (v29+)
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-sudo make install
+cmake -B build
+cmake --build build -j$(nproc)
+sudo cmake --install build
 ```
 
 :::tip Build System Change

@@ -45,7 +45,7 @@ MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM
 │││ │    │              Data + Checksum
 │││ │    └── Share index (A-Z, or S for secret)
 │││ └────── Identifier (4 characters)
-││└──────── Threshold (1-9 shares needed)
+││└──────── Threshold (2-9 shares needed, or 0 for no splitting)
 │└───────── Version (always 1 for now)
 └────────── Human readable part (MS = "master seed")
 ```
@@ -82,7 +82,7 @@ Codex32 uses [Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_
 
 **Key properties:**
 - Split into up to **31 shares**
-- Threshold from **1 to 9** shares required
+- Threshold from **2 to 9** shares required (or **0** for an unsplit, checksummed secret)
 - Below threshold: **zero information** about secret
 - Mathematical guarantee, not just obscurity
 
@@ -91,37 +91,37 @@ Codex32 uses [Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_
 The 13-character checksum can:
 - **Detect** up to 8 errors anywhere in the string
 - **Correct** up to 4 character substitutions
-- **Handle** up to 15 consecutive erasures (unreadable characters)
+- **Handle** up to 8 erasures (unreadable characters), or up to 13 if they are consecutive
 
 This means small transcription errors when copying by hand can be automatically fixed.
 
 ## Using Codex32 in Bitcoin Knots
 
+Codex32 import is integrated into the `importdescriptors` RPC via its second parameter, `seeds`. Each entry is a list of codex32 strings — either the unsplit secret (the "S" share) on its own, or enough shares to meet the threshold. The recovered seed supplies the master key material for the descriptors being imported.
+
 ### Importing a Codex32 Seed
 
 ```bash
-# Import a single share (if threshold = 1) or the secret directly
-bitcoin-cli importcodex32 "MS10TESTSXXXXXXXXXXXXXXXXXXXXXXXXXX4NZVSHKZ"
+# Import the secret directly (a single string must be the S share)
+bitcoin-cli importdescriptors \
+  '[{"desc": "<descriptor>", "timestamp": "now", "active": true}]' \
+  '[["MS10TESTSXXXXXXXXXXXXXXXXXXXXXXXXXX4NZVSHKZ"]]'
 ```
 
 ### Importing Multiple Shares
 
-For threshold > 1, you need to combine shares:
+For split backups, provide enough shares to meet the threshold and Knots combines them:
 
 ```bash
-# Import with multiple shares
-bitcoin-cli importcodex32 '[
-  "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM",
-  "MS12NAMEB320ZYXWVUTSRQPNMLKJHGFEDCADH7HDLHPMS5X"
-]'
+bitcoin-cli importdescriptors \
+  '[{"desc": "<descriptor>", "timestamp": "now", "active": true}]' \
+  '[[
+    "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM",
+    "MS12NAMEB320ZYXWVUTSRQPNMLKJHGFEDCADH7HDLHPMS5X"
+  ]]'
 ```
 
-### Verifying a Share
-
-```bash
-# Check if a share is valid (checksum verification)
-bitcoin-cli validatecodex32 "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM"
-```
+Invalid shares are rejected with a checksum error, so a failed import also serves as share validation.
 
 ## Creating Codex32 Backups
 
@@ -195,7 +195,7 @@ Never store all shares in one location. The whole point of splitting is geograph
 :::tip Threshold Selection
 - **Threshold 2 of 3**: Good balance of security and convenience
 - **Threshold 3 of 5**: Higher security for large holdings
-- **Threshold 1**: No splitting (just checksummed backup)
+- **Threshold 0**: No splitting (just a checksummed backup)
 :::
 
 **Storage recommendations:**
@@ -255,7 +255,7 @@ Codex32 supports standard BIP-32 seed lengths:
 1. Gather any 2 shares (A+B, A+C, or B+C)
 
 2. Use recovery wheel or:
-   bitcoin-cli importcodex32 '["MS12VAULTA...", "MS12VAULTB..."]'
+   bitcoin-cli importdescriptors '[...]' '[["MS12VAULTA...", "MS12VAULTB..."]]'
 
 3. Wallet is restored with full funds access
 ```
@@ -275,7 +275,7 @@ Codex32 uses polynomial interpolation over a finite field:
 - **Generator polynomial**: Specifically chosen for Bech32 alphabet
 - **Error detection**: Guaranteed for up to 8 errors
 - **Error correction**: Can fix 4 substitutions automatically
-- **Erasure handling**: Up to 15 consecutive unreadable characters
+- **Erasure handling**: Up to 8 unreadable characters (13 if consecutive)
 
 ## Wallet Support Status
 

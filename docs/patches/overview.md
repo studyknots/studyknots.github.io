@@ -18,11 +18,11 @@ Control what transactions your node relays and accepts into its mempool.
 
 | Patch | Purpose | Config Option |
 |-------|---------|---------------|
-| `rejecttokens` | Filter BRC-20/token transactions | `rejecttokens=1` (off by default) |
+| `rejecttokens` | Filter Runes/Stamps token transactions | `rejecttokens=1` (off by default) |
 | `rejectparasites` | Filter CAT21 spam transactions | `rejectparasites=1` **(on by default)** |
 | `dustdynamic` | Dynamic dust threshold | `dustdynamic=1` |
 | `datacarriercost` | Weight OP_RETURN data | `datacarriercost=<n>` |
-| `bytespersigopstrict` | Stricter sigops limits | `bytespersigopstrict=1` |
+| `bytespersigopstrict` | Stricter sigops limits | `bytespersigopstrict=20` |
 | `unique_spk_mempool` | One tx per scriptPubKey | Enabled by default |
 | `maxscriptsize` | Maximum script size | `maxscriptsize=<n>` |
 
@@ -115,8 +115,8 @@ Features removed from Bitcoin Core but maintained in Knots.
 
 | Feature | Removed in Core | Status in Knots |
 |---------|-----------------|-----------------|
-| Legacy Wallet | v24+ | Maintained |
-| UPnP | v28 | Restored |
+| Legacy Wallet | v30 (creation deprecated since v26) | Maintained |
+| UPnP | v29 (deprecated in v28) | Restored |
 | `-blockmaxsize` | v0.15 | Restored |
 | `libconsensus` | v28 | Restored |
 | Fee filter option | v24 | Restored |
@@ -164,10 +164,10 @@ git show <commit-hash>
 Most patches add **optional** configuration. Features are not forced on users:
 
 ```ini title="bitcoin.conf"
-# Enable inscription filtering (off by default)
-rejectparasites=1
+# Enable token filtering (off by default)
+rejecttokens=1
 
-# Disable if you want Core behavior
+# Disable CAT21 filtering (on by default) if you want Core behavior
 rejectparasites=0
 ```
 

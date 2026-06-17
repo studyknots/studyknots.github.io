@@ -19,8 +19,8 @@ This review was conducted using AI-assisted static code analysis. It is not a fo
 
 | Category | Files Changed | Lines Added | Consensus Changes Found |
 |----------|---------------|-------------|------------------------|
-| `script/interpreter.cpp` | 1 | +90 | **None** |
-| `validation.cpp` | 1 | +591 | **None** |
+| `script/interpreter.cpp` | 1 | +68 | **None** |
+| `validation.cpp` | 1 | +551 | **None** |
 | `consensus/` | 3 | +94 | **None** |
 | `script/bitcoinconsensus.*` | 2 | +252 | **None** (restored Core code) |
 
@@ -72,7 +72,7 @@ For each change, we asked:
 
 ### 1. script/interpreter.cpp
 
-**Lines changed:** +90 insertions, -28 deletions
+**Lines changed:** +68 insertions, -22 deletions
 
 #### Finding 1.1: SigHashCache Performance Optimization
 
@@ -132,7 +132,7 @@ git diff FETCH_HEAD..HEAD -- src/script/interpreter.cpp | grep -E "EvalScript|Ve
 
 ### 2. validation.cpp
 
-**Lines changed:** +591 insertions, -210 deletions
+**Lines changed:** +551 insertions, -199 deletions
 
 This is the largest diff, but examination reveals all changes are **policy options**.
 

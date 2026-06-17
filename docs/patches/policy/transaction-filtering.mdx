@@ -8,7 +8,7 @@ import ThemedImage from '@theme/ThemedImage';
 
 # Transaction Filtering
 
-Bitcoin Knots provides comprehensive tools to filter transactions you consider spam from your mempool. This is one of the most significant differences from Bitcoin Core and a primary reason for Knots' [850% adoption surge](https://blog.bitfinex.com/education/why-is-bitcoin-knots-becoming-so-popular/) in 2024-2025.
+Bitcoin Knots provides comprehensive tools to filter transactions you consider spam from your mempool. This is one of the most significant differences from Bitcoin Core and a primary reason for Knots' [850% adoption surge](https://blog.bitfinex.com/education/why-is-bitcoin-knots-becoming-so-popular/) in 2025.
 
 <ThemedImage
   alt="Transaction Filtering Flow"
@@ -162,13 +162,10 @@ Detects OP_RETURN outputs starting with OP_13 (the Runes identifier). Updated in
 Maximum size of data in OP_RETURN outputs.
 
 ```ini title="bitcoin.conf"
-# Knots default (legacy compatibility)
+# Knots default (80 bytes of data plus script overhead)
 datacarriersize=83
 
-# Traditional limit (80 bytes of data)
-datacarriersize=83
-
-# Stricter (42 bytes - enough for hashes)
+# Stricter (42 bytes - enough for hashes; the historical Knots default)
 datacarriersize=42
 
 # Disable all OP_RETURN relay
@@ -253,7 +250,7 @@ Useful for testing or if you want Knots features but Core relay behavior.
 Used by [Ocean mining pool](https://ocean.xyz/):
 
 ```ini title="bitcoin.conf"
-# Inscriptions and ordinals
+# CAT21 spam
 rejectparasites=1
 
 # Runes and tokens
