@@ -50,8 +50,9 @@ bitcoind -printtoconsole
 **Symptom:** "Error reading configuration file"
 
 ```bash
-# Validate config file (Knots feature)
-bitcoin-cli -testconfig
+# Run in the foreground and read the startup error
+bitcoind -printtoconsole
+# The offending option and line are reported in the error message
 
 # Common syntax errors:
 # - Missing quotes around paths with spaces
@@ -64,7 +65,6 @@ bitcoin-cli -testconfig
 # These are valid in Knots but would error in Core:
 rejectparasites=1
 rejecttokens=1
-torsubprocess=1
 corepolicy=1
 ```
 
@@ -137,12 +137,17 @@ Look for `verificationprogress` — should increase steadily.
    bitcoin-cli getpeerinfo | grep -E '"addr"|"synced_blocks"'
    ```
 
-2. **Add seed nodes manually:**
+2. **Check outbound connectivity:**
    ```bash
-   bitcoin-cli addnode "seed.bitcoin.sipa.be" onetry
-   bitcoin-cli addnode "seed.btc.petertodd.org" onetry
-   bitcoin-cli addnode "seed.bitcoin.jonasschnelli.ch" onetry
+   # Verify DNS and outbound TCP work at all
+   bitcoin-cli getnetworkinfo | grep -E '"networks"|"reachable"'
+
+   # If you know a specific reliable peer, you can add it manually
+   bitcoin-cli addnode "<ip-or-hostname>:8333" onetry
    ```
+   If you have zero connections, check your firewall, proxy settings
+   (`proxy=`, `onlynet=`), and system clock — a badly skewed clock
+   causes peers to disconnect you.
 
 3. **Check for banned peers (may have banned good nodes):**
    ```bash
@@ -178,7 +183,8 @@ bitcoind
 Bitcoin Knots (like Core) can use significant RAM. Control with:
 
 ```ini title="bitcoin.conf"
-# Database cache (default: 450MB)
+# Database cache (v29.3+: auto-scaled by system RAM when unset,
+# between 100 MiB and 2 GiB)
 # Reduce for low-RAM systems
 dbcache=300
 
@@ -222,13 +228,15 @@ journalctl -xe | grep oom
 
 ### Disk Full
 
-**Current blockchain size:** ~600GB+ (unpruned)
+**Current blockchain size:** ~700GB (unpruned, as of mid-2026)
 
-**Option 1: Enable pruning (reduces to ~5-10GB)**
+**Option 1: Enable pruning**
 ```ini title="bitcoin.conf"
 # Keep 5GB of block data
 prune=5000
 ```
+
+Note that `prune` only limits block and undo data. The chainstate (UTXO set) alone is around 12GB, so expect a real on-disk footprint of roughly 20-25GB for a pruned node.
 
 :::warning Pruning Limitations
 Pruned nodes cannot:
@@ -245,11 +253,12 @@ ln -s /new/location/bitcoin ~/.bitcoin
 # Or use -datadir=/new/location
 ```
 
-**Option 3: Use assumeutxo (Knots/Core v29+)**
+**Option 3: Use assumeutxo (available since Core v26, supported in Knots)**
 ```bash
-# Fast-sync using a UTXO snapshot
-# Downloads and validates in background
-bitcoind -loadtxoutset=/path/to/snapshot.dat
+# Fast-sync using a UTXO snapshot: start bitcoind normally, then
+# load the snapshot via RPC. The node becomes usable at the snapshot
+# height while historical blocks validate in the background.
+bitcoin-cli loadtxoutset /path/to/snapshot.dat
 ```
 
 ### Slow Disk I/O
@@ -364,17 +373,13 @@ bitcoin-cli loadwallet "mylegacywallet"
 
 **Recovery steps:**
 
-1. **Try loading with salvage:**
+1. **Use the wallet tool to salvage (legacy wallets):**
    ```bash
-   bitcoin-cli loadwallet "walletname" false true  # load_on_startup=false, salvage=true
-   ```
-
-2. **Use wallet tool (legacy wallets):**
-   ```bash
+   # Run with bitcoind stopped; salvage attempts to recover keys
    bitcoin-wallet -wallet=~/.bitcoin/wallets/mylegacy salvage
    ```
 
-3. **Restore from backup:**
+2. **Restore from backup:**
    ```bash
    cp /backup/wallet.dat ~/.bitcoin/wallets/mylegacy/
    bitcoin-cli loadwallet "mylegacy"
@@ -398,13 +403,17 @@ bitcoin-cli testmempoolaccept '["0200000001..."]'
 | "txn-mempool-conflict" | Double spend in mempool | One version already there |
 
 **Knots filtering considerations:**
-```bash
-# If you're running Knots with filtering, check if that's the issue:
-bitcoin-cli getmempoolinfo | grep -E "rejectparasites|rejecttokens"
 
-# Test without filtering
-bitcoin-cli -corepolicy=1 testmempoolaccept '["rawtx"]'
+If you're running Knots with filtering and suspect your transaction is being rejected by Knots policy, temporarily test with Core-compatible policy. Policy options apply to `bitcoind`, not `bitcoin-cli` — the CLI only takes client connection options, so you must restart the node:
+
+```bash
+# Restart with Core-compatible policy defaults (or set corepolicy=1
+# in bitcoin.conf), then retry:
+bitcoind -corepolicy=1
+bitcoin-cli testmempoolaccept '["rawtx"]'
 ```
+
+To see which policy settings are in effect, check `bitcoind -help` for the options and their defaults, and review debug.log at startup — rejected transactions are logged with `debug=mempool` enabled.
 
 ### Stuck Unconfirmed Transaction
 
@@ -450,13 +459,7 @@ bitcoin-cli getnetworkinfo | grep -E '"connections|localaddresses"'
 
 ### Tor Connection Issues
 
-**Using Knots embedded Tor (recommended):**
-```ini title="bitcoin.conf"
-torsubprocess=1
-# Knots manages Tor automatically
-```
-
-**Manual Tor configuration:**
+**Tor configuration:**
 ```ini title="bitcoin.conf"
 # Proxy all connections through Tor
 proxy=127.0.0.1:9050
@@ -464,20 +467,39 @@ proxy=127.0.0.1:9050
 # Create hidden service
 listenonion=1
 
+# Tor control host and port (default: 127.0.0.1:9051)
+torcontrol=127.0.0.1:9051
+
 # Only connect to .onion addresses
 onlynet=onion
 ```
 
+When built with subprocess support, Knots launches Tor automatically if onion listening is enabled and no running Tor daemon is reachable — you just need `tor` installed and on the PATH (the command is configurable via the hidden `-torexecute` option, default: `tor`).
+
 **Debug Tor issues:**
 ```bash
-# Check if Tor is running
+# Is tor installed?
+which tor
+
+# Is a Tor daemon running?
 systemctl status tor
 # Or
 pgrep -a tor
 
+# Is the control port reachable? (default 127.0.0.1:9051)
+nc -zv 127.0.0.1 9051
+
+# Enable Tor logging in bitcoin.conf, then check debug.log
+# debug=tor
+grep -i tor ~/.bitcoin/debug.log | tail -20
+
 # Check onion address
 bitcoin-cli getnetworkinfo | grep onion
 ```
+
+:::note Onion service PoW defense (v29.3+)
+As of v29.3, Knots enables Tor's onion service proof-of-work DoS defense for the node's hidden service when the Tor daemon supports it, making it harder to flood your onion address with connection attempts.
+:::
 
 ### Banned by Many Peers
 
