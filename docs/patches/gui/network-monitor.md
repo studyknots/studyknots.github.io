@@ -54,7 +54,6 @@ Click the network icon for quick stats.
 | **Services** | Node capabilities |
 | **Starting Height** | Peer's block height at connect |
 | **Sync Height** | Current synced height |
-| **Ban Score** | Misbehavior points |
 | **Ping** | Round-trip latency |
 | **Sent/Received** | Bandwidth usage |
 
@@ -210,8 +209,9 @@ bitcoin-cli getnettotals
 
 - **0 connections** — Network issue, check firewall
 - **Only outbound** — Ports not forwarded
-- **High ban scores** — May be misbehaving peer
 - **No Tor peers** — Consider enabling Tor
+
+(Note: the peer "ban score" / `misbehavior_score` field is deprecated — it is always 0, or 100 just before a peer is disconnected — so it is not useful as a live health metric.)
 
 ## Configuration Impact
 
@@ -220,11 +220,12 @@ Monitor shows effects of these settings:
 ```ini title="bitcoin.conf"
 # Connection limits
 maxconnections=125      # Total peer limit
-maxuploadtarget=1000    # Monthly upload limit (MB)
+maxuploadtarget=1000    # Upload target per 24 hours (MiB by default)
 
-# Network selection
-onlynet=ipv4           # Restrict to IPv4
-onlynet=onion          # Add Tor peers
+# Network selection: each onlynet= line adds a permitted network,
+# so together these restrict connections to IPv4 and Tor only
+onlynet=ipv4
+onlynet=onion
 
 # Peer management
 addnode=x.x.x.x        # Always try to connect

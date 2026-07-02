@@ -10,21 +10,40 @@ Bitcoin Knots includes several RPC commands not available in Bitcoin Core.
 
 ## Mempool Commands
 
-### listmempooltxs
+### listmempooltransactions
 
-List transactions in the mempool with filtering options:
+Returns all transactions in the mempool, with an `entry_sequence` value per entry so you can poll for new entries (an alternative to ZMQ notifications):
 
 ```bash
-bitcoin-cli listmempooltxs
+# All mempool transactions (txids + sequence numbers)
+bitcoin-cli listmempooltransactions
+
+# Only entries since a given mempool sequence, with full decoded transactions
+bitcoin-cli listmempooltransactions 12345 true
 ```
+
+Parameters: `start_sequence` (default 0 — all transactions) and `verbose` (default false).
+
+### maxmempool
+
+New in v29.3: change the memory allocated to the mempool at runtime, without restarting the node:
+
+```bash
+# Set the mempool allocation to 150 MB
+bitcoin-cli maxmempool 150
+```
+
+Takes a single `megabytes` argument. The current value is reported in the `maxmempool` field of `getmempoolinfo`.
 
 ### getmempoolinfo (Enhanced)
 
-Returns extended mempool information including fee histogram:
+Knots extends `getmempoolinfo` with an optional fee-histogram argument. Pass `true` for default fee-rate buckets, or an array of custom bucket boundaries:
 
 ```bash
-bitcoin-cli getmempoolinfo
+bitcoin-cli getmempoolinfo true
 ```
+
+The response then includes a `fee_histogram` object (not available in Bitcoin Core).
 
 ## Block Commands
 
@@ -58,11 +77,13 @@ bitcoin-cli getblockfileinfo 1234
 
 ### sweepprivkeys
 
-Import and sweep private keys:
+Sweep the funds controlled by one or more private keys into the loaded wallet. Takes a single options object (there is no destination parameter — funds go to a new address in your wallet) and returns the sweep transaction id:
 
 ```bash
-bitcoin-cli sweepprivkeys '["privkey1"]' "destination"
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["<WIF key>"], "label": "swept"}'
 ```
+
+See [Sweep Private Keys](/patches/wallet/sweep-keys) for details.
 
 ### dumpmasterprivkey
 
@@ -114,7 +135,7 @@ Enhanced with transaction ID information:
 bitcoin-cli getaddressinfo "address"
 ```
 
-Includes `txids` field showing transactions involving the address.
+Includes a `use_txids` field listing the ids of wallet transactions which received with the address.
 
 ## See Also
 

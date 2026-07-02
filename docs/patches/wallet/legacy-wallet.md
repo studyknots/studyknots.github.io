@@ -10,13 +10,15 @@ Bitcoin Core v30 completely removed Berkeley DB legacy wallet support, forcing u
 
 ## Why This Matters
 
-| Feature | Core v30 | Knots v29.2 |
+| Feature | Core v30 | Knots v29.3 |
 |---------|----------|-------------|
 | Legacy wallet creation | **Removed** | Supported |
 | Berkeley DB wallets | **Removed** | Supported |
-| `dumpprivkey` RPC | Descriptor only | **Both types** |
-| `importprivkey` RPC | Descriptor only | **Both types** |
+| `dumpprivkey` RPC | **Removed** | Available (legacy wallets) |
+| `importprivkey` RPC | **Removed** | Available (legacy wallets) |
 | Direct key management | Limited | **Full** |
+
+(`dumpprivkey` and `importprivkey` only ever worked on legacy wallets — with legacy wallets removed in Core v30, these RPCs are simply gone there.)
 
 Many users need legacy wallets for:
 - **Older hardware wallets** with specific BIP32 paths
@@ -110,7 +112,7 @@ bitcoin-cli -rpcwallet=mylegacy migratewallet
 
 ## Descriptor Wallets (Default in v23+)
 
-Since Knots v23.0, new wallets default to descriptor format. Key differences:
+Since v23.0 — a default inherited from upstream Bitcoin Core 23 — new wallets default to descriptor format. Key differences:
 
 | Feature | Legacy | Descriptor |
 |---------|--------|------------|
@@ -132,7 +134,7 @@ bitcoin-cli createwallet "mydesc" false false "" false true
 |---------|-------------|
 | `dumpmasterprivkey` | Export HD master key (legacy) |
 | `sweepprivkeys` | Import and sweep in one step |
-| `importfromcoldcard` | Import Coldcard wallet |
+| `importfromcoldcard` | Import Coldcard wallet (a `bitcoin-wallet` tool command, not an RPC) |
 
 ## See Also
 

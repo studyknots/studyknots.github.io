@@ -10,57 +10,59 @@ Several existing Bitcoin Core RPC commands have enhanced functionality in Bitcoi
 
 ## getblocktemplate
 
-Extended options for miners:
+The `template_request` object accepts additional options for miners (from the `gbt_rpc_options` patch), letting a template be customized per request:
+
+| Option | Description |
+|--------|-------------|
+| `blockmaxsize` | Limit returned block to the specified size (bytes) |
+| `blockmaxweight` | Limit returned block to the specified weight |
+| `blockreservedsize` | Reserve size in the block for the generation transaction |
+| `blockreservedweight` | Reserve weight in the block for the generation transaction |
+| `blockreservedsigops` | Reserve sigops in the block for the generation transaction |
+| `minfeerate` | Only include transactions paying at least this many sats/vbyte |
 
 ```bash
 bitcoin-cli getblocktemplate '{
   "rules": ["segwit"],
-  "capabilities": ["proposal"],
-  "longpollid": "...",
-  "data": "..."
+  "blockmaxweight": 3000000,
+  "minfeerate": 2
 }'
 ```
 
-Additional parameters available through `gbt_rpc_options` patch.
-
-## createrawtransaction
-
-Enhanced fee handling options:
-
-```bash
-bitcoin-cli createrawtransaction '[...]' '{...}' 0 true
-```
+Using any of these options disables the template cache for that request.
 
 ## walletprocesspsbt
 
-Additional options for PSBT processing:
+Knots accepts an **options object** as the second argument (in place of the positional `sign` boolean), grouping the existing settings:
 
 ```bash
-bitcoin-cli walletprocesspsbt "psbt" true "ALL" true
+bitcoin-cli walletprocesspsbt "psbt" '{"sign": true, "sighashtype": "ALL", "bip32derivs": true, "finalize": true}'
 ```
+
+The Core-style positional form (`walletprocesspsbt "psbt" true "ALL" true`) is still accepted for backwards compatibility.
 
 ## descriptorprocesspsbt
 
-Enhanced with previous transaction support:
+Knots likewise accepts an options object as the third argument, and adds a `prevtxs` option — an array of dependent serialized transactions in hex, used to fill in input information that isn't available from the UTXO set or mempool:
 
 ```bash
-bitcoin-cli descriptorprocesspsbt "psbt" '[descriptors]' '{options}'
+bitcoin-cli descriptorprocesspsbt "psbt" '["descriptor1"]' '{"prevtxs": ["<raw tx hex>"]}'
 ```
 
 ## signmessage
 
-Enhanced with BIP-322 support for generic message signing:
+Enhanced with BIP-322 support: while Bitcoin Core can only sign messages for legacy (P2PKH) addresses, Knots can also sign for other address types, producing a BIP-322 "simple" signature automatically:
 
 ```bash
-bitcoin-cli signmessage "address" "message"
+bitcoin-cli signmessage "bc1q..." "message"
 ```
 
 ## verifymessage
 
 Enhanced to support multiple signature formats:
-- Standard Bitcoin signatures
-- BIP-137 format
-- Electrum format
+- Standard legacy Bitcoin signatures (P2PKH)
+- Legacy-style signatures with BIP-137 header bytes (covering P2SH-segwit and native segwit addresses)
+- BIP-322 signatures (both simple and full formats)
 
 ```bash
 bitcoin-cli verifymessage "address" "signature" "message"
@@ -68,23 +70,18 @@ bitcoin-cli verifymessage "address" "signature" "message"
 
 ## getpeerinfo
 
-Enhanced with additional fields:
+Additional per-peer fields:
+
+- `last_block_announcement`: the time this peer was first to announce a block
+- `misbehavior_score`: **deprecated** — always 0, or 100 if the peer is about to be disconnected; do not rely on it as a live metric
 
 ```bash
 bitcoin-cli getpeerinfo
 ```
 
-Additional fields:
-- `misbehaving_score`: Peer misbehavior score
-- `last_block_announcement`: Time of last block announcement
+## getaddressinfo
 
-## fundrawtransaction
-
-Enhanced with `min_conf` option:
-
-```bash
-bitcoin-cli fundrawtransaction "rawtx" '{"min_conf": 6}'
-```
+Includes a Knots-specific `use_txids` array listing the ids of wallet transactions which received with the address. See [New Commands](/patches/rpc/new-commands).
 
 ## See Also
 

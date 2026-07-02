@@ -45,14 +45,14 @@ MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM
 │││ │    │              Data + Checksum
 │││ │    └── Share index (A-Z, or S for secret)
 │││ └────── Identifier (4 characters)
-││└──────── Threshold (1-9 shares needed)
-│└───────── Version (always 1 for now)
+││└──────── Threshold (0 = no split, otherwise 2-9)
+│└───────── Bech32 separator (always 1)
 └────────── Human readable part (MS = "master seed")
 ```
 
 **Components:**
 - **MS**: Human-readable prefix (case-insensitive)
-- **1**: Version number
+- **1**: Bech32 separator
 - **2**: Threshold (2 shares needed to recover)
 - **NAME**: 4-character identifier for this backup set
 - **A**: Share index (A = first share, S = the secret itself)
@@ -82,46 +82,57 @@ Codex32 uses [Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_
 
 **Key properties:**
 - Split into up to **31 shares**
-- Threshold from **1 to 9** shares required
+- Threshold of **0** (no splitting) or **2 to 9** shares required (a threshold of 1 is invalid)
 - Below threshold: **zero information** about secret
 - Mathematical guarantee, not just obscurity
 
 ### Error Correction
 
 The 13-character checksum can:
-- **Detect** up to 8 errors anywhere in the string
+- **Detect** up to 8 character substitution errors anywhere in the string
 - **Correct** up to 4 character substitutions
-- **Handle** up to 15 consecutive erasures (unreadable characters)
 
 This means small transcription errors when copying by hand can be automatically fixed.
 
 ## Using Codex32 in Bitcoin Knots
 
-### Importing a Codex32 Seed
+Bitcoin Knots supports Codex32 through the **`seeds` argument of the `importdescriptors` RPC** (available since v25.0.knots20230823). There is no separate Codex32 RPC — you pass your codex32-encoded seed or shares alongside the descriptors they should satisfy.
+
+Each entry in `seeds` is a list of codex32 strings: either the single **S** (secret) share, or at least *threshold* shares from the same backup set. Knots recovers the seed, derives the BIP32 master key from it, and uses that key as private data for the descriptors being imported. The descriptors themselves reference the corresponding extended public key.
+
+### Importing with the Secret (S) Share
 
 ```bash
-# Import a single share (if threshold = 1) or the secret directly
-bitcoin-cli importcodex32 "MS10TESTSXXXXXXXXXXXXXXXXXXXXXXXXXX4NZVSHKZ"
+# Create an empty descriptor wallet to restore into
+bitcoin-cli createwallet "restored" false true
+
+# Import a descriptor, supplying the codex32 secret as its seed
+bitcoin-cli -rpcwallet=restored importdescriptors \
+  '[{"desc": "wpkh(<xpub>/0/*)#checksum", "timestamp": 0, "active": true, "range": [0, 999]}]' \
+  '[["ms10testsxxxxxxxxxxxxxxxxxxxxxxxxxx4nzvca9cmczlw"]]'
 ```
 
-### Importing Multiple Shares
+### Combining Multiple Shares
 
-For threshold > 1, you need to combine shares:
+For a split backup (threshold 2 or more), provide at least *threshold* shares from the same set:
 
 ```bash
-# Import with multiple shares
-bitcoin-cli importcodex32 '[
-  "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM",
-  "MS12NAMEB320ZYXWVUTSRQPNMLKJHGFEDCADH7HDLHPMS5X"
-]'
+bitcoin-cli -rpcwallet=restored importdescriptors \
+  '[{"desc": "tr(<xpub>/0/*)#checksum", "timestamp": 0, "active": true, "range": [0, 999]}]' \
+  '[[
+    "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM",
+    "MS12NAMECACDEFGHJKLMNPQRSTUVWXYZ023FTR2GDZMPY6PN"
+  ]]'
 ```
+
+Notes:
+- A single codex32 string must be the **S** share (the secret itself); anything else is rejected with "single share must be the S share".
+- Providing fewer shares than the threshold fails with a "did not have enough input shares" error.
+- Multiple seeds can be imported at once — `seeds` is an array of share lists, one per seed.
 
 ### Verifying a Share
 
-```bash
-# Check if a share is valid (checksum verification)
-bitcoin-cli validatecodex32 "MS12NAMEA320ZYXWVUTSRQPNMLKJHGFEDCAXRPP870HKKQRM"
-```
+Every codex32 string is checksum-validated during import: an invalid share is rejected with an `Invalid codex32 share` error before anything is imported. For verification without a computer, use the checksum worksheet from [secretcodex32.com](https://secretcodex32.com/).
 
 ## Creating Codex32 Backups
 
@@ -163,16 +174,7 @@ Codex32 includes printable tools for hand computation:
 
 ### Using External Tools
 
-For those comfortable with electronics during creation:
-
-```bash
-# Using seedtool (Blockchain Commons)
-seedtool --format codex32 --shares 3 --threshold 2
-
-# Using Python library
-pip install codex32
-python -c "from codex32 import generate; print(generate(threshold=2, shares=3))"
-```
+For those comfortable with electronics during creation, [BIP-93](https://github.com/bitcoin/bips/blob/master/bip-0093.mediawiki) links to reference implementations for generating and splitting codex32 seeds. The interactive tools at [secretcodex32.com](https://secretcodex32.com/) can also be used.
 
 ## Security Considerations
 
@@ -195,7 +197,7 @@ Never store all shares in one location. The whole point of splitting is geograph
 :::tip Threshold Selection
 - **Threshold 2 of 3**: Good balance of security and convenience
 - **Threshold 3 of 5**: Higher security for large holdings
-- **Threshold 1**: No splitting (just checksummed backup)
+- **Threshold 0**: No splitting (just a checksummed backup of the secret)
 :::
 
 **Storage recommendations:**
@@ -254,8 +256,11 @@ Codex32 supports standard BIP-32 seed lengths:
 ```
 1. Gather any 2 shares (A+B, A+C, or B+C)
 
-2. Use recovery wheel or:
-   bitcoin-cli importcodex32 '["MS12VAULTA...", "MS12VAULTB..."]'
+2. Use the recovery wheel by hand, or let Knots combine
+   the shares while importing your descriptors:
+   bitcoin-cli importdescriptors \
+     '[{"desc": "...", "timestamp": 0, "active": true}]' \
+     '[["MS12VAULTA...", "MS12VAULTB..."]]'
 
 3. Wallet is restored with full funds access
 ```
@@ -273,19 +278,12 @@ Codex32 uses polynomial interpolation over a finite field:
 ### Checksum Specification
 
 - **Generator polynomial**: Specifically chosen for Bech32 alphabet
-- **Error detection**: Guaranteed for up to 8 errors
-- **Error correction**: Can fix 4 substitutions automatically
-- **Erasure handling**: Up to 15 consecutive unreadable characters
+- **Error detection**: Guaranteed for up to 8 substitution errors
+- **Error correction**: Can fix up to 4 substitutions automatically
 
-## Wallet Support Status
+## Wallet Support
 
-| Wallet | Codex32 Support |
-|--------|-----------------|
-| **Bitcoin Knots** | Import supported |
-| Bitcoin Core | PR pending |
-| Blockstream Green | Planned |
-| Sparrow | Under consideration |
-| Liana | Planned |
+Bitcoin Knots supports importing codex32 seeds and shares via `importdescriptors` (see above). Support in other wallets varies — check your wallet's documentation, or see the reference implementations linked from [BIP-93](https://github.com/bitcoin/bips/blob/master/bip-0093.mediawiki) for standalone tooling.
 
 ## See Also
 
