@@ -18,7 +18,7 @@ Useful tools for monitoring the Bitcoin network and Knots adoption.
 | [bitdis.org](https://bitdis.org) | Node distribution dashboard: Core vs Knots share, release adoption, and BIP-110 signaling |
 | [Bitbo Dashboard](https://bitbo.io) | Real-time Bitcoin stats, hash rate, fees, and network data |
 | [Clark Moody Dashboard](https://bitcoin.clarkmoody.com/dashboard/) | Real-time Bitcoin network metrics |
-| [The Bitcoin Portal](https://thebitcoinportal.com/) | Network statistics and node data |
+| [The Bitcoin Portal](https://thebitcoinportal.com/) | Bitcoin monetary health intelligence |
 
 :::note
 
@@ -31,10 +31,10 @@ Bitnodes (bitnodes.io), long the standard node explorer, went offline when its d
 On BTC Nodes, you can search for specific Knots versions by user agent:
 
 ```
-/Satoshi:29.2.0/Knots:20251110/
+/Satoshi:29.3.0/Knots:20260508/
 ```
 
-This shows all nodes running Knots 29.2.0 (November 2025 release).
+This shows all nodes running Knots 29.3.knots20260508 (May 2026 release).
 
 ### Searching by Service Flags
 
@@ -48,12 +48,12 @@ On BTC Nodes, you can search by service flags to find nodes signaling specific c
 
 ## Current Adoption
 
-As of early 2025, based on coin.dance data:
+As of July 2, 2026:
 
-- **Bitcoin Core**: ~18,600 nodes (78%)
-- **Bitcoin Knots**: ~5,100+ nodes (21%+)
+- [bitdis.org](https://bitdis.org) measured **22.97%** of 23,874 reachable nodes running Bitcoin Knots
+- [Coin Dance](https://coin.dance/nodes) showed a similar **22.7%** share
 
-Knots adoption increased significantly following the OP_RETURN controversy in mid-2025.
+The Knots share peaked at roughly 25% in September 2025, after adoption surged following the OP_RETURN controversy in mid-2025. These figures date quickly — check the live dashboards above for current numbers.
 
 ## Official Resources
 

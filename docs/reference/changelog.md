@@ -8,6 +8,79 @@ description: Bitcoin Knots release history
 
 Release history for Bitcoin Knots.
 
+## Version 29.3.knots20260508
+
+**Released:** May 2026 (current release)
+
+Based on Bitcoin Core 29.3.
+
+### Highlights
+
+- **Opt-in BIP-110/RDTS support**: This build can enforce the Reduced Data Temporary Softfork, but only with explicit confirmation — via a GUI prompt at startup or `consensusrules=rdts` in `bitcoin.conf`. A build without RDTS support (29.3.knots20260507) is also available.
+- **RAM-aware `dbcache` default**: When `-dbcache` is not set explicitly, Knots now auto-selects a value between 100 MiB and 2 GiB based on system memory (#34641)
+- **`sweepprivkeys` extended**: now also finds segwit (p2wpkh) and taproot (p2tr) UTXOs, in addition to p2pk and p2pkh (knots#296)
+- **"Sweep private key" GUI dialog** added to the File menu (knots#297)
+- **Sub-dust fee penalty**: transactions creating sub-dust outputs have their effective fee reduced accordingly; enabled by default, disable with `subdustfeepenalty=0` (knots#272)
+- **Datacarrier filter hardening**: datacarrier policy options now match a newer spam variation ("opnet") designed to bypass the prior implementation (knots#292)
+- **Tor hidden-service PoW defenses** enabled for automatically created hidden services, when the Tor daemon supports them (#33414)
+- **`maxmempool` RPC** to adjust the mempool memory limit at runtime
+
+### Changes
+
+#### Consensus
+- knots#238: Reduced Data Temporary Softfork (RDTS), implemented as a modified BIP9 temporary deployment (opt-in)
+
+#### Policy
+- knots#272: Penalize effective fee for sub-dust outputs
+- knots#292: Add 'opnet' to datacarriersize matching
+
+#### P2P and Network
+- #33414: Enable PoW defenses for automatically created Tor hidden services
+- #35087: Limit torcontrol line size to prevent OOM
+- #35116 / #35117: Clean up SOCKS5 and I2P error logging
+
+#### GUI
+- knots#256: Prompt user after upgrading to RDTS-enabled version
+- knots#297: Add sweep private key dialog
+- knots#287: Warn when script threads exceed CPU cores
+- knots#288: Expand sync progress bar in status bar
+
+#### Wallet
+- #34870: Fix feebumper crash when combined bump fee is unavailable
+- #34959: Enforce BDB btree levels and overflow item sizes
+- knots#266: Validate external signer fingerprint is hex before shell command use
+- knots#267: Codex32: prevent out-of-bounds read on validation error
+
+#### RPC
+- knots#296: Add segwit and taproot support to sweepprivkeys
+- knots#294: Fix unsigned underflow in GetBlockFileInfo bounds check
+
+See the [official release notes](https://github.com/bitcoinknots/bitcoin/releases/tag/v29.3.knots20260508) for the full change log.
+
+---
+
+## Version 29.3.knots20260507
+
+**Released:** May 8, 2026
+
+Identical to 29.3.knots20260508, except it **does not support the BIP-110/RDTS network upgrade**. Provided for users who are not ready to adopt RDTS.
+
+---
+
+## Version 29.3.knots20260210
+
+**Released:** February 10, 2026
+
+Based on Bitcoin Core 29.3.
+
+### Highlights
+
+- Numerous wallet bug fixes, including some obscure scenarios that could delete the wallet (migration issues, backup path handling, and crashes when wallet directories lack write permissions)
+- P2P stability fixes, including a use-after-free in the v2-to-v1 reconnection logic
+- Qt updated to 5.15.18
+
+---
+
 ## Version 29.2.knots20251110
 
 **Released:** November 10, 2025
@@ -51,6 +124,22 @@ Thanks to all contributors including:
 - Antoine Poinsot
 - Luke Dashjr
 - And others
+
+---
+
+## Version 29.2.knots20251010
+
+**Released:** October 10, 2025
+
+Based on Bitcoin Core 29.2.
+
+### Highlights
+
+- Various bug fixes and a new Dockerfile (see `contrib/docker`)
+- Discontinued advertising the NODE_REPLACE_BY_FEE service bit
+- Tor control improvements, including ephemeral config files
+- Improved NAT-PMP/PCP logging and connection handling
+- Wallet migration fixes and improved macOS icon rendering
 
 ---
 

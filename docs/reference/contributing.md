@@ -31,14 +31,16 @@ Bitcoin Knots welcomes contributions from the community.
 
 ### Translation
 
-Help translate the interface (when Transifex access is restored).
+Translations follow the upstream Bitcoin Core translation process — see [doc/translation_process.md](https://github.com/bitcoinknots/bitcoin/blob/29.x-knots/doc/translation_process.md) in the repository. (Recent releases note that translation updates are currently disrupted by issues with the shared Bitcoin Transifex repository.)
 
 ## Getting Started
 
 ### 1. Fork the Repository
 
+Fork [bitcoinknots/bitcoin](https://github.com/bitcoinknots/bitcoin) on GitHub, then clone **your fork** and add the main repository as upstream:
+
 ```bash
-git clone https://github.com/bitcoinknots/bitcoin.git
+git clone https://github.com/YOUR_USERNAME/bitcoin.git
 cd bitcoin
 git remote add upstream https://github.com/bitcoinknots/bitcoin.git
 ```
@@ -54,11 +56,20 @@ git checkout -b my-feature
 
 Follow the coding style of the existing codebase.
 
-### 4. Test
+### 4. Build and Test
+
+Bitcoin Knots uses CMake:
 
 ```bash
-make check
-./test/functional/test_runner.py
+# Build
+cmake -B build
+cmake --build build -j$(nproc)
+
+# Run unit tests
+ctest --test-dir build
+
+# Run functional tests
+build/test/functional/test_runner.py
 ```
 
 ### 5. Commit

@@ -22,8 +22,9 @@ These options are unique to Bitcoin Knots or have different defaults than Bitcoi
 | `-datacarrierfullcount` | bool | 1 | Apply datacarriersize limit to all known datacarrier methods |
 | `-acceptnonstddatacarrier` | bool | 0 | Relay non-OP_RETURN datacarrier injection transactions |
 | `-permitbaredatacarrier` | bool | 0 | Relay transactions that only have data carrier outputs |
-| `-rejectparasites` | bool | 1 | **Refuse to relay CAT21 spam transactions** |
-| `-rejecttokens` | bool | 0 | Refuse to relay transactions involving non-bitcoin tokens |
+| `-rejectparasites` | bool | 1 | **Refuse to relay or mine parasitic overlay protocols** |
+| `-rejecttokens` | bool | 0 | Refuse to relay or mine transactions involving non-bitcoin tokens (Runes, OLGA-pattern data) |
+| `-subdustfeepenalty` | bool | 1 | Reduce effective fee by the dust threshold for each sub-dust output (v29.3+) |
 
 ### Script & Validation Policy
 
@@ -32,6 +33,7 @@ These options are unique to Bitcoin Knots or have different defaults than Bitcoi
 | `-acceptnonstdtxn` | bool | 0 | Relay and mine non-standard transactions |
 | `-permitbarepubkey` | bool | 0 | Relay transactions with bare pubkey outputs |
 | `-permitbaremultisig` | bool | 0 | Relay transactions with bare multisig outputs |
+| `-permitbareanchor` | bool | 1 | Relay transactions that only have ephemeral anchor outputs |
 | `-permitephemeral` | string | "anchor,-send,-dust" | Comma-separated ephemeral output options |
 | `-acceptunknownwitness` | bool | 1 | Relay transactions to unknown witness versions |
 | `-maxscriptsize` | int | 1650 | Maximum script size (including witness) in bytes |
@@ -74,6 +76,14 @@ These options are unique to Bitcoin Knots or have different defaults than Bitcoi
 | `-blockreservedweight` | int | 8000 | Reserved weight for coinbase |
 | `-maxtxlegacysigops` | int | 2500 | Maximum legacy sigops per transaction |
 
+### Consensus Rules (v29.3+)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `-consensusrules=<rules>` | string | none | Enforce the specified consensus rules. Set to `rdts` to opt in to the BIP-110/RDTS softfork |
+
+RDTS enforcement is **opt-in**: v29.3.knots20260508 asks for explicit confirmation at GUI startup, or you can set `consensusrules=rdts` in `bitcoin.conf`. Without it, the node validates with the same consensus rules as Bitcoin Core.
+
 ### Core Policy Mode
 
 | Option | Type | Default | Description |
@@ -105,7 +115,7 @@ These options exist in both Core and Knots.
 | `-proxy` | string | - | SOCKS5 proxy (supports per-network syntax) |
 | `-onlynet` | string | all | Restrict to networks: ipv4, ipv6, onion, i2p, cjdns |
 | `-upnp` | bool | 0 | Enable UPnP port mapping |
-| `-natpmp` | bool | 1 | Enable NAT-PMP (default on in Knots v29+) |
+| `-natpmp` | bool | 1 | Use PCP or NAT-PMP to map the listening port (default on in Knots v29+) |
 
 ### RPC
 
@@ -122,7 +132,7 @@ These options exist in both Core and Knots.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `-dbcache` | int | 450 | Database cache size (MB) |
+| `-dbcache` | int | auto | Database cache size (MiB). Since v29.3, the default auto-scales with system RAM, between 100 MiB and 2 GiB; set explicitly to override |
 | `-par` | int | auto | Script verification threads |
 | `-maxmempool` | int | 300 | Maximum mempool size (MB) |
 | `-mempoolexpiry` | int | 336 | Mempool transaction expiry (hours) |
@@ -156,7 +166,7 @@ These options exist in both Core and Knots.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `-softwareexpiry` | bool | 1 | Enable expiry warnings (4-week warning, alerts at expiry) |
+| `-softwareexpiry` | timestamp | ~2 years after release | Stop working after this POSIX timestamp. The default is set roughly two years after the release, encouraging nodes to stay updated |
 
 ---
 

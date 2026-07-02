@@ -10,11 +10,11 @@ description: Frequently asked questions about Bitcoin Knots
 
 ### What is Bitcoin Knots?
 
-Bitcoin Knots is an enhanced derivative of Bitcoin Core, maintained by [Luke Dashjr](https://github.com/luke-jr) since 2011. It includes additional features, policy options, and improvements not available in Bitcoin Core while maintaining identical consensus rules.
+Bitcoin Knots is an enhanced derivative of Bitcoin Core, maintained by [Luke Dashjr](https://github.com/luke-jr) since 2011. It includes additional features, policy options, and improvements not available in Bitcoin Core while maintaining identical consensus rules by default (v29.3 adds one explicitly opt-in exception — see the [BIP-110/RDTS section](#bip-110--rdts) below).
 
 ### Is Bitcoin Knots safe to use?
 
-Yes. Bitcoin Knots follows identical consensus rules to Bitcoin Core, ensuring full network compatibility. The differences are in local policy (what your node relays) and features (GUI, wallet, RPC). Your node will validate the blockchain exactly the same as Core.
+Yes. By default, Bitcoin Knots follows identical consensus rules to Bitcoin Core, ensuring full network compatibility. The differences are in local policy (what your node relays) and features (GUI, wallet, RPC). Your node will validate the blockchain exactly the same as Core — unless you explicitly opt in to the RDTS softfork in v29.3+ (it is off by default and requires confirmation).
 
 ### Who maintains Bitcoin Knots?
 
@@ -30,7 +30,7 @@ The project was originally called "Bitcoin LJR" before being renamed.
 
 ### How popular is Bitcoin Knots?
 
-As of late 2025, Bitcoin Knots powers approximately **21% of all Bitcoin nodes** — a significant portion of the network. Adoption surged 850% in 2024-2025, largely driven by the OP_RETURN controversy and Core v30's removal of data limits.
+As of July 2026, Bitcoin Knots runs on roughly **23% of reachable Bitcoin nodes** ([bitdis.org](https://bitdis.org) measured 22.97% of 23,874 reachable nodes on July 2, 2026; [Coin Dance](https://coin.dance/nodes) showed 22.7%). The share peaked at about 25% in September 2025. Adoption surged in 2024-2025, largely driven by the OP_RETURN controversy and Core v30's removal of data limits. For current figures, check the live dashboards linked in [External Resources](/reference/resources).
 
 ---
 
@@ -55,7 +55,7 @@ The ~40,000 lines figure is roughly accurate when counting insertions (~36k). Th
 - ~70% is GUI, tests, and docs (zero consensus risk)
 - ~25% is wallet, RPC, policy (affects your node only)
 - Only ~4% (~1,400 lines) is consensus-adjacent
-- **0% changes consensus rules** — Knots validates identically to Core
+- **0% changes consensus rules** — Knots validates identically to Core (this analysis covers v29.2; v29.3 later added the opt-in, off-by-default RDTS softfork)
 
 **What's in the "consensus-adjacent" code?**
 - `bitcoinconsensus`: **Restored Core code** removed in v28 — already reviewed
@@ -68,27 +68,27 @@ See [Code Analysis](/architecture/code-analysis) for the full breakdown.
 
 | Feature | Bitcoin Core | Bitcoin Knots |
 |---------|--------------|---------------|
-| Consensus Rules | Standard | **Identical** |
+| Consensus Rules | Standard | **Identical by default** (v29.3 adds opt-in RDTS) |
 | Legacy Wallet | Removed (v30) | **Maintained** |
 | OP_RETURN Limit | Removed (v30) | **Configurable** |
 | Inscription Filtering | No | **Yes (default on)** |
-| Embedded Tor | No | **Yes** |
+| Automatic Tor launch | No | **Yes** (starts Tor for you if installed) |
 | Dark Mode | Partial | **Full support** |
 | UPnP | Removed | **Restored** |
 | Block Size Options | Removed | **Restored** |
 
 ### Will Knots fork Bitcoin?
 
-**No.** Knots follows the same consensus rules as Bitcoin Core. It will never create a network fork. The differences are purely in:
+**Not by default.** Out of the box, Knots follows the same consensus rules as Bitcoin Core. The differences are purely in:
 - What transactions your node **relays** (policy)
 - What features are **available** (GUI, RPC, wallet)
 - What **defaults** are used
 
-Your Knots node validates blocks identically to Core.
+By default, your Knots node validates blocks identically to Core. Since v29.3.knots20260508, there is one **explicitly opt-in** exception: the BIP-110/RDTS softfork, which is off by default, requires confirmation to enable, and is also offered as a separate build without it. If RDTS were to activate without broad hashrate support, enforcing nodes could diverge from non-enforcing nodes — see the [BIP-110/RDTS section](#bip-110--rdts) below.
 
 ### Can I run Knots and Core on the same network?
 
-Yes, they're fully compatible. Knots nodes communicate seamlessly with Core nodes. The network doesn't distinguish between them at the consensus level.
+Yes, they're fully compatible. Knots nodes communicate seamlessly with Core nodes. With default settings, the network doesn't distinguish between them at the consensus level.
 
 ### Does filtering affect the Bitcoin network?
 
@@ -98,6 +98,28 @@ No. Policy is local to your node. When you filter transactions:
 - Your node will still accept blocks containing them
 
 You're choosing what **your node** relays, not what the network allows.
+
+---
+
+## BIP-110 / RDTS
+
+### What is BIP-110 (RDTS)?
+
+The **Reduced Data Temporary Softfork** (RDTS) is a proposed temporary softfork that restricts data-carrying transactions at the consensus level. It is an official BIP, [BIP-110](https://github.com/bitcoin/bips/blob/master/bip-0110.mediawiki), and Knots implements it as a modified BIP9 temporary deployment that automatically expires after roughly one year of enforcement (~52,416 blocks).
+
+### Does Knots enforce RDTS?
+
+**Only if you explicitly opt in.** Knots v29.3.knots20260508 ships with RDTS support, but enforcement is **off by default**. To enable it, you must either confirm the GUI prompt shown at startup or add `consensusrules=rdts` to your `bitcoin.conf`. A build of the same version without RDTS support (29.3.knots20260507) is also available for users who don't want it.
+
+### How would RDTS activate?
+
+Via miner signaling on version bit 4: activation requires **55% of blocks (1,109 of 2,016) within a difficulty period** to signal support. The Knots deployment parameters also include a maximum activation height (block 965,664, roughly September 2026 per the implementation), after which the softfork activates regardless of signaling.
+
+As of late June 2026, signaling remains minimal — around **0.31% of hashrate**, mostly from the Ocean pool.
+
+### Is RDTS controversial?
+
+Yes. Critics — including Adam Back and Jameson Lopp — have warned that activating a softfork with minority hashrate support risks a **chain split**: nodes enforcing RDTS could end up following a different chain than the rest of the network. Supporters argue the upgrade fixes long-standing data-abuse vectors. If you enable RDTS, understand that you are opting in to enforcing rules the majority of the network may not enforce.
 
 ---
 
@@ -195,7 +217,7 @@ Potentially yes, but:
 ### What are "parasites" and "tokens"?
 
 - **Parasites** (`rejectparasites`): CAT21 spam transactions
-- **Tokens** (`rejecttokens`): Runes protocol transactions using OP_RETURN with OP_13
+- **Tokens** (`rejecttokens`): transactions involving non-bitcoin tokens — this covers Runes protocol transactions (OP_RETURN with OP_13) as well as OLGA-pattern data storage in P2WSH outputs
 
 Both are "data storage" uses of Bitcoin that some consider spam.
 
@@ -216,14 +238,18 @@ Yes. Both descriptor and legacy wallets are compatible.
 
 ### What is `sweepprivkeys`?
 
-A Knots command to import a private key and immediately send funds to a new address in one atomic operation. Safer than `importprivkey` because:
-- The imported key isn't stored in your wallet
-- Funds move to an address only you control
-- Original key exposure doesn't matter after sweep
+A Knots RPC that finds all funds controlled by a private key and sends them to a fresh address in your loaded wallet, in one operation. Safer than `importprivkey` because:
+- The swept key isn't stored in your wallet
+- Funds move to an address your wallet controls
+- Original key exposure doesn't matter after the sweep
+
+It takes a single options object (there is no destination argument — funds always go to a new address in the loaded wallet):
 
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q_your_address"
+bitcoin-cli sweepprivkeys '{"privkeys": ["5KJvs..."], "label": "swept coins"}'
 ```
+
+Since v29.3, `sweepprivkeys` also finds segwit (p2wpkh) and taproot (p2tr) UTXOs in addition to p2pk/p2pkh, and the GUI has a matching "Sweep private key" dialog in the File menu.
 
 ### What is Codex32?
 
@@ -261,12 +287,9 @@ No. Knots doesn't modify the mining algorithm or proof-of-work. It only affects 
 
 ### How do I use Tor with Knots?
 
-**Simple way (embedded Tor):**
-```ini title="bitcoin.conf"
-torsubprocess=1
-```
+**Simple way (automatic):** if Tor is installed on your system, Knots will automatically launch it as a subprocess when appropriate — no configuration needed. (Knots doesn't bundle Tor itself; the command used can be overridden with the hidden `-torexecute=<command>` option, default `tor`.)
 
-**Manual way:**
+**Manual way (existing Tor daemon):**
 ```ini title="bitcoin.conf"
 proxy=127.0.0.1:9050
 listenonion=1
