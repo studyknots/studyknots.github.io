@@ -42,8 +42,8 @@ bitcoin-cli getblockchaininfo
 On first run, your node will download and verify the entire blockchain. This takes:
 
 - **Time**: 6-24 hours depending on hardware and connection
-- **Disk Space**: ~600 GB for full node, ~10 GB for pruned node
-- **Bandwidth**: ~600 GB download
+- **Disk Space**: ~700 GB for full node (mid-2026), ~25 GB real footprint for a pruned node (the chainstate alone is ~12 GB)
+- **Bandwidth**: ~700 GB download
 
 ### Pruned Mode (Recommended for Limited Storage)
 
@@ -73,10 +73,12 @@ rpcuser=youruser
 rpcpassword=yourpassword
 
 # Performance
+# Note: since v29.3, dbcache auto-scales with system RAM when unset
 dbcache=4000
 maxconnections=40
 
 # Knots-specific: data carrier limit
+# (42 is the traditional Knots default; current releases default to 83)
 datacarriersize=42
 ```
 
@@ -131,7 +133,7 @@ bitcoin-cli getmempoolinfo
 
 ```bash
 # Get fee histogram (Knots feature)
-bitcoin-cli getmempoolinfo
+bitcoin-cli getmempoolinfo true
 ```
 
 ## Troubleshooting

@@ -11,7 +11,7 @@ Bitcoin Knots includes numerous enhancements over Bitcoin Core. This page summar
 ## Consensus
 
 :::tip Important
-Bitcoin Knots follows **identical consensus rules** to Bitcoin Core. Your node will validate blocks exactly the same way.
+Bitcoin Knots follows **identical consensus rules** to Bitcoin Core **by default**. Your node will validate blocks exactly the same way. The one exception is the explicitly opt-in [BIP-110/RDTS soft fork](/guides/bip-110) added in v29.3 — see below.
 :::
 
 The differences are in:
@@ -20,17 +20,28 @@ The differences are in:
 - Additional features and RPC commands
 - User interface improvements
 
+### Consensus (opt-in)
+
+Since v29.3, Knots ships optional enforcement of the BIP-110 ReducedData Temporary Softfork (RDTS). It is **off by default** — you must explicitly opt in via configuration (or the GUI prompt):
+
+```ini title="bitcoin.conf"
+# Opt in to BIP-110/RDTS enforcement (Knots 29.3+, off by default)
+consensusrules=rdts
+```
+
+Without this setting, Knots validates blocks identically to Bitcoin Core. See the [BIP-110 guide](/guides/bip-110) for details.
+
 ## Policy Differences
 
 ### Mempool & Relay Policies
 
 | Feature | Bitcoin Core | Bitcoin Knots |
 |---------|--------------|---------------|
-| `datacarriersize` | Fixed 80 bytes | Configurable (default 83) |
+| `datacarriersize` | No limit since v30 (default 100kB); 83-byte scriptPubKey limit before v30 | Configurable (default 83, traditionally 42) |
 | `datacarriercost` | N/A | Configurable weight multiplier |
 | `rejecttokens` | N/A | Filter BRC-20/token transactions |
-| `rejectparasites` | N/A | Filter CAT21 spam transactions |
-| `bytespersigopstrict` | N/A | Stricter sigops enforcement |
+| `rejectparasites` | N/A | Filter CAT21 spam transactions (on by default) |
+| `bytespersigopstrict` | N/A | Minimum bytes per sigop in relayed/mined transactions (default 20) |
 | `dustdynamic` | N/A | Dynamic dust threshold |
 | `permitbarepubkey` | N/A | Bare pubkey output policy |
 
@@ -49,7 +60,7 @@ datacarriersize=42
 
 ### Legacy Wallet Support
 
-Bitcoin Core has deprecated legacy wallets. Knots maintains support:
+Bitcoin Core removed legacy (BDB) wallets entirely in Core 30. Knots maintains support:
 
 ```bash
 # Create a legacy wallet (Knots)
@@ -63,9 +74,8 @@ bitcoin-cli dumpprivkey <address>
 
 | Command | Description |
 |---------|-------------|
-| `sweepprivkeys` | Import and sweep private keys |
+| `sweepprivkeys` | Sweep funds from private keys into the wallet (p2wpkh/p2tr support since v29.3) |
 | `dumpmasterprivkey` | Export HD master private key |
-| `signmessagewithprivkey` | BIP-322 enhanced signing |
 
 ### Codex32 Support
 
@@ -77,13 +87,13 @@ Knots includes Codex32 seed phrase import for hardware wallet recovery.
 
 ```bash
 # List mempool transactions (Knots)
-bitcoin-cli listmempooltxs
+bitcoin-cli listmempooltransactions
 
 # Get block file locations
 bitcoin-cli getblocklocations <blockhash>
 
 # Fee histogram data
-bitcoin-cli getmempoolinfo
+bitcoin-cli getmempoolinfo true
 ```
 
 ### Enhanced Commands
@@ -110,22 +120,20 @@ bitcoin-cli createrawtransaction [...] # Additional fee options
 
 ### Enabling Dark Mode
 
-Dark mode is available in Qt preferences or via:
-
-```bash
-bitcoin-qt -style=fusion
-```
+Dark mode support is native in Knots: the GUI automatically detects your operating system's theme and adjusts its colors accordingly. No flags or extra configuration are required — just set your OS to a dark theme.
 
 ## Networking
 
 ### Tor Integration
 
-Knots includes built-in Tor subprocess management:
+Knots automatically launches Tor as a subprocess when it isn't already running — no configuration needed. The command used can be overridden with the hidden `-torexecute` option (default: `tor`):
 
 ```ini title="bitcoin.conf"
-# Enable embedded Tor (Knots)
-torsubprocess=1
+# Optional: override the Tor command Knots launches (default: tor)
+torexecute=/usr/local/bin/tor
 ```
+
+Since v29.3, Knots also enables Tor's onion-service proof-of-work (PoW) DoS defenses for your hidden service when the Tor daemon supports them.
 
 ### UPnP Support
 
@@ -136,18 +144,14 @@ UPnP was removed from Bitcoin Core but restored in Knots:
 upnp=1
 ```
 
-### V2 Transport Default
-
-Knots defaults to v2 encrypted transport where available.
-
 ## Mining
 
 ### Block Size Control
 
-The `-blockmaxsize` option was removed from Core but restored in Knots:
+The `-blockmaxsize` option was removed from Core but restored in Knots (default: 300000 bytes):
 
 ```ini title="bitcoin.conf"
-# Limit block size (bytes)
+# Limit block size (bytes; Knots default is 300000)
 blockmaxsize=750000
 ```
 
@@ -173,9 +177,6 @@ rejecttokens=1
 permitbarepubkey=0
 bytespersigop=20
 bytespersigopstrict=1
-
-# Privacy
-torsubprocess=1
 
 # Mining
 blockmaxsize=750000
