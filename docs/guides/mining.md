@@ -6,7 +6,7 @@ description: Mining configuration with Bitcoin Knots
 
 # Mining with Bitcoin Knots
 
-Bitcoin Knots is the node software powering [Ocean](https://ocean.xyz/), the decentralized mining pool co-founded by Luke Dashjr and backed by Jack Dorsey and Tether. This guide covers Knots-specific mining features and configuration.
+Bitcoin Knots is the node software powering [Ocean](https://ocean.xyz/), the decentralized mining pool co-founded by Luke Dashjr, whose 2023 seed round was led by Jack Dorsey's Block. This guide covers Knots-specific mining features and configuration.
 
 ## Why Miners Choose Knots
 
@@ -16,7 +16,8 @@ Ocean launched in 2023 with a mission to decentralize Bitcoin mining by giving m
 
 - **Runs Bitcoin Knots** as its node software
 - **Filters inscriptions** by default (configurable)
-- **Backed by** Jack Dorsey, Tether ($500M+ mining investment)
+- **Funding**: Jack Dorsey's Block led Ocean's $6.2M seed round (2023)
+- **Tether**: announced roughly $500M of investment in its own mining operations, and separately partnered with Ocean, deploying hashrate to the pool
 - **Headquarters** in El Salvador (2024)
 
 Dashjr's argument for filtering: "Spam-filtered blocks often have more fees anyway for some reason." The pool allows miners to construct their own templates, reducing reliance on centralized operators.
@@ -82,7 +83,7 @@ bitcoin-cli getblocktemplate '{
 **Parameters:**
 - `blockmaxsize` — Override configured block size limit
 - `blockmaxweight` — Override configured weight limit
-- `minfeerate` — Minimum fee rate (sat/vB) for inclusion
+- `minfeerate` — Only include transactions paying at least this fee rate, in sat/vB (default: set by `-blockmintxfee`)
 
 :::note Performance
 Setting per-call parameters disables template caching, which may reduce efficiency with multiple applications using `getblocktemplate`.
@@ -130,6 +131,19 @@ Critics argue filtering reduces miner income. Dashjr's response:
 > "Bitcoin works with the assumption that a majority of miners are honest, not malicious. Besides, spam-filtered blocks often have more fees anyway for some reason."
 
 The choice is yours — Knots provides the options, you decide the policy.
+
+## BIP-110/RDTS Signaling
+
+Miners who want to go beyond relay policy can signal for **BIP-110**, the Reduced Data Temporary Softfork (RDTS). Knots v29.3 ships RDTS enforcement as a strictly opt-in feature:
+
+```ini title="bitcoin.conf"
+# Opt in to enforcing the RDTS consensus rules (Knots v29.3+)
+consensusrules=rdts
+```
+
+GUI users are shown a consent prompt instead, and a separate non-RDTS build is published for those who decline. Ocean has been signaling for BIP-110 since around March 2026, though as of mid-2026 overall network signaling remains well below the 55% activation threshold.
+
+See **[BIP-110: The Reduced Data Soft Fork](/guides/bip-110)** for the full rules, activation timeline, and risks before opting in.
 
 ## Fee Configuration
 
@@ -217,19 +231,25 @@ blockmaxweight=4000000
 maxmempool=1000
 ```
 
-### Solo Mining (Testnet)
+### Test Mining (Regtest)
+
+For experimenting with block templates without real hashrate, use regtest — a private test network where you can generate blocks on demand:
 
 ```ini title="bitcoin.conf"
-# Testnet solo mining
-testnet=1
+# Regtest mining sandbox
+regtest=1
 server=1
-gen=1
 ```
 
 ```bash
-# Generate test blocks
-bitcoin-cli -testnet generatetoaddress 1 $(bitcoin-cli -testnet getnewaddress)
+# Create a wallet and generate test blocks to your own address
+bitcoin-cli -regtest createwallet "test"
+bitcoin-cli -regtest generatetoaddress 101 $(bitcoin-cli -regtest getnewaddress)
 ```
+
+:::note No built-in CPU mining
+The old `gen=1` internal miner was removed from Bitcoin long ago. On mainnet, blocks are found by external mining hardware pointed at your node (directly or via a pool); `generatetoaddress` only works on regtest and similar test networks.
+:::
 
 ## Performance Patches
 

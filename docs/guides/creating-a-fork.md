@@ -17,15 +17,15 @@ Bitcoin's security model assumes no single entity controls the network. But what
 <div className="implementation-chart">
   <div className="chart-container">
     <div className="pie-chart">
-      <div className="slice core" style={{background: 'conic-gradient(#f7931a 0% 78%, #4a90a4 78% 100%)'}}></div>
+      <div className="slice core" style={{background: 'conic-gradient(#f7931a 0% 77%, #4a90a4 77% 100%)'}}></div>
     </div>
     <div className="chart-legend">
-      <div className="legend-item"><span className="dot core"></span> Bitcoin Core: ~78%</div>
-      <div className="legend-item"><span className="dot knots"></span> Bitcoin Knots: ~21%</div>
+      <div className="legend-item"><span className="dot core"></span> Bitcoin Core: ~77%</div>
+      <div className="legend-item"><span className="dot knots"></span> Bitcoin Knots: ~23%</div>
       <div className="legend-item"><span className="dot other"></span> All others: ~1%</div>
     </div>
   </div>
-  <p className="chart-source">As of January 2026 · Live data: <a href="https://coin.dance/nodes">coin.dance/nodes</a></p>
+  <p className="chart-source">As of July 2026 (Coin Dance: 22.7%; bitdis.org: 22.97%) · Live data: <a href="https://coin.dance/nodes">coin.dance/nodes</a></p>
 </div>
 
 This is a **monoculture problem**. When ~99% of nodes run code from two closely-related implementations:
@@ -79,7 +79,7 @@ Most successful implementations started as personal projects. Build something yo
 
 ### The Scenario
 
-Bitcoin Core v30 removed the standardness limit on OP_RETURN outputs. Previously, the default was 80 bytes. Now there's effectively no limit enforced at the policy level.
+Bitcoin Core v30 raised the default standardness limit on OP_RETURN outputs from 80 bytes of data to **100,000 bytes**, and marked the `-datacarrier`/`-datacarriersize` options as deprecated. The policy limit still technically exists, but at 100 kB it no longer meaningfully constrains data storage.
 
 You might:
 - Disagree with this change
@@ -108,10 +108,11 @@ OP_RETURN limits are **policy only** — safe to modify.
 
 We're going to restore the pre-v30 behavior:
 
-| Setting | Core v29 | Core v30 | Our Fork |
-|---------|----------|----------|----------|
-| Default `datacarriersize` | 83 | Unlimited | 83 |
-| OP_RETURN relay | Limited | Unlimited | Limited |
+| Setting | Core v29 | Core v30+ | Our Fork |
+|---------|----------|-----------|----------|
+| Default `datacarriersize` | 83 | 100,000 bytes | 83 |
+| `-datacarrier`/`-datacarriersize` options | Supported | Deprecated | Supported |
+| OP_RETURN relay | Limited | Effectively unconstrained | Limited |
 
 This is a one-line change that affects default behavior while still allowing users to override it via configuration.
 
@@ -119,26 +120,29 @@ This is a one-line change that affects default behavior while still allowing use
 
 You'll need:
 - **Git** — Version control
-- **Build tools** — Compiler, make, etc.
+- **Build tools** — CMake (3.22+) and a C++ compiler
 - **Dependencies** — Libraries Bitcoin Core needs
-- **~50GB disk space** — For source, build artifacts, and blockchain
+- **~50GB disk space** — For source, build artifacts, and regtest testing (a synced **mainnet** node additionally needs ~700 GB for the full blockchain, or ~25 GB pruned)
 - **2-4 hours** — For first build (faster on subsequent builds)
 
 ### Install Build Dependencies
 
+Since v29, Bitcoin Core builds with **CMake** (autotools is gone), and from v30 the GUI requires **Qt 6**.
+
 **Ubuntu/Debian:**
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
+sudo apt-get install -y build-essential cmake pkgconf python3
 sudo apt-get install -y libevent-dev libboost-dev libsqlite3-dev
-sudo apt-get install -y libminiupnpc-dev libnatpmp-dev libzmq3-dev
-# For GUI (optional)
-sudo apt-get install -y qtbase5-dev qttools5-dev-tools
+# Optional: ZMQ notifications
+sudo apt-get install -y libzmq3-dev
+# For GUI (optional, Qt 6)
+sudo apt-get install -y qt6-base-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools
 ```
 
 **macOS:**
 ```bash
-brew install automake libtool boost pkg-config libevent qt@5 miniupnpc libnatpmp zeromq
+brew install cmake boost pkgconf libevent sqlite qt@6 zeromq
 ```
 
 **For other systems**, see [Core's build documentation](https://github.com/bitcoin/bitcoin/tree/master/doc).
@@ -163,8 +167,8 @@ git tag -l 'v3*' | tail -10
 Choose a recent stable release as your base:
 
 ```bash
-# Check out the latest stable release (example: v30.0)
-git checkout v30.0
+# Check out the latest stable release (example: v31.0)
+git checkout v31.0
 
 # Create your fork branch
 git checkout -b my-policy-fork
@@ -173,7 +177,9 @@ git checkout -b my-policy-fork
 git branch
 ```
 
-**Naming convention suggestion:** `v30.0-mypolicy` or `v30.0-opreturn-limit`
+As of mid-2026, **v31.0** is the latest stable release; the 30.x series is maintained at **v30.2** if you prefer an older base.
+
+**Naming convention suggestion:** `v31.0-mypolicy` or `v31.0-opreturn-limit`
 
 ## Step 3: Find the Code to Change
 
@@ -188,7 +194,7 @@ grep -rn "MAX_OP_RETURN" src/
 grep -rn "nMaxDatacarrierBytes" src/
 ```
 
-In Bitcoin Core v30, the key files are:
+In Bitcoin Core v30 and later, the key files are:
 
 - `src/policy/policy.h` — Default constants
 - `src/policy/policy.cpp` — Policy implementation
@@ -205,12 +211,11 @@ cat src/policy/policy.h | head -80
 
 ### Understanding the Current Code
 
-In Core v30, you'll find something like:
+In Core v30 and later, you'll find something like:
 
-```cpp title="src/policy/policy.h (Core v30 - simplified)"
-/** Maximum size of OP_RETURN scripts we relay and mine */
-static constexpr unsigned int MAX_OP_RETURN_RELAY = MAX_SCRIPT_SIZE;
-// Or it may be effectively unlimited
+```cpp title="src/policy/policy.h (Core v30+ - simplified)"
+/** Default for -datacarriersize */
+static constexpr unsigned int MAX_OP_RETURN_RELAY{100'000};
 ```
 
 In earlier versions (v29 and before):
@@ -282,11 +287,11 @@ cat > doc/my-policy-changes.md << 'EOF'
 
 This fork restores the pre-v30 OP_RETURN data carrier size limit.
 
-## Changes from Bitcoin Core v30.0
+## Changes from Bitcoin Core v31.0
 
 ### 1. OP_RETURN Size Limit (src/policy/policy.h)
 
-- **Before (Core v30):** Effectively unlimited
+- **Before (Core v30+):** 100,000 bytes by default
 - **After (this fork):** 83 bytes (80 bytes of data)
 
 This is a **policy-only** change. It affects:
@@ -325,7 +330,7 @@ Nodes running this fork will:
 
 To update this fork when Core releases a new version:
 1. Fetch upstream: `git fetch origin`
-2. Rebase: `git rebase v30.1` (or merge)
+2. Rebase: `git rebase v31.1` (or merge)
 3. Resolve conflicts in policy.h
 4. Rebuild and test
 
@@ -353,54 +358,49 @@ Rationale: [Your reason]"
 
 ## Step 7: Build Your Fork
 
-### Generate Build System
-
-```bash
-# Run autogen (creates configure script)
-./autogen.sh
-```
+Bitcoin Core uses **CMake** (since v29) — there is no `autogen.sh` or `./configure` anymore.
 
 ### Configure
 
 ```bash
-# Basic build (no GUI)
-./configure --disable-gui --disable-tests --disable-bench
+# Basic build (no GUI, no tests)
+cmake -B build -DBUILD_TESTS=OFF
 
-# With GUI
-./configure --with-gui=qt5
+# With GUI (Qt 6)
+cmake -B build -DBUILD_GUI=ON
 
 # See all options
-./configure --help
+cmake -B build -LH
 ```
 
 **Recommended for first build:**
 ```bash
-./configure --disable-tests --disable-bench --with-gui=no
+cmake -B build -DBUILD_TESTS=OFF
 ```
 
 ### Compile
 
 ```bash
 # Use all CPU cores
-make -j$(nproc)
+cmake --build build -j$(nproc)
 
 # Or specify core count
-make -j4
+cmake --build build -j4
 ```
 
-This takes 30-90 minutes depending on your hardware.
+This takes 30-90 minutes depending on your hardware. Binaries land in `build/bin/`.
 
 ### Verify Build
 
 ```bash
-# Check the binary exists
-ls -la src/bitcoind src/bitcoin-cli
+# Check the binaries exist
+ls -la build/bin/bitcoind build/bin/bitcoin-cli
 
 # Check version
-./src/bitcoind --version
+./build/bin/bitcoind --version
 
 # Verify your change is present
-./src/bitcoind -help | grep datacarriersize
+./build/bin/bitcoind -help | grep datacarriersize
 ```
 
 ## Step 8: Test Your Fork
@@ -412,50 +412,53 @@ ls -la src/bitcoind src/bitcoin-cli
 mkdir -p /tmp/bitcoin-test
 
 # Start in regtest mode (private test network)
-./src/bitcoind -regtest -datadir=/tmp/bitcoin-test -daemon
+./build/bin/bitcoind -regtest -datadir=/tmp/bitcoin-test -daemon
 
 # Wait a moment, then test RPC
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test getblockchaininfo
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test getblockchaininfo
 
 # Check your policy setting
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test getnetworkinfo
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test getnetworkinfo
 
 # Stop the node
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test stop
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test stop
 ```
 
 ### Test the OP_RETURN Limit
 
 ```bash
 # Start regtest node
-./src/bitcoind -regtest -datadir=/tmp/bitcoin-test -daemon
+./build/bin/bitcoind -regtest -datadir=/tmp/bitcoin-test -daemon
 sleep 2
 
 # Create a wallet and generate some coins
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test createwallet "test"
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test -generate 101
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test createwallet "test"
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test -generate 101
 
 # Create an OP_RETURN transaction with 80 bytes of data (should work)
 # This requires more complex scripting - see Bitcoin Core's functional tests
 # for examples of creating OP_RETURN transactions
 
 # Cleanup
-./src/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test stop
+./build/bin/bitcoin-cli -regtest -datadir=/tmp/bitcoin-test stop
 rm -rf /tmp/bitcoin-test
 ```
 
 ### Run Automated Tests (Optional but Recommended)
 
 ```bash
-# Rebuild with tests enabled
-./configure --enable-tests
-make -j$(nproc)
+# Rebuild with tests enabled (the default)
+cmake -B build -DBUILD_TESTS=ON
+cmake --build build -j$(nproc)
 
 # Run unit tests
-make check
+ctest --test-dir build
+
+# Run the functional test suite
+./build/test/functional/test_runner.py
 
 # Run specific policy tests
-./test/functional/mempool_datacarrier.py
+./build/test/functional/mempool_datacarrier.py
 ```
 
 ## Step 9: Install Your Fork
@@ -463,7 +466,7 @@ make check
 ### Option A: Install System-Wide
 
 ```bash
-sudo make install
+sudo cmake --install build
 ```
 
 This installs to `/usr/local/bin/`. Your system's `bitcoind` is now your fork.
@@ -472,20 +475,20 @@ This installs to `/usr/local/bin/`. Your system's `bitcoind` is now your fork.
 
 ```bash
 # Add to your PATH
-export PATH="$HOME/bitcoin-dev/bitcoin/src:$PATH"
+export PATH="$HOME/bitcoin-dev/bitcoin/build/bin:$PATH"
 
 # Or create aliases
-alias bitcoind-custom="$HOME/bitcoin-dev/bitcoin/src/bitcoind"
-alias bitcoin-cli-custom="$HOME/bitcoin-dev/bitcoin/src/bitcoin-cli"
+alias bitcoind-custom="$HOME/bitcoin-dev/bitcoin/build/bin/bitcoind"
+alias bitcoin-cli-custom="$HOME/bitcoin-dev/bitcoin/build/bin/bitcoin-cli"
 ```
 
 ### Option C: Parallel Installation
 
 ```bash
-# Install with a different prefix
-./configure --prefix=$HOME/bitcoin-custom
-make -j$(nproc)
-make install
+# Configure with a different install prefix
+cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/bitcoin-custom
+cmake --build build -j$(nproc)
+cmake --install build
 
 # Run with explicit path
 ~/bitcoin-custom/bin/bitcoind
@@ -508,21 +511,22 @@ git tag -l 'v3*' | tail -5
 
 # Option A: Rebase onto new version (cleaner history)
 git checkout my-policy-fork
-git rebase v30.1
+git rebase v31.1
 
 # Option B: Merge new version (preserves history)
 git checkout my-policy-fork
-git merge v30.1
+git merge v31.1
 
 # Resolve any conflicts in policy.h
 # The conflict will likely be straightforward - just keep your value
 
-# Rebuild
-make clean
-./autogen.sh
-./configure [your options]
-make -j$(nproc)
+# Rebuild from scratch
+rm -rf build
+cmake -B build [your options]
+cmake --build build -j$(nproc)
 ```
+
+(Substitute whatever the newest tag actually is — e.g. a future v31.x point release, or v30.2 if you track the 30.x series.)
 
 ### Tracking Changes
 
@@ -533,12 +537,12 @@ cat >> doc/my-policy-changes.md << 'EOF'
 
 ## Changelog
 
-### v30.1-mypolicy (2025-XX-XX)
-- Rebased onto Bitcoin Core v30.1
+### v31.1-mypolicy (2026-XX-XX)
+- Rebased onto Bitcoin Core v31.1
 - No additional changes
 
-### v30.0-mypolicy (2025-XX-XX)
-- Initial fork from Bitcoin Core v30.0
+### v31.0-mypolicy (2026-XX-XX)
+- Initial fork from Bitcoin Core v31.0
 - Restored 83-byte OP_RETURN default
 
 EOF
@@ -621,13 +625,13 @@ After going through this process, you might appreciate why Bitcoin Knots exists:
 | Your testing only | Community tested |
 | No GUI improvements | Dark mode, mempool stats, etc. |
 
-**Knots already includes the OP_RETURN limit** (and makes it configurable):
+**Knots already includes the OP_RETURN limit** (and makes it configurable). Knots traditionally defaulted `datacarriersize` to 42; current releases temporarily default to 83:
 
 ```ini title="bitcoin.conf (Knots)"
-# Knots: Set OP_RETURN limit (default respects traditional limit)
+# Knots: Set OP_RETURN limit explicitly (or the stricter traditional 42)
 datacarriersize=83
 
-# Or use Core-compatible unlimited policy
+# Or use Core-compatible permissive policy
 corepolicy=1
 ```
 
