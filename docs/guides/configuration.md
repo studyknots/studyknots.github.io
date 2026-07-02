@@ -134,18 +134,18 @@ permitbarepubkey=0
 
 ## Consensus Rules (RDTS / BIP-110)
 
-New in v29.3.knots20260508: Bitcoin Knots ships opt-in support for the Rejecting Data Transaction Softfork (RDTS, BIP-110). The rules are **disabled by default** — you must explicitly opt in, either through the GUI confirmation dialog or in `bitcoin.conf`:
+New in v29.3.knots20260508: Bitcoin Knots ships the Reduced Data Temporary Softfork (RDTS, BIP-110). The standard build **enforces RDTS on its deployment schedule** and asks for your explicit confirmation — through the GUI dialog at startup, or in `bitcoin.conf`:
 
 ```ini title="bitcoin.conf"
-# Opt in to enforcing the RDTS (BIP-110) consensus rules
+# Confirm the RDTS (BIP-110) upgrade; bitcoind warns hourly until this is set
 consensusrules=rdts
 ```
 
-:::danger Consensus opt-in
-Enabling `consensusrules=rdts` changes how your node validates blocks — this is a change to **consensus validation**, not just relay policy. If the soft fork does not gain broad support across the network, nodes enforcing RDTS could follow a different chain than the rest of the network (a chain split). Do not opt in unless you understand and accept these implications. A parallel build without RDTS support (v29.3.knots20260507) is also available.
+:::danger Enforcement is a property of the build
+`consensusrules=rdts` records your confirmation — it does not switch enforcement on or off. RDTS is a change to **consensus validation**, not just relay policy: if the soft fork activates without broad support across the network, enforcing nodes could follow a different chain than the rest of the network (a chain split). If you do not want your node to enforce RDTS, run the parallel build without it (v29.3.knots20260507).
 :::
 
-See [BIP-110](/guides/bip-110) for a full explanation of the proposed rules.
+See [BIP-110 / RDTS Integration](/patches/consensus/bip110) for the full mechanics and [BIP-110](/guides/bip-110) for an explanation of the rules.
 
 ## Wallet Options
 

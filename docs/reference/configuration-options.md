@@ -80,9 +80,9 @@ These options are unique to Bitcoin Knots or have different defaults than Bitcoi
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `-consensusrules=<rules>` | string | none | Enforce the specified consensus rules. Set to `rdts` to opt in to the BIP-110/RDTS softfork |
+| `-consensusrules=<rules>` | string | none | Records confirmation of the specified consensus rules. Set to `rdts` to confirm the BIP-110/RDTS softfork (help text: "Must be rdts to use this software") |
 
-RDTS enforcement is **opt-in**: v29.3.knots20260508 asks for explicit confirmation at GUI startup, or you can set `consensusrules=rdts` in `bitcoin.conf`. Without it, the node validates with the same consensus rules as Bitcoin Core.
+Note: in the standard v29.3.knots20260508 build, this option records your **confirmation** of RDTS — enforcement follows the deployment schedule regardless. The GUI prompts at startup (and exits if declined); `bitcoind` runs and enforces but warns hourly until confirmed. A build without RDTS enforcement (29.3.knots20260507) is published separately. See [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 
 ### Core Policy Mode
 

@@ -21,6 +21,14 @@ const sidebars: SidebarsConfig = {
         'patches/overview',
         {
           type: 'category',
+          label: 'Consensus',
+          collapsed: true,
+          items: [
+            'patches/consensus/bip110',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Policy Patches',
           collapsed: true,
           items: [

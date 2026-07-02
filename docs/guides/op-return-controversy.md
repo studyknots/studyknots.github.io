@@ -282,7 +282,7 @@ Some developers argued that policy-level changes weren't enough — **consensus-
 - **Mechanism**: UASF (User-Activated Soft Fork) requiring 55% miner support
 - **Duration**: ~1 year, then auto-expires
 - **Effect**: Seven consensus rules restricting data storage methods
-- **Status**: Now an official BIP. Knots v29.3 ships RDTS enforcement as a strictly **opt-in** feature (`consensusrules=rdts` in the config, or a consent prompt in the GUI; a separate non-RDTS build is also published)
+- **Status**: Now an official BIP. The standard Knots v29.3 build enforces RDTS on its deployment schedule, asking users for explicit confirmation (`consensusrules=rdts` in the config, or a consent prompt in the GUI); a separate non-RDTS build is also published
 
 ### Activation Status (as of July 2026)
 

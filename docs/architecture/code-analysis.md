@@ -9,7 +9,7 @@ description: Objective analysis of Bitcoin Knots code differences from Core
 This page provides an objective, data-driven analysis of the code differences between Bitcoin Knots and Bitcoin Core. All numbers are verifiable by running `git diff` between the respective tags.
 
 :::info Analysis pinned to v29.2 vs Core 29.0
-The numbers on this page compare **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026, based on Core 29.3), additionally ships the opt-in BIP-110 (RDTS) consensus ruleset (`consensusrules=rdts`, disabled by default), which is outside the scope of this analysis.
+The numbers on this page compare **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026, based on Core 29.3), additionally ships the BIP-110 (RDTS) consensus ruleset — enforced by the standard build on its activation schedule, with a non-enforcing build also published — which is outside the scope of this analysis. See [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 :::
 
 ## The "40,000 Lines" Claim
@@ -149,7 +149,7 @@ Primarily:
 | **Medium** | ~1,400 | ~4% | Consensus-adjacent but mostly policy/restored code |
 | **Remaining** | ~5,000 | ~14% | Misc (translations, contrib scripts, etc.) |
 
-**Consensus rule changes in the analyzed v29.2 release: 0%** — v29.2 follows identical consensus rules to Core, and later releases do the same in their default configuration. (Since v29.3, an explicitly opt-in RDTS ruleset exists — off by default.)
+**Consensus rule changes in the analyzed v29.2 release: 0%** — v29.2 follows identical consensus rules to Core. (v29.3 later added the RDTS soft-fork deployment, a deliberate consensus feature outside this analysis — see [BIP-110 / RDTS Integration](/patches/consensus/bip110).)
 
 ## Key Insight: Policy ≠ Consensus
 
@@ -218,7 +218,7 @@ The ~40,000 lines figure is roughly accurate. What matters is understanding that
 1. **~70% is GUI/tests/docs** — cannot affect consensus
 2. **~12% is wallet/RPC/policy** — affects your node only
 3. **~4% is consensus-adjacent** — mostly policy hooks and restored Core code
-4. **0% changes consensus rules in the analyzed v29.2 / default configuration** — Knots validates identically to Core unless you explicitly opt in to the v29.3+ RDTS ruleset
+4. **0% changes consensus rules in the analyzed v29.2 release** — Knots validated identically to Core; the deliberate RDTS soft-fork deployment came later, in v29.3
 
 The question isn't whether to trust 40,000 lines blindly. It's whether you trust:
 - A 14-year Bitcoin contributor

@@ -22,7 +22,7 @@ The name "Knots" has a dual meaning — it both references the merging/tying tog
 - **2023**: Luke Dashjr co-founded Ocean mining pool (which runs Knots)
 - **2025**: Adoption surged 638% as debates over OP_RETURN limits intensified
 - **November 2025**: Release v29.2.knots20251110
-- **May 2026**: Current release v29.3.knots20260508 — the first release to ship the opt-in BIP-110/RDTS soft fork
+- **May 2026**: Current release v29.3.knots20260508 — the first release to ship the BIP-110/RDTS soft fork (confirmation required; a non-RDTS build is also published)
 
 As of mid-2026, Bitcoin Knots powers roughly 23% of all reachable Bitcoin nodes (after peaking near 25% in late 2025) — a significant share of the network's infrastructure.
 
@@ -38,7 +38,7 @@ Bitcoin Knots follows the same consensus rules as Bitcoin Core — your node wil
 - **Conservative Defaults**: Knots defaults to filtering certain transaction types that Core allows
 
 :::info Consensus Compatibility
-Bitcoin Knots follows identical consensus rules to Bitcoin Core by default. Running Knots does not affect your node's ability to validate the blockchain correctly. The one exception is the explicitly opt-in [BIP-110/RDTS soft fork](/guides/bip-110) introduced in v29.3 — it is off unless you enable it. Otherwise the differences are purely in local policy and features.
+Bitcoin Knots follows identical consensus rules to Bitcoin Core. Running Knots does not affect your node's ability to validate the blockchain correctly. The one exception is the [BIP-110/RDTS soft fork](/guides/bip-110) introduced in v29.3: the standard build will enforce it on its activation schedule (~September 2026) after asking for your confirmation, and a non-enforcing build is also published — see [BIP-110 / RDTS Integration](/patches/consensus/bip110). Otherwise the differences are purely in local policy and features.
 :::
 
 ## Version Numbering
@@ -78,7 +78,7 @@ Bitcoin Knots takes a more conservative approach than Bitcoin Core regarding blo
 4. **Feature Inclusion**: Includes useful features that Core hasn't prioritized or has removed
 
 :::tip The OP_RETURN Controversy
-The philosophical differences between Knots and Core came to a head in 2025 with Bitcoin Core v30's controversial removal of OP_RETURN limits. Nick Szabo, Jimmy Song, and Luke Dashjr were among the prominent voices opposing the change. The fight has since moved to the [BIP-110/RDTS soft fork](/guides/bip-110), which shipped as an opt-in feature in Knots 29.3. [Read the full story →](/guides/op-return-controversy)
+The philosophical differences between Knots and Core came to a head in 2025 with Bitcoin Core v30's controversial removal of OP_RETURN limits. Nick Szabo, Jimmy Song, and Luke Dashjr were among the prominent voices opposing the change. The fight has since moved to the [BIP-110/RDTS soft fork](/guides/bip-110), which ships in Knots 29.3. [Read the full story →](/guides/op-return-controversy)
 :::
 
 ## Notable Features
@@ -88,7 +88,7 @@ The philosophical differences between Knots and Core came to a head in 2025 with
 | `-rejectparasites` | Filter CAT21 spam transactions (on by default) |
 | `-datacarriersize` | Configurable OP_RETURN limit (83 bytes default) |
 | `-corepolicy` | Single flag to use Bitcoin Core defaults instead |
-| `-consensusrules` | Opt-in enforcement of the [BIP-110/RDTS soft fork](/guides/bip-110) (off by default, new in v29.3) |
+| `-consensusrules` | Confirmation setting for the [BIP-110/RDTS soft fork](/patches/consensus/bip110) (new in v29.3) |
 | Legacy Wallet | Maintained support (removed in Core 30) |
 | Embedded Tor | Built-in Tor subprocess management |
 | Dark Mode | GUI dark theme support |

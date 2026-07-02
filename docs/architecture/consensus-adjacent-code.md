@@ -9,7 +9,7 @@ description: Detailed examination of Bitcoin Knots changes near consensus-critic
 This page provides a detailed examination of the ~4% of Bitcoin Knots code changes that touch files near consensus-critical areas. While these files are "consensus-adjacent," the changes examined here do not alter Bitcoin's consensus rules.
 
 :::caution Analysis pinned to v29.2
-This page examines **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026), additionally ships the opt-in BIP-110 (RDTS) consensus ruleset (`consensusrules=rdts`, disabled by default), which is outside the scope of this page. In its default configuration, v29.3 validates identically to Core.
+This page examines **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026), additionally ships the BIP-110 (RDTS) consensus ruleset — enforced by the standard build on its activation schedule (~September 2026), with a non-enforcing build also published — which is outside the scope of this page. Until RDTS activates, v29.3 validates identically to Core. See [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 :::
 
 :::info Why This Matters
@@ -306,7 +306,7 @@ When evaluating consensus-adjacent code, ask:
 
 1. **Does it change validation rules?** → No (in the v29.2 code examined here)
 2. **Does it change consensus parameters?** → No
-3. **Could it cause a network fork?** → No — not unless you explicitly opt in to the v29.3+ RDTS ruleset with `consensusrules=rdts`, which is off by default and outside this page's scope
+3. **Could it cause a network fork?** → Not the code examined here. The separate question is the v29.3+ RDTS ruleset, which the standard build enforces on its activation schedule and which is outside this page's scope — see [BIP-110 / RDTS Integration](/patches/consensus/bip110)
 4. **Is it configurable/optional?** → Yes (mostly)
 5. **Was it reviewed?** → Yes (Core PRs, post-merge review)
 
@@ -358,7 +358,7 @@ The ~1,400 lines of consensus-adjacent code in Knots v29.2:
 3. **Include restored Core code** — Already reviewed, just restored
 4. **Are independently verifiable** — Commands provided above
 
-The claim that Knots has "dangerous consensus changes" is not supported by examination of the v29.2 code. The consensus-adjacent code adds policy flexibility while leaving actual consensus validation untouched. (The opt-in RDTS consensus ruleset added in v29.3 is a separate, explicitly-enabled feature not covered by this analysis.)
+The claim that Knots has "dangerous consensus changes" is not supported by examination of the v29.2 code. The consensus-adjacent code adds policy flexibility while leaving actual consensus validation untouched. (The RDTS consensus ruleset added in v29.3 is a separate, deliberate soft-fork deployment not covered by this analysis.)
 
 ## See Also
 

@@ -7,7 +7,7 @@ description: Independent technical review of Bitcoin Knots consensus-adjacent co
 # Code Review Report
 
 :::caution Review pinned to v29.2
-This review covers **Bitcoin Knots v29.2.knots20251110**. The current release, **v29.3.knots20260508** (May 2026), additionally ships the opt-in BIP-110 (RDTS) consensus rules (`consensusrules=rdts`, disabled by default). Those rules are outside the scope of this review.
+This review covers **Bitcoin Knots v29.2.knots20251110**. The current release, **v29.3.knots20260508** (May 2026), additionally ships the BIP-110 (RDTS) consensus rules — enforced by the standard build on its activation schedule, with a non-enforcing build also published. Those rules are outside the scope of this review; see [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 :::
 
 **Subject:** Bitcoin Knots v29.2.knots20251110 consensus-adjacent code
@@ -28,7 +28,7 @@ This review was conducted using AI-assisted static code analysis. It is not a fo
 | `consensus/` | 3 | +94 | **None** |
 | `script/bitcoinconsensus.*` | 2 | +252 | **None** (restored Core code) |
 
-**Conclusion:** No consensus rule changes were identified in v29.2.knots20251110, the release under review (and none apply in later releases' default configuration; v29.3's opt-in RDTS rules are outside this review's scope). All modifications are either:
+**Conclusion:** No consensus rule changes were identified in v29.2.knots20251110, the release under review. (v29.3's deliberate RDTS soft-fork deployment is outside this review's scope.) All modifications are either:
 1. Policy options (configurable relay behavior)
 2. Performance optimizations
 3. Restored Bitcoin Core code
@@ -369,7 +369,7 @@ After systematic review of all consensus-adjacent code in Bitcoin Knots v29.2, *
 2. **Performance optimizations** — Same results, faster computation
 3. **Restored Core code** — Previously reviewed code brought back for compatibility
 
-The claim that Knots contains "dangerous consensus changes" is **not supported by examination of the v29.2 code**. Knots v29.2 validates blocks identically to Bitcoin Core, and later releases do the same in their default configuration — the opt-in RDTS ruleset added in v29.3 only takes effect if the operator explicitly sets `consensusrules=rdts`, and would need a separate review.
+The claim that Knots contains "dangerous consensus changes" is **not supported by examination of the v29.2 code**. Knots v29.2 validates blocks identically to Bitcoin Core. The RDTS soft-fork deployment added in v29.3 is a deliberate, documented consensus feature — not a hidden change — and would need a separate review; see [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 
 ---
 
