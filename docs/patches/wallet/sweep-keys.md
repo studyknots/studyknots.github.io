@@ -6,7 +6,7 @@ description: Import and sweep funds from private keys in one atomic operation
 
 # Sweep Private Keys
 
-Bitcoin Knots includes the `sweepprivkeys` RPC command — a feature [proposed for Bitcoin Core](https://github.com/bitcoin/bitcoin/pull/9152) but never merged. It allows importing private keys and sweeping their funds in a single atomic operation.
+Bitcoin Knots includes the `sweepprivkeys` RPC command — a feature [proposed for Bitcoin Core](https://github.com/bitcoin/bitcoin/pull/9152) but never merged. It scans for funds controlled by the private keys you provide and moves them into your currently loaded wallet in a single operation.
 
 ## Why Sweep Instead of Import?
 
@@ -22,75 +22,102 @@ Sweeping is safer because:
 
 ## Usage
 
+`sweepprivkeys` takes a single **options object**. There is no destination or fee rate parameter — swept funds always go to a freshly generated address in the wallet the command is run against, and the fee is calculated automatically from your wallet's fee settings. The command returns the transaction id of the sweep.
+
 ### Basic Sweep
 
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"]' "bc1q..."
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"]}'
 ```
 
 ### Multiple Keys
 
 ```bash
-bitcoin-cli sweepprivkeys '["key1", "key2", "key3"]' "bc1qyouraddress..."
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["key1", "key2", "key3"]}'
 ```
 
-### With Custom Fee Rate
+### With a Label
+
+The receiving address is added to your wallet's address book; you can label it:
 
 ```bash
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..." 10
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["5KJvs..."], "label": "old paper wallet"}'
 ```
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `privkeys` | array | Yes | Array of WIF-encoded private keys |
-| `destination` | string | Yes | Address to receive swept funds |
-| `fee_rate` | number | No | Fee rate in sat/vB (default: automatic) |
+| `options` | object | Yes | Single options object (see fields below) |
+| `options.privkeys` | array | Yes | Array of WIF-encoded private keys |
+| `options.label` | string | No | Label for the received bitcoins |
+
+**Result:** the transaction id (hex string) of the sweep transaction.
+
+:::info Why no destination address?
+Sweeping and sending to an arbitrary address in a single action is intentionally unsupported — the Knots source notes it "isn't safe to sweep-and-send in a single action", since the send would be missing from your transaction history. Sweep into your wallet first, then send onward as a normal transaction.
+:::
 
 ## How It Works
 
-1. **UTXO Scan**: Scans the UTXO set for outputs spendable by the provided keys
-2. **Transaction Creation**: Creates a transaction spending all found UTXOs
-3. **Broadcast**: Sends funds to the destination address
-4. **Cleanup**: Keys are not persisted in the wallet
+1. **Address Reservation**: A new receiving address is reserved from your wallet's keypool
+2. **UTXO Scan**: The mempool and UTXO set are scanned for outputs spendable by the provided keys
+3. **Transaction Creation**: A transaction spending all found UTXOs is created and signed, deducting only the network fee
+4. **Broadcast**: Funds are sent to the new address in your wallet
+5. **Cleanup**: The provided keys are not persisted in the wallet
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│ Private Key │ --> │ UTXO Scan   │ --> │ New Address │
-│ (temporary) │     │ & Sweep TX  │     │ (yours)     │
-└─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────┐     ┌──────────────┐
+│ Private Key │ --> │ UTXO Scan   │ --> │ New Address  │
+│ (temporary) │     │ & Sweep TX  │     │ (your wallet)│
+└─────────────┘     └─────────────┘     └──────────────┘
 ```
+
+### Supported Output Types
+
+For each key, Knots looks for P2PK and P2PKH outputs. Since **v29.3**, it also scans for segwit and taproot outputs of compressed keys:
+
+| Output type | Supported |
+|-------------|-----------|
+| P2PK (raw pubkey) | Yes |
+| P2PKH (legacy address) | Yes |
+| P2WPKH (native segwit) | Yes — v29.3+ (compressed keys) |
+| P2SH-P2WPKH (wrapped segwit) | Yes — v29.3+ (compressed keys) |
+| P2TR (taproot, key-path) | Yes — v29.3+ (compressed keys) |
+
+### GUI Support (v29.3+)
+
+Knots v29.3 adds a **"Sweep private key…"** dialog to the GUI, available from the **File** menu, so sweeps no longer require the command line.
 
 ## Use Cases
 
 ### Paper Wallet Redemption
 
 ```bash
-# Sweep a paper wallet to your HD wallet
+# Sweep a paper wallet into your HD wallet
 PAPER_KEY="5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS"
-MY_ADDR=$(bitcoin-cli getnewaddress)
-bitcoin-cli sweepprivkeys "[\"$PAPER_KEY\"]" "$MY_ADDR"
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys "{\"privkeys\": [\"$PAPER_KEY\"], \"label\": \"paper wallet\"}"
 ```
 
-### Merchant Payment Acceptance
+### Gift Card / Physical Bitcoin Redemption
 
-Merchants can accept payments via typed or scanned private keys:
+If someone hands you a private key (e.g., from a gift card or physical coin), sweep it into your own wallet before treating the funds as yours. Once swept, send the funds onward with a normal `sendtoaddress` if needed:
 
 ```bash
-# Customer provides private key (e.g., from gift card)
-bitcoin-cli sweepprivkeys '["customer_privkey"]' "merchant_address"
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["gift_card_privkey"]}'
+# Then, once confirmed, optionally forward the funds:
+bitcoin-cli -rpcwallet=mywallet sendtoaddress "bc1q..." 0.001
 ```
 
 ### Consolidating Old Keys
 
 ```bash
-# Sweep multiple old keys to a single new address
-bitcoin-cli sweepprivkeys '[
+# Sweep multiple old keys into your wallet in one transaction
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": [
   "5KJvsngHeMpm...",
   "5HueCGU8rMjx...",
   "5Kb8kLf9zgW..."
-]' "bc1q_consolidation_address"
+], "label": "consolidation"}'
 ```
 
 ## Comparison with Manual Process
@@ -120,7 +147,7 @@ With `sweepprivkeys`:
 
 ```bash
 # One command, key not persisted
-bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..."
+bitcoin-cli -rpcwallet=mywallet sweepprivkeys '{"privkeys": ["5KJvs..."]}'
 ```
 
 ## Security Considerations
@@ -129,24 +156,24 @@ bitcoin-cli sweepprivkeys '["5KJvs..."]' "bc1q..."
 Once you sweep a key, consider it compromised. Never send new funds to addresses derived from that key.
 :::
 
-:::tip Verify Destination
-Always double-check the destination address before sweeping. There's no undo.
+:::tip Check the Right Wallet
+The swept funds go to the wallet the command runs against. When multiple wallets are loaded, use `-rpcwallet=` to select the correct one.
 :::
 
 ## Error Handling
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| "No UTXOs found" | Key has no funds or already swept | Verify key controls expected address |
-| "Invalid private key" | Wrong format or typo | Use WIF format (starts with 5, K, or L) |
-| "Insufficient fee" | Low fee rate during congestion | Increase fee_rate parameter |
+| "No value to sweep" | Key has no funds or already swept | Verify key controls expected outputs |
+| "Invalid private key encoding" | Wrong format or typo | Use WIF format (starts with 5, K, or L) |
+| "Swept value would be dust" | Funds too small to cover the fee | Wait for lower fees, or sweep together with other keys |
 
 ## Related Commands
 
 | Command | Description |
 |---------|-------------|
-| `importprivkey` | Import key (persists in wallet) |
-| `dumpprivkey` | Export key from wallet |
+| `importprivkey` | Import key (persists in wallet; legacy wallets only) |
+| `dumpprivkey` | Export key from wallet (legacy wallets only) |
 | `listunspent` | List UTXOs (manual approach) |
 
 ## See Also

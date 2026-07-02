@@ -8,6 +8,10 @@ description: Objective analysis of Bitcoin Knots code differences from Core
 
 This page provides an objective, data-driven analysis of the code differences between Bitcoin Knots and Bitcoin Core. All numbers are verifiable by running `git diff` between the respective tags.
 
+:::info Analysis pinned to v29.2 vs Core 29.0
+The numbers on this page compare **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026, based on Core 29.3), additionally ships the opt-in BIP-110 (RDTS) consensus ruleset (`consensusrules=rdts`, disabled by default), which is outside the scope of this analysis.
+:::
+
 ## The "40,000 Lines" Claim
 
 A common concern about Bitcoin Knots is that it contains "40,000 lines of code" beyond Core. This page examines that claim and provides context about what those lines actually do.
@@ -145,7 +149,7 @@ Primarily:
 | **Medium** | ~1,400 | ~4% | Consensus-adjacent but mostly policy/restored code |
 | **Remaining** | ~5,000 | ~14% | Misc (translations, contrib scripts, etc.) |
 
-**Consensus rule changes: 0%** — Knots follows identical consensus rules to Core.
+**Consensus rule changes in the analyzed v29.2 release: 0%** — v29.2 follows identical consensus rules to Core, and later releases do the same in their default configuration. (Since v29.3, an explicitly opt-in RDTS ruleset exists — off by default.)
 
 ## Key Insight: Policy ≠ Consensus
 
@@ -172,7 +176,7 @@ When evaluating the ~40k lines:
 - Many Knots patches are rejected Core PRs — they were reviewed, just not merged
 - Restored code (libconsensus, UPnP) was reviewed when originally in Core
 - Code has been reviewed post-merge by others (albeit poorly documented)
-- The 21% of nodes running Knots provides real-world testing
+- The large share of nodes running Knots (peaking around 25% in September 2025; roughly 23% as of July 2026) provides real-world testing
 
 **Consider what's configurable:**
 - Most policy additions can be disabled with `corepolicy=1`
@@ -214,13 +218,13 @@ The ~40,000 lines figure is roughly accurate. What matters is understanding that
 1. **~70% is GUI/tests/docs** — cannot affect consensus
 2. **~12% is wallet/RPC/policy** — affects your node only
 3. **~4% is consensus-adjacent** — mostly policy hooks and restored Core code
-4. **0% changes consensus rules** — Knots validates identically to Core
+4. **0% changes consensus rules in the analyzed v29.2 / default configuration** — Knots validates identically to Core unless you explicitly opt in to the v29.3+ RDTS ruleset
 
 The question isn't whether to trust 40,000 lines blindly. It's whether you trust:
 - A 14-year Bitcoin contributor
 - Code that's 70% GUI/tests/docs
 - Policy options you can disable
-- 21% of the network running it in production
+- Roughly 23% of the network (as of July 2026) running it in production
 
 ## See Also
 

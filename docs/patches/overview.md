@@ -18,12 +18,14 @@ Control what transactions your node relays and accepts into its mempool.
 
 | Patch | Purpose | Config Option |
 |-------|---------|---------------|
-| `rejecttokens` | Filter BRC-20/token transactions | `rejecttokens=1` (off by default) |
-| `rejectparasites` | Filter CAT21 spam transactions | `rejectparasites=1` **(on by default)** |
-| `dustdynamic` | Dynamic dust threshold | `dustdynamic=1` |
+| `rejecttokens` | Filter non-bitcoin token transactions (e.g. BRC-20) | `rejecttokens=1` (off by default) |
+| `rejectparasites` | Filter parasitic overlay protocols (currently CAT-21) | `rejectparasites=1` **(on by default)** |
+| `dustdynamic` | Dynamic dust threshold | `dustdynamic=off\|[<mult>*]target:<blocks>\|[<mult>*]mempool:<kvB>` (default: off) |
+| `subdustfeepenalty` | Reduce effective fee for sub-dust outputs — v29.3 | `subdustfeepenalty=1` **(on by default)** |
 | `datacarriercost` | Weight OP_RETURN data | `datacarriercost=<n>` |
+| `datacarrierfullcount` | Apply `datacarriersize` limit to all known datacarrier methods — updated in v29.3 to match newer bypass variations (incl. 'opnet') | `datacarrierfullcount=1` **(on by default)** |
 | `bytespersigopstrict` | Stricter sigops limits | `bytespersigopstrict=1` |
-| `unique_spk_mempool` | One tx per scriptPubKey | Enabled by default |
+| `unique_spk_mempool` | One unconfirmed tx per scriptPubKey | `spkreuse=conflict` (default: allow) |
 | `maxscriptsize` | Maximum script size | `maxscriptsize=<n>` |
 
 [Learn more about Policy Patches →](/patches/policy/mempool-policies)
@@ -53,7 +55,8 @@ Additional and enhanced RPC commands.
 
 | Patch | Purpose |
 |-------|---------|
-| `listmempooltxs` | List mempool transactions |
+| `listmempooltransactions` | List mempool transactions |
+| `maxmempool` | Change mempool memory allocation at runtime — v29.3 |
 | `getblocklocations` | Block file location info |
 | `fee_histogram` | Fee histogram in mempool info |
 | `getblockfileinfo` | Block file details |
@@ -109,17 +112,22 @@ Enhancements for miners.
 
 [Learn more about Mining →](/guides/mining)
 
+### Consensus
+
+New in v29.3: Bitcoin Knots ships the opt-in **Reduced Data Temporary Softfork (RDTS, BIP-110)**. It requires explicit confirmation — via the GUI startup prompt or by adding `consensusrules=rdts` to `bitcoin.conf`.
+
+[Learn more about BIP-110 →](/guides/bip-110)
+
 ### Restored Features
 
 Features removed from Bitcoin Core but maintained in Knots.
 
 | Feature | Removed in Core | Status in Knots |
 |---------|-----------------|-----------------|
-| Legacy Wallet | v24+ | Maintained |
+| Legacy Wallet | v30 | Maintained |
 | UPnP | v28 | Restored |
 | `-blockmaxsize` | v0.15 | Restored |
-| `libconsensus` | v28 | Restored |
-| Fee filter option | v24 | Restored |
+| `libconsensus` | v27 | Restored |
 
 ### Security & Checkpoints
 
@@ -138,7 +146,7 @@ Knots patches follow a naming convention:
 ```
 
 For example:
-- `dustdynamic-29.1+knots` - Dust dynamic patch for Core 29.1
+- `dustdynamic-29.3+knots` - Dust dynamic patch for Core 29.3
 - `rbf_opts-29+knots` - RBF options for Core 29.x
 
 ## Finding Specific Patches
@@ -164,10 +172,10 @@ git show <commit-hash>
 Most patches add **optional** configuration. Features are not forced on users:
 
 ```ini title="bitcoin.conf"
-# Enable inscription filtering (off by default)
-rejectparasites=1
+# Enable token filtering (off by default)
+rejecttokens=1
 
-# Disable if you want Core behavior
+# Disable the CAT-21 parasite filter (on by default) if you want Core behavior
 rejectparasites=0
 ```
 

@@ -43,16 +43,25 @@ maxconnections=125
 # Bind to specific IP
 bind=0.0.0.0
 
-# Use Tor
+# Use Tor: route outgoing connections through a Tor SOCKS proxy
 proxy=127.0.0.1:9050
-onlynet=onion
 
-# Knots: Enable embedded Tor
-torsubprocess=1
+# Accept incoming connections via a Tor onion service
+listenonion=1
+
+# Tor control host and port (default: 127.0.0.1:9051)
+torcontrol=127.0.0.1:9051
+
+# Only connect to .onion addresses
+onlynet=onion
 
 # Knots: Enable UPnP
 upnp=1
 ```
+
+:::tip Automatic Tor launch
+When built with subprocess support, Bitcoin Knots automatically launches Tor as a subprocess if onion listening is enabled and no already-running Tor daemon is reachable. The command used is controlled by the hidden `-torexecute=<command>` option (default: `tor`), so you normally only need `tor` installed — no manual `torrc` configuration required.
+:::
 
 ## RPC Configuration
 
@@ -60,7 +69,7 @@ upnp=1
 # Enable RPC server
 server=1
 
-# RPC credentials
+# RPC credentials (legacy method — prefer cookie auth or rpcauth below)
 rpcuser=bitcoinrpc
 rpcpassword=CHANGE_ME
 
@@ -72,10 +81,14 @@ rpcbind=0.0.0.0
 rpcauthfile=/path/to/rpcauth
 ```
 
+:::tip Prefer cookie auth or rpcauth
+If you don't set `rpcuser`/`rpcpassword`, bitcoind writes a random `.cookie` file to the data directory that local `bitcoin-cli` uses automatically — this is the safest default. For remote clients, use `rpcauth=<userpw>` (generated with the `share/rpcauth/rpcauth.py` script) or Knots' `rpcauthfile` instead of storing a plaintext password in `bitcoin.conf`.
+:::
+
 ## Performance
 
 ```ini title="bitcoin.conf"
-# Database cache (MB)
+# Database cache (MiB)
 dbcache=4000
 
 # Maximum mempool size (MB)
@@ -84,6 +97,10 @@ maxmempool=300
 # Block verification threads
 par=4
 ```
+
+:::note dbcache auto-scaling (v29.3+)
+Since v29.3, when `dbcache` is not set, Bitcoin Knots automatically selects a value based on available system memory — platform dependent, between 100 MiB and 2 GiB. Only set `dbcache` explicitly if you want a different size (e.g. a larger cache to speed up initial sync).
+:::
 
 ## Knots Policy Options
 
@@ -100,16 +117,35 @@ rejecttokens=1
 # Reject inscription transactions
 rejectparasites=1
 
-# Bytes per sigop
+# Equivalent bytes per sigop for relay and mining (default: 20)
 bytespersigop=20
-bytespersigopstrict=1
 
-# Dust settings
-dustdynamic=1
+# Minimum bytes per sigop in relayed/mined transactions (default: 20)
+bytespersigopstrict=20
 
-# Bare pubkey policy
+# Dynamic dust threshold (experimental; default: off)
+# Syntax: off | [<multiplier>*]target:<blocks> | [<multiplier>*]mempool:<kvB>
+# Example: raise dustrelayfee to the fee expected to confirm within 6 blocks
+dustdynamic=target:6
+
+# Bare pubkey policy (0 is already the default)
 permitbarepubkey=0
 ```
+
+## Consensus Rules (RDTS / BIP-110)
+
+New in v29.3.knots20260508: Bitcoin Knots ships opt-in support for the Rejecting Data Transaction Softfork (RDTS, BIP-110). The rules are **disabled by default** — you must explicitly opt in, either through the GUI confirmation dialog or in `bitcoin.conf`:
+
+```ini title="bitcoin.conf"
+# Opt in to enforcing the RDTS (BIP-110) consensus rules
+consensusrules=rdts
+```
+
+:::danger Consensus opt-in
+Enabling `consensusrules=rdts` changes how your node validates blocks — this is a change to **consensus validation**, not just relay policy. If the soft fork does not gain broad support across the network, nodes enforcing RDTS could follow a different chain than the rest of the network (a chain split). Do not opt in unless you understand and accept these implications. A parallel build without RDTS support (v29.3.knots20260507) is also available.
+:::
+
+See [BIP-110](/guides/bip-110) for a full explanation of the proposed rules.
 
 ## Wallet Options
 
@@ -130,12 +166,16 @@ changetype=bech32
 ## Mining Options (Knots)
 
 ```ini title="bitcoin.conf"
-# Maximum block size (Knots)
-blockmaxsize=750000
+# Maximum block size in bytes (Knots default: 300000)
+blockmaxsize=300000
 
 # Priority space for transactions
 blockprioritysize=50000
 ```
+
+:::warning Block size and mining income
+`blockmaxweight` is the preferred option since SegWit. Setting `blockmaxsize` to anything other than maximum will reduce your income — see the [Mining Guide](/guides/mining) for details and full-block configurations.
+:::
 
 ## Pruning
 
@@ -169,7 +209,8 @@ printtoconsole=1
 ```ini title="bitcoin.conf"
 server=1
 listen=1
-torsubprocess=1
+proxy=127.0.0.1:9050
+listenonion=1
 onlynet=onion
 rejecttokens=1
 rejectparasites=1

@@ -56,7 +56,7 @@ const config: Config = {
       {property: 'og:type', content: 'website'},
       {property: 'og:site_name', content: 'Study Knots'},
       {property: 'og:title', content: 'Study Knots - Learn Bitcoin Knots'},
-      {property: 'og:description', content: 'The comprehensive guide to Bitcoin Knots. Understand the enhanced Bitcoin Core derivative powering 21% of the network.'},
+      {property: 'og:description', content: 'The comprehensive guide to Bitcoin Knots. Understand the enhanced Bitcoin Core derivative powering nearly a quarter of the network.'},
       {property: 'og:image', content: 'https://studyknots.com/img/studyknots-social.png'},
       {property: 'og:image:width', content: '1200'},
       {property: 'og:image:height', content: '630'},
@@ -76,8 +76,8 @@ const config: Config = {
     },
 
     announcementBar: {
-      id: 'latest_release',
-      content: 'Bitcoin Knots 29.2 is now available! <a href="https://bitcoinknots.org/">Download from bitcoinknots.org</a>',
+      id: 'announcement_29_3',
+      content: 'Bitcoin Knots 29.3 (v29.3.knots20260508) is now available! <a href="https://bitcoinknots.org/">Download from bitcoinknots.org</a>',
       backgroundColor: '#4A90A4',
       textColor: '#fff',
       isCloseable: true,
@@ -162,8 +162,7 @@ const config: Config = {
         {
           title: 'Community',
           items: [
-            {label: 'Discord', href: 'https://discord.gg/bitcoin'},
-            {label: 'Telegram', href: 'https://t.me/bitcoinknots'},
+            {label: 'GitHub Issues', href: 'https://github.com/bitcoinknots/bitcoin/issues'},
             {label: 'Contributing', to: '/reference/contributing'},
           ],
         },

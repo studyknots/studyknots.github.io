@@ -16,8 +16,12 @@ This guide covers setting up and operating a Bitcoin Knots full node.
 |----------|-------------|
 | CPU | 2+ cores |
 | RAM | 4 GB |
-| Storage | 10 GB (pruned) |
+| Storage | ~25 GB (pruned) |
 | Network | 10+ Mbps |
+
+:::note Pruned node footprint
+A pruned node's real disk usage is more than just the retained blocks: the chainstate (UTXO database) alone is around 12 GB as of mid-2026, plus indexes and undo data. Budget roughly 20-25 GB even with aggressive pruning. An unpruned node needs on the order of 700 GB for the full blockchain.
+:::
 
 ### Recommended
 
@@ -41,17 +45,24 @@ See [Installation Guide](/getting-started/installation).
 server=1
 daemon=1
 
-# RPC configuration
-rpcuser=bitcoinrpc
-rpcpassword=CHANGE_THIS_PASSWORD
+# RPC configuration (only needed for remote clients — see note below)
+#rpcauth=<userpw generated with share/rpcauth/rpcauth.py>
 
 # Performance
-dbcache=4000
 maxconnections=125
 
-# Knots-specific
+# Knots-specific (traditional Knots default; current releases
+# temporarily default to 83)
 datacarriersize=42
 ```
+
+:::tip Prefer cookie auth or rpcauth
+If you set no RPC credentials, bitcoind writes a random `.cookie` file to the data directory that local `bitcoin-cli` picks up automatically — this is the safest option for local use. For remote clients, use `rpcauth` (or Knots' `rpcauthfile`) rather than plaintext `rpcuser`/`rpcpassword` in `bitcoin.conf`.
+:::
+
+:::note dbcache
+Since Knots v29.3, leaving `dbcache` unset auto-scales the database cache to your system memory (between 100 MiB and 2 GiB). Setting a large value manually (e.g. `dbcache=4000` and up) is only worthwhile to speed up the initial block download on machines with plenty of RAM — well beyond the 4 GB minimum — and can be removed once synced.
+:::
 
 ### 3. Start the Node
 
@@ -134,8 +145,9 @@ cp ~/.bitcoin/bitcoin.conf ~/bitcoin-backup/
 
 1. Stop the node: `bitcoin-cli stop`
 2. Download new version
-3. Replace binaries
-4. Start node: `bitcoind -daemon`
+3. Verify the release signatures and checksums before installing — see [Verify Downloads](/getting-started/installation#verify-downloads)
+4. Replace binaries
+5. Start node: `bitcoind -daemon`
 
 ## Troubleshooting
 

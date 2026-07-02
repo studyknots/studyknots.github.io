@@ -10,25 +10,29 @@ This guide covers downloading and installing Bitcoin Knots on various platforms.
 
 ## Current Release
 
-**Version:** 29.2.knots20251110
-**Release Date:** November 10, 2025
-**Based on:** Bitcoin Core 29.2
+**Version:** 29.3.knots20260508
+**Release Date:** May 8, 2026
+**Based on:** Bitcoin Core 29.3
+
+:::info RDTS opt-in
+v29.3.knots20260508 is the first release to ship the [BIP-110/RDTS soft fork](/guides/bip-110) — strictly **opt-in** (GUI confirmation or `consensusrules=rdts`; disabled by default). A parallel build without RDTS support, v29.3.knots20260507, is also available for users who prefer a client that cannot enforce it at all.
+:::
 
 ## Download
 
 Official releases are available at:
 
-**[bitcoinknots.org/files/29.x/29.2.knots20251110/](https://bitcoinknots.org/files/29.x/29.2.knots20251110/)**
+**[bitcoinknots.org/files/29.x/29.3.knots20260508/](https://bitcoinknots.org/files/29.x/29.3.knots20260508/)**
 
 ### Available Packages
 
 | Platform | File | Notes |
 |----------|------|-------|
-| Linux (x86_64) | `bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz` | Most common |
-| Linux (ARM64) | `bitcoin-29.2.knots20251110-aarch64-linux-gnu.tar.gz` | Raspberry Pi 4+ |
-| macOS (Intel) | `bitcoin-29.2.knots20251110-x86_64-apple-darwin.tar.gz` | Intel Macs |
-| macOS (Apple Silicon) | `bitcoin-29.2.knots20251110-arm64-apple-darwin.tar.gz` | M1/M2/M3/M4 Macs |
-| Windows | `bitcoin-29.2.knots20251110-win64-setup.exe` | Installer |
+| Linux (x86_64) | `bitcoin-29.3.knots20260508-x86_64-linux-gnu.tar.gz` | Most common |
+| Linux (ARM64) | `bitcoin-29.3.knots20260508-aarch64-linux-gnu.tar.gz` | Raspberry Pi 4+ |
+| macOS (Intel) | `bitcoin-29.3.knots20260508-x86_64-apple-darwin.tar.gz` | Intel Macs |
+| macOS (Apple Silicon) | `bitcoin-29.3.knots20260508-arm64-apple-darwin.tar.gz` | M1/M2/M3/M4 Macs |
+| Windows | `bitcoin-29.3.knots20260508-win64-setup.exe` | Installer |
 
 ## Verify Downloads
 
@@ -38,31 +42,34 @@ Official releases are available at:
 
 ```bash
 # Download the checksum and signature files
-wget https://bitcoinknots.org/files/29.x/29.2.knots20251110/SHA256SUMS
-wget https://bitcoinknots.org/files/29.x/29.2.knots20251110/SHA256SUMS.asc
+wget https://bitcoinknots.org/files/29.x/29.3.knots20260508/SHA256SUMS
+wget https://bitcoinknots.org/files/29.x/29.3.knots20260508/SHA256SUMS.asc
 ```
 
 ### Step 2: Verify GPG Signature
 
-First, import Luke Dashjr's GPG key:
+Import the release signing keys from the official Bitcoin Knots Guix signature repository:
 
 ```bash
-# Import Luke's key from a keyserver
-gpg --keyserver hkps://keys.openpgp.org --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+# Import all builder keys from the official repository
+git clone https://github.com/bitcoinknots/guix.sigs
+gpg --import guix.sigs/builder-keys/*.gpg
 
-# Or from the SKS keyserver pool
-gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+# Refresh from a keyserver to pick up updated expiry dates
+gpg --keyserver hkps://keys.openpgp.org --refresh-keys
 ```
 
-**Luke Dashjr's key fingerprint:**
+**Luke Dashjr's key fingerprints** (from the [official builder-keys](https://github.com/bitcoinknots/guix.sigs/tree/knots/builder-keys)):
+
 ```
-E463 A93F 5F31 17EE DE6C  7316 BD02 9424 21F4 889F
+Personal:    93CB 4961 F69A 6508 2D44  1080 2CBA 8253 0896 55C3
+Codesigning: 1A3E 761F 19D2 CC77 85C5  502E A291 A2C4 5D0C 504A
 ```
 
-You can also find the key at:
+Cross-check these fingerprints against multiple independent sources:
+- The [Bitcoin Knots Guix signature repository](https://github.com/bitcoinknots/guix.sigs/tree/knots/builder-keys)
 - [keys.openpgp.org](https://keys.openpgp.org/search?q=luke%40dashjr.org)
-- Luke's personal website
-- Bitcoin Core's [trusted-keys](https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys) (Luke is a Core contributor)
+- Bitcoin Core's [builder-keys](https://github.com/bitcoin-core/guix.sigs/tree/main/builder-keys) (Luke is a Core contributor)
 
 Verify the signature:
 
@@ -73,7 +80,7 @@ gpg --verify SHA256SUMS.asc SHA256SUMS
 **Expected output:**
 ```
 gpg: Signature made [date]
-gpg:                using RSA key E463A93F5F3117EEDE6C7316BD02942421F4889F
+gpg:                using EDDSA key ...
 gpg: Good signature from "Luke Dashjr <luke@dashjr.org>"
 ```
 
@@ -85,12 +92,12 @@ Don't just look for "Good signature" — verify the key fingerprint matches. A m
 
 ```bash
 # Verify your download matches the checksum
-sha256sum -c SHA256SUMS 2>/dev/null | grep bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz
+sha256sum -c SHA256SUMS 2>/dev/null | grep bitcoin-29.3.knots20260508-x86_64-linux-gnu.tar.gz
 ```
 
 **Expected output:**
 ```
-bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz: OK
+bitcoin-29.3.knots20260508-x86_64-linux-gnu.tar.gz: OK
 ```
 
 ### Web of Trust
@@ -98,7 +105,7 @@ bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz: OK
 For additional verification, Luke's key is signed by several well-known Bitcoin developers. You can view the key's signatures:
 
 ```bash
-gpg --list-sigs 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
+gpg --list-sigs 0x1A3E761F19D2CC7785C5502EA291A2C45D0C504A
 ```
 
 ### Quick Verification Script
@@ -107,9 +114,9 @@ gpg --list-sigs 0xE463A93F5F3117EEDE6C7316BD02942421F4889F
 #!/bin/bash
 # verify-knots.sh - Verify Bitcoin Knots download
 
-VERSION="29.2.knots20251110"
+VERSION="29.3.knots20260508"
 FILE="bitcoin-${VERSION}-x86_64-linux-gnu.tar.gz"
-LUKE_KEY="E463A93F5F3117EEDE6C7316BD02942421F4889F"
+LUKE_KEY="1A3E761F19D2CC7785C5502EA291A2C45D0C504A"
 
 # Download verification files
 wget -q "https://bitcoinknots.org/files/29.x/${VERSION}/SHA256SUMS"
@@ -150,22 +157,22 @@ Bitcoin software controls your money. A compromised binary could steal your fund
 
 ```bash
 # Extract the archive
-tar -xzf bitcoin-29.2.knots20251110-x86_64-linux-gnu.tar.gz
+tar -xzf bitcoin-29.3.knots20260508-x86_64-linux-gnu.tar.gz
 
 # Move binaries to system path (optional)
-sudo install -m 0755 -o root -g root -t /usr/local/bin bitcoin-29.2.knots20251110/bin/*
+sudo install -m 0755 -o root -g root -t /usr/local/bin bitcoin-29.3.knots20260508/bin/*
 ```
 
 ### Or Run from Directory
 
 ```bash
-cd bitcoin-29.2.knots20251110/bin
+cd bitcoin-29.3.knots20260508/bin
 ./bitcoind --version
 ```
 
 Expected output:
 ```
-Bitcoin Knots version v29.2.knots20251110
+Bitcoin Knots version v29.3.knots20260508
 ```
 
 ## macOS Installation
@@ -174,10 +181,10 @@ Bitcoin Knots version v29.2.knots20251110
 
 ```bash
 # Extract
-tar -xzf bitcoin-29.2.knots20251110-arm64-apple-darwin.tar.gz
+tar -xzf bitcoin-29.3.knots20260508-arm64-apple-darwin.tar.gz
 
 # Move to Applications (optional)
-mv bitcoin-29.2.knots20251110 /Applications/Bitcoin-Knots
+mv bitcoin-29.3.knots20260508 /Applications/Bitcoin-Knots
 ```
 
 ### First Run
@@ -188,7 +195,7 @@ macOS will require you to approve the application:
 
 ## Windows Installation
 
-1. Run the installer: `bitcoin-29.2.knots20251110-win64-setup.exe`
+1. Run the installer: `bitcoin-29.3.knots20260508-win64-setup.exe`
 2. Follow the installation wizard
 3. Choose installation directory (default: `C:\Program Files\Bitcoin`)
 
@@ -200,17 +207,16 @@ For advanced users who want to compile from source:
 # Clone the repository
 git clone https://github.com/bitcoinknots/bitcoin.git
 cd bitcoin
-git checkout v29.2.knots20251110
+git checkout v29.3.knots20260508
 
 # Install dependencies (Debian/Ubuntu)
-sudo apt-get install build-essential cmake pkg-config bsdmainutils \
-  python3 libssl-dev libevent-dev libboost-dev libsqlite3-dev
+sudo apt-get install build-essential cmake pkgconf \
+  python3 libevent-dev libboost-dev libsqlite3-dev
 
 # Build with CMake (v29+)
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-sudo make install
+cmake -B build
+cmake --build build -j$(nproc)
+sudo cmake --install build
 ```
 
 :::tip Build System Change
@@ -244,6 +250,9 @@ Running on unsupported systems is not recommended.
 
 | Version | Date | Notes |
 |---------|------|-------|
+| v29.3.knots20260508 | May 8, 2026 | Opt-in BIP-110/RDTS, dbcache auto-scaling, sweepprivkeys segwit/taproot + GUI dialog |
+| v29.3.knots20260507 | May 8, 2026 | Same as above, without RDTS support |
+| v29.3.knots20260210 | Feb 10, 2026 | Wallet bug fixes, P2P use-after-free fixes |
 | v29.2.knots20251110 | Nov 10, 2025 | CVE-2025-46598 fix, datacarriersize default increased |
 | v29.1.knots20250903 | Sep 3, 2025 | Ephemeral anchors, CMake migration, NAT-PMP default |
 | v28.1.knots20250305 | Mar 5, 2025 | Previous stable |

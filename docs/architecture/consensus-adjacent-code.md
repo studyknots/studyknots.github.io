@@ -6,7 +6,11 @@ description: Detailed examination of Bitcoin Knots changes near consensus-critic
 
 # Consensus-Adjacent Code Deep Dive
 
-This page provides a detailed examination of the ~4% of Bitcoin Knots code changes that touch files near consensus-critical areas. While these files are "consensus-adjacent," the changes themselves do not alter Bitcoin's consensus rules.
+This page provides a detailed examination of the ~4% of Bitcoin Knots code changes that touch files near consensus-critical areas. While these files are "consensus-adjacent," the changes examined here do not alter Bitcoin's consensus rules.
+
+:::caution Analysis pinned to v29.2
+This page examines **Bitcoin Knots v29.2.knots20251110** against **Bitcoin Core v29.0**. The current release, **v29.3.knots20260508** (May 2026), additionally ships the opt-in BIP-110 (RDTS) consensus ruleset (`consensusrules=rdts`, disabled by default), which is outside the scope of this page. In its default configuration, v29.3 validates identically to Core.
+:::
 
 :::info Why This Matters
 Understanding what code is actually changed — and more importantly, what it does — is essential for evaluating Knots' safety. This page provides the technical detail that the [Code Analysis](/architecture/code-analysis) overview summarizes.
@@ -108,7 +112,7 @@ The `script/` directory contains Bitcoin's Script interpreter. Changes here coul
 | `descriptor.cpp` | Enhanced | More descriptor types |
 | `sign.cpp` | Enhanced | BIP-322 message signing |
 | `signingprovider.cpp` | Enhanced | Codex32 seed support |
-| `interpreter.cpp` | Minimal | Comments only |
+| `interpreter.cpp` | ~90 insertions | SigHashCache performance caching; optional SIGHASH_ALL policy check |
 
 ### Descriptor Enhancements
 
@@ -130,15 +134,18 @@ BIP-322 provides a standard way to sign messages with Bitcoin keys. It's used fo
 
 ### What's NOT Changed
 
-The core Script interpreter (`interpreter.cpp`) has minimal changes:
+The core Script interpreter (`interpreter.cpp`) has about 90 insertions, detailed in the [Code Review Report](/architecture/code-review):
+
+- **SigHashCache** — a performance cache for signature hash midstates; the hash computation itself is unchanged (same inputs produce identical outputs)
+- **Optional SIGHASH_ALL requirement** — an opt-in, more-restrictive *policy* check (`m_require_sighash_all`), disabled by default
 
 ```bash
 # Check interpreter changes
-git diff FETCH_HEAD..HEAD -- src/script/interpreter.cpp | wc -l
-# Result: Very few lines, mostly comments
+git diff FETCH_HEAD..HEAD -- src/script/interpreter.cpp
+# ~90 insertions: SigHashCache + optional policy check, no opcode changes
 ```
 
-Critical functions remain untouched:
+Neither change touches consensus script evaluation. Critical functions remain untouched:
 - `EvalScript()` — Script execution
 - `VerifyScript()` — Script verification
 - Opcode implementations
@@ -297,9 +304,9 @@ git diff FETCH_HEAD..HEAD --stat -- src/validation.cpp src/script/ src/consensus
 
 When evaluating consensus-adjacent code, ask:
 
-1. **Does it change validation rules?** → No
+1. **Does it change validation rules?** → No (in the v29.2 code examined here)
 2. **Does it change consensus parameters?** → No
-3. **Could it cause a network fork?** → No
+3. **Could it cause a network fork?** → No — not unless you explicitly opt in to the v29.3+ RDTS ruleset with `consensusrules=rdts`, which is off by default and outside this page's scope
 4. **Is it configurable/optional?** → Yes (mostly)
 5. **Was it reviewed?** → Yes (Core PRs, post-merge review)
 
@@ -309,7 +316,7 @@ If you want to commission a professional audit of Knots' consensus-adjacent code
 
 1. The scope is manageable (~1,400 lines)
 2. Focus on `validation.cpp` policy hooks
-3. Verify `interpreter.cpp` is unchanged
+3. Verify the `interpreter.cpp` changes are limited to the SigHashCache and the optional policy check
 4. Confirm consensus parameters match Core
 
 ## Verify Everything
@@ -344,14 +351,14 @@ git diff FETCH_HEAD..HEAD -- src/consensus/consensus.h
 
 ## Summary
 
-The ~1,400 lines of consensus-adjacent code in Knots:
+The ~1,400 lines of consensus-adjacent code in Knots v29.2:
 
-1. **Do not change consensus rules** — Block validation is identical to Core
+1. **Do not change consensus rules** — Block validation in v29.2 is identical to Core (as it is in later releases' default configuration)
 2. **Are primarily policy options** — Configurable relay behavior
 3. **Include restored Core code** — Already reviewed, just restored
 4. **Are independently verifiable** — Commands provided above
 
-The claim that Knots has "dangerous consensus changes" is not supported by code examination. The consensus-adjacent code adds policy flexibility while leaving actual consensus validation untouched.
+The claim that Knots has "dangerous consensus changes" is not supported by examination of the v29.2 code. The consensus-adjacent code adds policy flexibility while leaving actual consensus validation untouched. (The opt-in RDTS consensus ruleset added in v29.3 is a separate, explicitly-enabled feature not covered by this analysis.)
 
 ## See Also
 

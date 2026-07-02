@@ -68,7 +68,9 @@ Bitcoin Core v30, released in October 2025, made significant policy changes:
 | OP_RETURN outputs per tx | 1 | Multiple allowed |
 | Default relay policy | Conservative | Permissive |
 
-The change was merged in June 2025 via [PR #32406](https://github.com/bitcoin/bitcoin/pull/32406) by maintainer Gloria Zhao, despite vocal opposition from many community members.
+The change was merged in June 2025 via [PR #32406](https://github.com/bitcoin/bitcoin/pull/32406) — authored by Gregory Sanders (instagibbs) and merged by maintainer Gloria Zhao — despite vocal opposition from many community members.
+
+Core has since moved on: as of mid-2026 the stable release is v31.0 (with 30.x maintained at 30.2), and the permissive OP_RETURN policy remains unchanged.
 
 ## The Case Against (Why Critics Say It's Harmful)
 
@@ -89,13 +91,15 @@ Critics argue Bitcoin was designed as "peer-to-peer electronic cash" — not a g
 
 ### 2. Blockchain Bloat and Node Costs
 
-Every byte stored on Bitcoin must be processed and stored by every full node forever. The numbers tell a stark story:
+Every byte stored on Bitcoin must be processed and stored by every full node forever. Community estimates circulated during the debate illustrate the trend:
 
-| Metric | 2009-2023 | By 2025 |
-|--------|-----------|---------|
-| UTXO set size | 4 GB (14 years) | 12 GB |
+| Metric | 2009-2023 | By 2025 (estimates) |
+|--------|-----------|---------------------|
+| UTXO set size | 4 GB (14 years) | ~12 GB |
 | UTXOs < 1000 sats | Minimal | ~49% of all UTXOs |
 | Ordinal-linked UTXOs | 0% | ~30% of all UTXOs |
+
+*Figures for 2025 are community estimates cited during the debate; exact percentages vary by methodology and measurement date.*
 
 This growth threatens decentralization by making it more expensive to run a node (disk space, RAM, bandwidth).
 
@@ -260,7 +264,7 @@ Libre Relay nodes preferentially peer with each other to form a parallel relay n
 
 **Chris Guida's Garbageman** (created at a hackathon) counters Libre Relay by having Knots nodes impersonate Libre Relay nodes. When Libre Relay nodes connect, expecting a friendly peer, the Garbageman node accepts the "spam" transactions — then discards them instead of relaying.
 
-~3,000 Bitcoin Knots nodes are running Garbageman, effectively sybil-attacking the Libre Relay network.
+As of late 2025, an estimated ~3,000 Bitcoin Knots nodes were running Garbageman, effectively sybil-attacking the Libre Relay network.
 
 ### Todd's Response
 
@@ -278,7 +282,14 @@ Some developers argued that policy-level changes weren't enough — **consensus-
 - **Mechanism**: UASF (User-Activated Soft Fork) requiring 55% miner support
 - **Duration**: ~1 year, then auto-expires
 - **Effect**: Seven consensus rules restricting data storage methods
-- **Status**: RC2 released January 3, 2026; minimal miner signaling so far
+- **Status**: Now an official BIP. Knots v29.3 ships RDTS enforcement as a strictly **opt-in** feature (`consensusrules=rdts` in the config, or a consent prompt in the GUI; a separate non-RDTS build is also published)
+
+### Activation Status (as of July 2026)
+
+- Miner signaling began around March 2026, led almost entirely by the Ocean pool
+- As of late June 2026, signaling stood at roughly **0.31% of hashrate** (~5 EH/s of ~940 EH/s) — far below the 55% threshold
+- The proposal's timeline includes a mandatory signaling period (blocks 961,632–963,647), lock-in by block 963,648 at the latest, and a flag day around **August 7, 2026**
+- **Adam Back** and **Jameson Lopp** have both warned that the activation parameters risk a chain split; Lopp published "A Layman's Guide to BIP-110" at blog.lopp.net
 
 ### Controversy
 
@@ -382,6 +393,8 @@ Notably, **Adam Back** (Blockstream CEO, Hashcash inventor) broke from other cri
 
 Back argued that "filters don't fix anything empirically" — though this contradicts the observable 850% growth in Knots nodes suggesting many operators disagree.
 
+In 2026, Back weighed in again from the same skeptical direction: together with Jameson Lopp, he warned that BIP-110's activation parameters risk a chain split (see the [BIP-110 guide](/guides/bip-110)).
+
 ## The Fallout
 
 The controversy had significant consequences on both sides:
@@ -444,12 +457,16 @@ Bitcoin Knots takes a fundamentally different approach: **defaults should embody
 
 ### Conservative Defaults
 
-| Option | Core v30 | Knots v29.2 |
+| Option | Core v30 | Knots v29.3 |
 |--------|----------|-------------|
 | `datacarriersize` | 100,000 bytes | **83 bytes** |
 | `rejectparasites` | Not available | **Enabled by default** |
 | `datacarriercost` | 0.25 | **1.0** (full cost) |
 | Philosophy | Neutral relay | Purpose-aligned relay |
+
+:::note About the 83-byte default
+Knots traditionally defaulted `datacarriersize` to **42 bytes**. Current releases temporarily default to **83 bytes** (80 bytes of data plus opcode overhead) — still a tiny fraction of Core's 100,000-byte default, and fully configurable either way.
+:::
 
 ### Key Protective Features
 
@@ -478,16 +495,17 @@ corepolicy=1
 
 This respects user autonomy while providing sensible defaults that align with Bitcoin's original purpose.
 
+The philosophy continues in current releases: Knots v29.3 adds a `subdustfeepenalty` policy (on by default, requiring higher fees from dust-creating transactions) and extends datacarrier bypass matching to newer injection schemes such as 'opnet'.
+
 ## Network Response
 
 The community voted with their nodes:
 
-| Metric | Early 2025 | Late 2025 |
-|--------|------------|-----------|
-| Bitcoin Knots nodes | ~2-4% | **~21%** |
-| Growth | — | **~850%** |
+| Metric | Early 2025 | Sept 2025 (peak) | July 2026 |
+|--------|------------|------------------|-----------|
+| Bitcoin Knots nodes | ~2-4% | **~25%** | **~23%** |
 
-This represents one of the largest shifts in node implementation share since Bitcoin's early days.
+Knots' share of reachable nodes grew roughly 850% during 2025, peaking around 25% in September 2025. It then gave back about a third of that peak before recovering to roughly 23% as of July 2026 (bitdis.org reports 22.97%; Coin Dance reports 22.7%). Even after the pullback, this represents one of the largest shifts in node implementation share since Bitcoin's early days.
 
 ## Why This Matters
 

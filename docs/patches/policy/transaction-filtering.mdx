@@ -124,11 +124,17 @@ This is why `permitbaremultisig=0` is particularly important.
 | `rejectparasites` | **1** (on) | Filters CAT21 spam |
 | `rejecttokens` | 0 (off) | Filters Runes |
 | `datacarriersize` | 83 | Max OP_RETURN bytes |
-| `datacarriercost` | 1 | Weight multiplier for data |
-| `maxscriptsize` | varies | Max witness script size |
+| `datacarriercost` | 1 | Vbytes counted per data byte (1 = full cost, no witness discount) |
+| `datacarrierfullcount` | **1** (on) | Apply datacarriersize limit to all known datacarrier methods |
+| `maxscriptsize` | 1650 | Max script size (incl. witness stack) |
 | `permitbaremultisig` | **0** (off) | Blocks Stamps |
 | `acceptnonstddatacarrier` | **0** (off) | Strict OP_RETURN format |
 | `corepolicy` | 0 (off) | Use Core defaults instead |
+
+:::info What's new in v29.3
+- Datacarrier matching was updated to catch a newer bypass variation, and 'opnet' data is now recognized.
+- New `subdustfeepenalty` option (default on): sub-dust outputs reduce a transaction's effective fee by the shortfall, so dust-creating transactions need higher fees. See [Dust and Fees](/patches/policy/dust-and-fees).
+:::
 
 ### Detailed Options
 
@@ -144,7 +150,7 @@ rejectparasites=1
 rejectparasites=0
 ```
 
-Note: This option specifically targets CAT21 spam, not inscriptions or ordinals in general.
+Note: This option specifically targets CAT-21 spam (transactions with `nLockTime` set to 21), not inscriptions or ordinals in general. Inscription-envelope data is instead limited via `datacarrierfullcount` + `datacarriersize` (see below).
 
 #### rejecttokens
 
@@ -162,20 +168,17 @@ Detects OP_RETURN outputs starting with OP_13 (the Runes identifier). Updated in
 Maximum size of data in OP_RETURN outputs.
 
 ```ini title="bitcoin.conf"
-# Knots default (legacy compatibility)
+# Knots default (80 bytes of data + overhead)
 datacarriersize=83
 
-# Traditional limit (80 bytes of data)
-datacarriersize=83
-
-# Stricter (42 bytes - enough for hashes)
+# Stricter (42 bytes - enough for hashes; the traditional Knots value)
 datacarriersize=42
 
 # Disable all OP_RETURN relay
 datacarriersize=0
 ```
 
-**Why 83?** 1 byte OP_RETURN + 1-2 bytes pushdata + 80 bytes data = ~83 bytes.
+**Why 83?** 1 byte OP_RETURN + 2 bytes pushdata opcodes + 80 bytes data = 83 bytes.
 
 :::tip Filtering Runes
 Luke Dashjr's recommendation for filtering Runes: set `datacarriersize=0` in bitcoin.conf. [Source](https://x.com/LukeDashjr/status/1781749769431650700)
@@ -183,28 +186,48 @@ Luke Dashjr's recommendation for filtering Runes: set `datacarriersize=0` in bit
 
 #### datacarriercost
 
-Adjusts the "virtual size" calculation for data-carrying bytes, making data more expensive.
+Treats extra data in transactions as at least N vbytes per actual byte, adjusting the "virtual size" used for fee calculation.
 
 ```ini title="bitcoin.conf"
-# Default - data bytes count as 1 vbyte each
+# Knots default - each data byte counts as 1 full vbyte
+# (i.e. no witness discount for data)
 datacarriercost=1
 
-# Make data 4x more expensive (removes witness discount)
-datacarriercost=4
+# Core-equivalent witness discount (what corepolicy=1 sets)
+datacarriercost=0.25
 
-# Effectively prohibit large data (very expensive)
-datacarriercost=10
+# 4x penalty beyond full cost - data-heavy transactions
+# need much higher fees
+datacarriercost=4
 ```
 
-Higher values mean data-heavy transactions need higher fees to enter your mempool.
+Higher values mean data-heavy transactions need higher fees to enter your mempool. The default of `1` already counts data at full cost; values above 1 are an extra penalty.
+
+#### datacarrierfullcount
+
+Applies the `datacarriersize` limit to **all known datacarrier methods** (not just OP_RETURN), making it the central anti-bypass knob. **Enabled by default in Knots.**
+
+```ini title="bitcoin.conf"
+# Default in Knots - count data in inscription envelopes,
+# fake pubkeys, etc. against the datacarriersize limit
+datacarrierfullcount=1
+
+# Only apply the limit to OP_RETURN (Core-style; corepolicy=1 sets this)
+datacarrierfullcount=0
+```
+
+This is what makes `datacarriersize` effective against inscriptions and similar bypass techniques that store data outside OP_RETURN.
 
 #### maxscriptsize
 
-Limits the total witness script size per input.
+Limits the size of scripts your node relays and mines. **Default: 1650 bytes** — setting a larger value loosens the policy rather than tightening it.
 
 ```ini title="bitcoin.conf"
-# Limit witness scripts (targets large inscriptions)
-maxscriptsize=10000
+# Knots default - already restrictive
+maxscriptsize=1650
+
+# Stricter still
+maxscriptsize=1000
 ```
 
 In v29.1+, this applies to the **entire witness stack** of each input, closing evasion attempts.
@@ -253,7 +276,7 @@ Useful for testing or if you want Knots features but Core relay behavior.
 Used by [Ocean mining pool](https://ocean.xyz/):
 
 ```ini title="bitcoin.conf"
-# Inscriptions and ordinals
+# CAT-21 spam (default in Knots)
 rejectparasites=1
 
 # Runes and tokens
@@ -262,7 +285,11 @@ rejecttokens=1
 # Minimal OP_RETURN (or 0 to disable)
 datacarriersize=42
 
-# Remove witness discount for data
+# Apply the size limit to all datacarrier methods,
+# including inscription envelopes (default in Knots)
+datacarrierfullcount=1
+
+# 4x fee penalty for data bytes
 datacarriercost=4
 
 # Block Stamps
@@ -270,9 +297,6 @@ permitbaremultisig=0
 
 # Strict OP_RETURN format
 acceptnonstddatacarrier=0
-
-# Limit script sizes
-maxscriptsize=10000
 ```
 
 ### Moderate Filtering (Knots Default)
@@ -381,10 +405,12 @@ bitcoin-cli getblocktemplate '{"rules":["segwit"]}'
 - However, Dashjr notes "spam-filtered blocks often have more fees anyway"
 - [Ocean pool](https://ocean.xyz/) runs filtered and reports competitive revenue
 
-### Per-Template Overrides (v27.1+)
+### Per-Template Overrides (Knots-only)
+
+Knots' `getblocktemplate` accepts a `minfeerate` option: only include transactions paying at least this many sats/vbyte (defaults to the `-blockmintxfee` setting; using it disables the template cache):
 
 ```bash
-# Override policy for specific template
+# Only include transactions paying at least 10 sats/vbyte
 bitcoin-cli getblocktemplate '{
   "rules": ["segwit"],
   "minfeerate": 10

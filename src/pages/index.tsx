@@ -45,8 +45,8 @@ function ControversyBanner() {
           <div className={styles.controversyText}>
             <Heading as="h2">The OP_RETURN Controversy</Heading>
             <p>
-              Bitcoin Core v30 removed OP_RETURN limits. Nick Szabo broke 5 years of silence to warn about it.
-              Learn why 21% of nodes switched to Knots.
+              Bitcoin Core v30 dropped OP_RETURN limits (unchanged through v31). Nick Szabo broke 5 years of silence to warn about it.
+              Learn why roughly a quarter of reachable nodes switched to Knots.
             </p>
           </div>
           <div className={styles.controversyButtons}>
@@ -58,7 +58,7 @@ function ControversyBanner() {
             <Link
               className="button button--secondary button--lg"
               to="/architecture/code-analysis">
-              Debunking the FUD
+              Read the Code Analysis
             </Link>
           </div>
         </div>
@@ -73,20 +73,20 @@ function StatsSection() {
       <div className="container">
         <div className="stats-container">
           <div className="stat-item">
-            <span className="stat-number">21%</span>
-            <span className="stat-label">Of All Nodes</span>
+            <span className="stat-number">~23%</span>
+            <span className="stat-label">Of All Nodes (July 2026)</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">14+</span>
             <span className="stat-label">Years Active</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">v29.2</span>
+            <span className="stat-number">v29.3</span>
             <span className="stat-label">Current Release</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">100%</span>
-            <span className="stat-label">Consensus Compatible</span>
+            <span className="stat-number">Consensus</span>
+            <span className="stat-label">Compatible by Default</span>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ function HomepageFeatures() {
         <div className="text--center margin-bottom--xl">
           <Heading as="h2">What Makes Knots Different</Heading>
           <p className={styles.sectionSubtitle}>
-            Same consensus rules as Bitcoin Core. More features for power users.
+            Same consensus rules as Bitcoin Core by default. More features for power users.
           </p>
         </div>
         <div className="row">
@@ -188,11 +188,11 @@ function ComparisonSection() {
               <tr>
                 <td>Consensus Rules</td>
                 <td>Standard</td>
-                <td>Identical</td>
+                <td>Identical by default (RDTS opt-in)</td>
               </tr>
               <tr>
                 <td>Legacy Wallet</td>
-                <td>Deprecated</td>
+                <td>Removed (v30)</td>
                 <td>Maintained</td>
               </tr>
               <tr>

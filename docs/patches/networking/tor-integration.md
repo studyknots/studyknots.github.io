@@ -6,7 +6,7 @@ description: Built-in Tor support for enhanced privacy in Bitcoin Knots
 
 # Tor Integration
 
-Bitcoin Knots includes enhanced Tor support with an embedded Tor subprocess — a feature that simplifies running your node over Tor without manual configuration.
+Bitcoin Knots includes enhanced Tor support, including the ability to launch Tor automatically as a subprocess — a feature that simplifies running your node over Tor without manual configuration.
 
 ## Why Use Tor?
 
@@ -47,22 +47,25 @@ With Tor:
 └─────────────┘     └─────────────┘     └─────────────┘
 ```
 
-## Knots Embedded Tor
+## Automatic Tor Launch (tor_subprocess patch)
 
 ### The Simple Way
 
-Bitcoin Knots can manage Tor automatically — no separate Tor installation needed:
+Bitcoin Knots can launch Tor automatically — you just need the `tor` binary installed. Whenever onion listening is enabled (`listenonion=1`, the default) and no Tor control port is reachable at `torcontrol` (default `127.0.0.1:9051`), Knots starts Tor itself as a subprocess:
 
 ```ini title="bitcoin.conf"
-# Enable embedded Tor subprocess
-torsubprocess=1
+# These are the defaults - shown for clarity
+listen=1
+listenonion=1
 ```
 
-That's it. Knots will:
-1. Start a Tor process automatically
+That's it. If Tor isn't already running, Knots will:
+1. Start a Tor process automatically (when built with Tor subprocess support)
 2. Configure it appropriately
 3. Create an onion service for your node
-4. Route connections through Tor
+4. Route onion connections through Tor
+
+For advanced use, the hidden option `-torexecute=<command>` (default: `tor`) controls the command used to launch Tor. Setting `torexecute=0` disables the automatic launch entirely.
 
 ### Verify It's Working
 
@@ -82,6 +85,10 @@ bitcoin-cli getnetworkinfo | jq '.localaddresses'
 #   }
 # ]
 ```
+
+### Onion Service PoW Defense (v29.3+)
+
+Starting with v29.3, onion services created by Knots request Tor's Proof-of-Work DoS defenses (`PoWDefensesEnabled=1`) when creating the onion service. If the connected Tor daemon doesn't support this feature, Knots automatically retries without it. This helps protect your node's onion service against denial-of-service floods.
 
 ## Manual Tor Configuration
 
@@ -144,11 +151,9 @@ Route **all** connections through Tor:
 # Only connect via Tor
 onlynet=onion
 proxy=127.0.0.1:9050
-
-# Or with embedded Tor
-torsubprocess=1
-onlynet=onion
 ```
+
+If Tor isn't already running, Knots launches it automatically as long as onion listening is enabled (see above).
 
 :::warning Tor-Only Tradeoffs
 - Slower initial sync (Tor bandwidth limited)
@@ -238,12 +243,12 @@ This encrypts peer connections, preventing ISPs from inspecting Bitcoin protocol
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `torsubprocess` | 0 | Enable embedded Tor |
 | `proxy` | none | SOCKS5 proxy for all connections |
 | `onion` | proxy | Separate proxy for .onion only |
 | `onlynet` | all | Restrict to specific networks |
 | `listenonion` | 1 | Create onion service |
-| `torcontrol` | none | Tor control port for auth |
+| `torcontrol` | 127.0.0.1:9051 | Tor control host and port |
+| `torexecute` | tor | Command to launch Tor if not running (hidden/advanced) |
 | `torpassword` | none | Tor control password |
 | `i2psam` | none | I2P SAM proxy address |
 | `i2pacceptincoming` | 1 | Accept inbound I2P |
@@ -253,7 +258,7 @@ This encrypts peer connections, preventing ISPs from inspecting Bitcoin protocol
 
 **Maximum Privacy (Tor-Only):**
 ```ini title="bitcoin.conf"
-torsubprocess=1
+# Knots auto-launches Tor when listenonion=1 (default)
 onlynet=onion
 dnsseed=0
 dns=0
@@ -261,8 +266,8 @@ dns=0
 
 **Balanced (Hybrid):**
 ```ini title="bitcoin.conf"
-torsubprocess=1
 listen=1
+listenonion=1
 ```
 
 **Performance Priority:**
@@ -290,7 +295,7 @@ tail -f ~/.bitcoin/debug.log | grep -i tor
 
 | Problem | Cause | Solution |
 |---------|-------|----------|
-| "Tor not found" | Tor not installed/running | Install Tor or use `torsubprocess=1` |
+| "Failed to execute Tor process" | Tor binary not installed | Install Tor (or point `torexecute` at the binary) |
 | "Control connection failed" | Wrong control port | Check torrc ControlPort |
 | "Authentication failed" | Cookie permissions | Add user to Tor group |
 | "No onion address" | listenonion disabled | Set `listenonion=1` |
@@ -313,7 +318,7 @@ bitcoin-cli getnetworkinfo | grep -E '"name"|"proxy"|"reachable"'
 
 ### Do
 
-- Use `torsubprocess=1` for simplicity
+- Let Knots auto-launch Tor for simplicity
 - Keep Tor updated
 - Use Tor-only for maximum privacy
 - Enable v2 transport for clearnet
@@ -347,10 +352,9 @@ Tor is slower than clearnet. For initial blockchain download:
 
 ```ini title="bitcoin.conf"
 # Sync over clearnet first
-# (comment out torsubprocess during IBD)
+# (leave onlynet unset during IBD)
 
-# After sync, enable Tor
-torsubprocess=1
+# After sync, restrict to Tor
 onlynet=onion
 ```
 

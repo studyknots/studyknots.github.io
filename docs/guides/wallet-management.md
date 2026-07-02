@@ -88,9 +88,13 @@ bitcoin-cli -rpcwallet=wallet1 send '{
 
 ### Sweep Private Keys
 
+`sweepprivkeys` takes a single options object and sweeps all coins controlled by the given WIF private keys **into the loaded wallet** (it scans the UTXO set directly — no rescan needed):
+
 ```bash
-bitcoin-cli sweepprivkeys '["5K..."]' "bc1q..."
+bitcoin-cli -rpcwallet=wallet1 sweepprivkeys '{"privkeys": ["5K..."], "label": "swept coins"}'
 ```
+
+The destination and fee are handled by the wallet automatically; the call returns the sweep transaction id. As of Knots v29.3, sweeping covers legacy (P2PK/P2PKH), SegWit (P2WPKH and P2SH-P2WPKH), and Taproot (P2TR) outputs. The GUI also offers a **Sweep private key** dialog in the File menu.
 
 ### Dump Master Key (Legacy)
 
@@ -98,10 +102,12 @@ bitcoin-cli sweepprivkeys '["5K..."]' "bc1q..."
 bitcoin-cli -rpcwallet=legacy dumpmasterprivkey
 ```
 
-### Import Codex32
+### Import Codex32 Seeds
+
+Knots supports [codex32 (BIP 93)](/patches/wallet/codex32) seed backups via the `seeds` argument of `importdescriptors`. Pass a codex32-encoded seed (or a list of codex32 shares to be recombined) alongside the descriptors that use it:
 
 ```bash
-bitcoin-cli importcodex32 "ms1..."
+bitcoin-cli -rpcwallet=wallet1 importdescriptors '[{"desc": "wpkh(...)", "timestamp": "now"}]' '[["ms1..."]]'
 ```
 
 ## Backup
@@ -112,10 +118,28 @@ bitcoin-cli importcodex32 "ms1..."
 bitcoin-cli -rpcwallet=wallet1 backupwallet "/path/backup.dat"
 ```
 
+You can also export the descriptors themselves as a text backup. With `private=true`, the output includes private keys — sufficient to fully restore the wallet via `importdescriptors`:
+
+```bash
+# Public descriptors (watch-only backup)
+bitcoin-cli -rpcwallet=wallet1 listdescriptors
+
+# Include private keys (guard this output carefully)
+bitcoin-cli -rpcwallet=wallet1 listdescriptors true
+```
+
 ### Legacy Wallet
 
 ```bash
 bitcoin-cli -rpcwallet=legacy dumpwallet "/path/dump.txt"
+```
+
+### Migrating Legacy to Descriptor
+
+To convert a legacy wallet into a descriptor wallet (a backup of the original is created automatically before migration):
+
+```bash
+bitcoin-cli -rpcwallet=legacy migratewallet
 ```
 
 ## Security

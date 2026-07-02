@@ -60,13 +60,16 @@ bitcoin-cli getmempoolinfo
 
 ### Enhanced getmempoolinfo (Knots)
 
-Knots adds a fee histogram to mempool info:
+Knots adds an optional fee-histogram argument to `getmempoolinfo`. Pass `true` for the default fee-rate buckets, or an array of custom bucket boundaries:
 
 ```bash
-bitcoin-cli getmempoolinfo
+bitcoin-cli getmempoolinfo true
+
+# Or with custom fee-rate buckets (sat/vB):
+bitcoin-cli getmempoolinfo '[0, 1, 2, 5, 10, 20, 50, 100]'
 ```
 
-The response includes fee distribution data not available in Bitcoin Core.
+The response then includes a `fee_histogram` object with fee distribution data not available in Bitcoin Core.
 
 ## Configuration
 
@@ -78,6 +81,13 @@ maxmempool=300
 
 # Mempool expiry in hours (default: 336 = 2 weeks)
 mempoolexpiry=336
+```
+
+Since Knots v29.3, the mempool allocation can also be changed at runtime — no restart required — with the new `maxmempool` RPC:
+
+```bash
+# Set the mempool allocation to 150 MB
+bitcoin-cli maxmempool 150
 ```
 
 ### Fee Estimation

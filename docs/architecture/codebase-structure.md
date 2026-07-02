@@ -25,18 +25,20 @@ bitcoin/
 
 ```
 src/
+├── common/              # Shared code between node, wallet, and tools
 ├── consensus/           # Consensus-critical code
 ├── crypto/              # Cryptographic primitives
 ├── index/               # Block and tx indexes
+├── init/                # Initialization contexts
 ├── interfaces/          # Interface definitions
+├── ipc/                 # Inter-process communication
 ├── kernel/              # libbitcoinkernel
-├── net/                 # Networking code
 ├── node/                # Node-specific code
 ├── policy/              # Mempool policy
 ├── primitives/          # Basic data structures
 ├── rpc/                 # RPC handlers
 ├── script/              # Script interpreter
-├── secp256k1/           # ECDSA library
+├── secp256k1/           # Elliptic-curve cryptography library (ECDSA and Schnorr)
 ├── support/             # Support utilities
 ├── univalue/            # JSON library
 ├── util/                # Utility functions
@@ -75,8 +77,9 @@ git show --stat <commit-hash>
 ~/.bitcoin/
 ├── bitcoin.conf         # Main configuration
 ├── debug.log            # Debug output
-├── wallet.dat           # Legacy wallet (if used)
 ├── wallets/             # Wallet directory
+│   └── <name>/          # One subdirectory per wallet
+│       └── wallet.dat   # Wallet database
 ├── blocks/              # Block data
 ├── chainstate/          # UTXO set
 └── peers.dat            # Known peers

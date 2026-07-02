@@ -87,15 +87,21 @@ bitcoin-qt [options]
 ### GUI Options
 
 ```bash
-# Enable dark mode (fusion style)
+# Use a specific Qt widget style (generic Qt flag)
 bitcoin-qt -style=fusion
 
-# Minimize to tray on startup
+# Start minimized (minimizes to tray only if enabled in settings)
 bitcoin-qt -min
 
 # Reset GUI settings
 bitcoin-qt -resetguisettings
 ```
+
+:::note
+
+Knots dark mode is native and follows your system theme automatically — no flag needed. `-style=fusion` merely selects a Qt widget style.
+
+:::
 
 ## bitcoin-tx
 
@@ -132,16 +138,24 @@ bitcoin-wallet -wallet=new create
 # Get wallet info
 bitcoin-wallet -wallet=existing info
 
-# Dump wallet
-bitcoin-wallet -wallet=existing dump
+# Dump wallet records (requires -dumpfile)
+bitcoin-wallet -wallet=existing -dumpfile=/path/to/wallet.dump dump
 ```
 
-## Environment Variables
+## Pointing Tools at the Right Node
 
-| Variable | Description |
-|----------|-------------|
-| `BITCOIN_DATADIR` | Data directory |
-| `BITCOIN_CLI_ARGS` | Default CLI arguments |
+There are no environment variables for this — use command-line options instead:
+
+```bash
+# Use a non-default data directory
+bitcoin-cli -datadir=/path/to/data <command>
+
+# Use a specific config file
+bitcoind -conf=/path/to/bitcoin.conf
+
+# Use a specific RPC auth cookie
+bitcoin-cli -rpccookiefile=/path/to/.cookie <command>
+```
 
 ## See Also
 

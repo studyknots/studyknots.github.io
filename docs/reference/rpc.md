@@ -25,7 +25,8 @@ Bitcoin Knots includes all Bitcoin Core RPC commands plus additional Knots-speci
 |---------|-------------|
 | `getmempoolinfo` | Mempool statistics (enhanced in Knots) |
 | `getrawmempool` | List mempool transactions |
-| `listmempooltxs` | List mempool txs (Knots) |
+| `listmempooltransactions` | List mempool txs with sequence numbers, for polling-based sync (Knots) |
+| `maxmempool` | Set the mempool memory limit at runtime (Knots, v29.3+) |
 | `getmempoolentry` | Mempool entry details |
 
 ## Network
@@ -47,7 +48,7 @@ Bitcoin Knots includes all Bitcoin Core RPC commands plus additional Knots-speci
 | `getnewaddress` | Generate address |
 | `getbalance` | Wallet balance |
 | `sendtoaddress` | Send bitcoin |
-| `sweepprivkeys` | Sweep private keys (Knots) |
+| `sweepprivkeys` | Sweep private keys to a fresh wallet address (Knots; v29.3 adds p2wpkh/p2tr support) |
 | `dumpmasterprivkey` | Dump master key (Knots) |
 
 ## Mining
