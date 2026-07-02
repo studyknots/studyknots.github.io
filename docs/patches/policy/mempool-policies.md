@@ -58,8 +58,9 @@ datacarriersize=42
 Control the maximum size of OP_RETURN outputs:
 
 ```ini title="bitcoin.conf"
-# Bitcoin Core default: 80 bytes
-# Knots default: 83 bytes (for legacy protocol compatibility)
+# Bitcoin Core before v30: 83-byte scriptPubKey (80 bytes of data)
+# Bitcoin Core v30+ (Oct 2025): limit removed (default 100,000 bytes)
+# Knots default: 83 bytes
 # Recommended for filtering: 42 bytes
 
 datacarriersize=42
@@ -79,21 +80,25 @@ datacarriercost=1.0
 
 ### Dynamic Dust Threshold
 
-Enable dynamic dust calculation based on fee rates:
+Automatically raise the dust fee rate based on current fee conditions (experimental, default `off`):
 
 ```ini title="bitcoin.conf"
-dustdynamic=1
+# Syntax: off | [<multiplier>*]target:<blocks> | [<multiplier>*]mempool:<kvB>
+dustdynamic=target:6
 ```
 
 This adjusts the dust threshold based on current fee conditions rather than using a fixed value.
 
-### Custom Dust Limit
+### Custom Dust Fee Rate
 
-Set a specific dust limit (in satoshis):
+Set the fee rate used to define dust, in BTC per 1000 virtual bytes (not a satoshi output limit):
 
 ```ini title="bitcoin.conf"
-dustrelayfee=3000
+# Default: 0.00003 BTC/kvB (3000 satoshis/kvB)
+dustrelayfee=0.00003
 ```
+
+An output counts as dust if spending it would cost more than its value at this fee rate.
 
 ## Sigops Policies
 
@@ -117,10 +122,12 @@ bytespersigopstrict=1
 
 ### Maximum Script Size
 
-Limit script sizes beyond consensus limits:
+Limit the size of scripts (including the entire witness stack) that your node relays and mines. The Knots default is 1650 bytes, so setting a higher value *loosens* the policy:
 
 ```ini title="bitcoin.conf"
-maxscriptsize=10000
+# Knots default: 1650 bytes
+# Lower values are stricter
+maxscriptsize=1650
 ```
 
 ### Bare Pubkey Outputs
@@ -128,6 +135,7 @@ maxscriptsize=10000
 Control bare pubkey (P2PK) output acceptance:
 
 ```ini title="bitcoin.conf"
+# Knots default (Core permits them)
 permitbarepubkey=0
 ```
 
@@ -135,31 +143,46 @@ permitbarepubkey=0
 
 ### RBF Mode Control
 
-Configure Replace-By-Fee behavior:
+Configure Replace-By-Fee behavior. `mempoolfullrbf` is a simple boolean (default `1`): accept replacements without requiring replaceability signaling:
 
 ```ini title="bitcoin.conf"
-# Options: 0=never, 1=optin, 2=always
+# Boolean, default: 1
 mempoolfullrbf=1
+```
+
+For finer control, Knots provides the three-way `mempoolreplacement` option:
+
+```ini title="bitcoin.conf"
+# 0           = disable RBF entirely
+# "fee,optin" = honour the RBF opt-out signal
+# "fee,-optin" = always allow RBF (full RBF) - default
+mempoolreplacement=fee,-optin
 ```
 
 ### TRUC Transaction Options
 
-Control Topologically Restricted Until Confirmation (v3) transactions:
+Control how your node treats transactions requesting TRUC (Topologically Restricted Until Confirmation, v3) limits:
 
 ```ini title="bitcoin.conf"
-# TRUC-specific options available via truc_opts patch
+# reject  = reject TRUC transactions entirely
+# accept  = treat them like any other transaction (default)
+# enforce = impose their requested restrictions
+mempooltruc=accept
 ```
 
 ## Mempool Limits
 
 ### Unique Script Per Mempool
 
-Limit to one unconfirmed transaction per output script:
+The `unique_spk_mempool` patch is controlled by the `spkreuse` option:
 
 ```ini title="bitcoin.conf"
-# Enabled by unique_spk_mempool patch
-# Helps prevent certain spam patterns
+# "allow"    = relay/mine transactions reusing addresses or other pubkey scripts (default)
+# "conflict" = treat reused scripts as exclusive prior to being mined
+spkreuse=conflict
 ```
+
+With `spkreuse=conflict`, only one unconfirmed transaction per output script is allowed at a time, which helps prevent certain spam patterns. (`corepolicy=1` sets `spkreuse=allow`.)
 
 ## Example Configurations
 
@@ -180,7 +203,7 @@ permitbarepubkey=0
 
 ```ini title="bitcoin.conf"
 # More permissive for fee revenue
-datacarriersize=80
+datacarriersize=83
 rejecttokens=0
 rejectparasites=0
 
