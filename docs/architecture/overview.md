@@ -27,7 +27,7 @@ Bitcoin Knots (patches applied)
 
 ### Consensus Engine
 
-The consensus engine validates blocks and transactions according to Bitcoin's rules. **This is identical to Bitcoin Core** - Knots makes no consensus changes.
+The consensus engine validates blocks and transactions according to Bitcoin's rules. **This is identical to Bitcoin Core by default** - in its default configuration, Knots makes no consensus changes. Since v29.3.knots20260508, Knots also ships an explicitly opt-in BIP-110 (RDTS) consensus ruleset (`consensusrules=rdts`), which is disabled by default.
 
 Key files:
 - `src/consensus/` - Consensus rules
@@ -90,8 +90,7 @@ Knots improvements:
 ## Build System
 
 Knots uses the same build system as Core:
-- CMake (primary, v28+)
-- Autotools (legacy)
+- CMake (the only supported build system since v29; requires CMake 3.22+)
 - Guix for reproducible builds
 
 ## See Also
