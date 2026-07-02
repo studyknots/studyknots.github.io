@@ -188,7 +188,7 @@ function ComparisonSection() {
               <tr>
                 <td>Consensus Rules</td>
                 <td>Standard</td>
-                <td>Identical by default (RDTS opt-in)</td>
+                <td>Identical (RDTS soft fork ships in v29.3)</td>
               </tr>
               <tr>
                 <td>Legacy Wallet</td>

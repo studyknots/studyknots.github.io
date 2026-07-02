@@ -134,16 +134,17 @@ The choice is yours — Knots provides the options, you decide the policy.
 
 ## BIP-110/RDTS Signaling
 
-Miners who want to go beyond relay policy can signal for **BIP-110**, the Reduced Data Temporary Softfork (RDTS). Knots v29.3 ships RDTS enforcement as a strictly opt-in feature:
+Miners running the standard Knots v29.3 build (v29.3.knots20260508) should know that **their block templates signal for BIP-110 automatically**: the Reduced Data Temporary Softfork (RDTS) is a BIP9-style deployment, and `getblocktemplate` sets version bit 4 for any deployment in its signaling phase. Confirming the upgrade in your configuration silences the hourly warnings but does not change signaling:
 
 ```ini title="bitcoin.conf"
-# Opt in to enforcing the RDTS consensus rules (Knots v29.3+)
+# Confirm the RDTS upgrade (Knots v29.3+); enforcement and signaling
+# are properties of the build, not of this setting
 consensusrules=rdts
 ```
 
-GUI users are shown a consent prompt instead, and a separate non-RDTS build is published for those who decline. Ocean has been signaling for BIP-110 since around March 2026, though as of mid-2026 overall network signaling remains well below the 55% activation threshold.
+Miners who do **not** want to signal or enforce RDTS should run the parallel non-RDTS build (v29.3.knots20260507). Ocean has been signaling for BIP-110 since around March 2026, though as of mid-2026 overall network signaling remains well below the 55% early lock-in threshold.
 
-See **[BIP-110: The Reduced Data Soft Fork](/guides/bip-110)** for the full rules, activation timeline, and risks before opting in.
+See **[BIP-110 / RDTS Integration](/patches/consensus/bip110)** for the mechanics and **[BIP-110: The Reduced Data Soft Fork](/guides/bip-110)** for the full rules, activation timeline, and risks.
 
 ## Fee Configuration
 

@@ -11,7 +11,7 @@ Bitcoin Knots includes numerous enhancements over Bitcoin Core. This page summar
 ## Consensus
 
 :::tip Important
-Bitcoin Knots follows **identical consensus rules** to Bitcoin Core **by default**. Your node will validate blocks exactly the same way. The one exception is the explicitly opt-in [BIP-110/RDTS soft fork](/guides/bip-110) added in v29.3 — see below.
+Bitcoin Knots follows **identical consensus rules** to Bitcoin Core. Your node validates blocks exactly the same way — until the [BIP-110/RDTS soft fork](/guides/bip-110) shipped in v29.3 activates (scheduled for ~September 2026), and only in the RDTS-enforcing build. See below.
 :::
 
 The differences are in:
@@ -20,16 +20,16 @@ The differences are in:
 - Additional features and RPC commands
 - User interface improvements
 
-### Consensus (opt-in)
+### Consensus (BIP-110 / RDTS)
 
-Since v29.3, Knots ships optional enforcement of the BIP-110 ReducedData Temporary Softfork (RDTS). It is **off by default** — you must explicitly opt in via configuration (or the GUI prompt):
+Since v29.3, the standard Bitcoin Knots build (v29.3.knots20260508) includes the BIP-110 Reduced Data Temporary Softfork (RDTS) and will enforce it on its deployment schedule. The build asks for your explicit confirmation — via a GUI prompt at startup, or in `bitcoin.conf`:
 
 ```ini title="bitcoin.conf"
-# Opt in to BIP-110/RDTS enforcement (Knots 29.3+, off by default)
+# Confirm the BIP-110/RDTS upgrade (Knots 29.3+); bitcoind warns hourly until set
 consensusrules=rdts
 ```
 
-Without this setting, Knots validates blocks identically to Bitcoin Core. See the [BIP-110 guide](/guides/bip-110) for details.
+Note that this setting records confirmation — it does not toggle enforcement. Users who don't want RDTS enforcement at all should run the parallel non-RDTS build (v29.3.knots20260507). See [BIP-110 / RDTS Integration](/patches/consensus/bip110) for the full mechanics and the [BIP-110 guide](/guides/bip-110) for background.
 
 ## Policy Differences
 

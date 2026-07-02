@@ -14,8 +14,8 @@ This guide covers downloading and installing Bitcoin Knots on various platforms.
 **Release Date:** May 8, 2026
 **Based on:** Bitcoin Core 29.3
 
-:::info RDTS opt-in
-v29.3.knots20260508 is the first release to ship the [BIP-110/RDTS soft fork](/guides/bip-110) — strictly **opt-in** (GUI confirmation or `consensusrules=rdts`; disabled by default). A parallel build without RDTS support, v29.3.knots20260507, is also available for users who prefer a client that cannot enforce it at all.
+:::info Two builds: with and without RDTS
+v29.3.knots20260508 is the first release to ship the [BIP-110/RDTS soft fork](/guides/bip-110). This build enforces RDTS on its deployment schedule and asks for explicit confirmation (GUI prompt, or `consensusrules=rdts` in bitcoin.conf). A parallel build without RDTS enforcement, v29.3.knots20260507, is available for users who prefer a client that cannot enforce it. See [BIP-110 / RDTS Integration](/patches/consensus/bip110) before choosing.
 :::
 
 ## Download
@@ -250,7 +250,7 @@ Running on unsupported systems is not recommended.
 
 | Version | Date | Notes |
 |---------|------|-------|
-| v29.3.knots20260508 | May 8, 2026 | Opt-in BIP-110/RDTS, dbcache auto-scaling, sweepprivkeys segwit/taproot + GUI dialog |
+| v29.3.knots20260508 | May 8, 2026 | BIP-110/RDTS (confirmation required), dbcache auto-scaling, sweepprivkeys segwit/taproot + GUI dialog |
 | v29.3.knots20260507 | May 8, 2026 | Same as above, without RDTS support |
 | v29.3.knots20260210 | Feb 10, 2026 | Wallet bug fixes, P2P use-after-free fixes |
 | v29.2.knots20251110 | Nov 10, 2025 | CVE-2025-46598 fix, datacarriersize default increased |

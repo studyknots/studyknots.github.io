@@ -114,9 +114,9 @@ Enhancements for miners.
 
 ### Consensus
 
-New in v29.3: Bitcoin Knots ships the opt-in **Reduced Data Temporary Softfork (RDTS, BIP-110)**. It requires explicit confirmation — via the GUI startup prompt or by adding `consensusrules=rdts` to `bitcoin.conf`.
+New in v29.3: Bitcoin Knots ships the **Reduced Data Temporary Softfork (RDTS, BIP-110)**. The standard build enforces it on its deployment schedule and asks for explicit confirmation — via the GUI startup prompt or `consensusrules=rdts` in `bitcoin.conf`; a parallel build without RDTS enforcement (v29.3.knots20260507) is also published.
 
-[Learn more about BIP-110 →](/guides/bip-110)
+[BIP-110 / RDTS Integration →](/patches/consensus/bip110) · [The BIP-110 story →](/guides/bip-110)
 
 ### Restored Features
 

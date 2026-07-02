@@ -10,11 +10,11 @@ description: Frequently asked questions about Bitcoin Knots
 
 ### What is Bitcoin Knots?
 
-Bitcoin Knots is an enhanced derivative of Bitcoin Core, maintained by [Luke Dashjr](https://github.com/luke-jr) since 2011. It includes additional features, policy options, and improvements not available in Bitcoin Core while maintaining identical consensus rules by default (v29.3 adds one explicitly opt-in exception — see the [BIP-110/RDTS section](#bip-110--rdts) below).
+Bitcoin Knots is an enhanced derivative of Bitcoin Core, maintained by [Luke Dashjr](https://github.com/luke-jr) since 2011. It includes additional features, policy options, and improvements not available in Bitcoin Core while maintaining identical consensus rules (with one v29.3 exception on a scheduled activation — see the [BIP-110/RDTS section](#bip-110--rdts) below).
 
 ### Is Bitcoin Knots safe to use?
 
-Yes. By default, Bitcoin Knots follows identical consensus rules to Bitcoin Core, ensuring full network compatibility. The differences are in local policy (what your node relays) and features (GUI, wallet, RPC). Your node will validate the blockchain exactly the same as Core — unless you explicitly opt in to the RDTS softfork in v29.3+ (it is off by default and requires confirmation).
+Yes. By default, Bitcoin Knots follows identical consensus rules to Bitcoin Core, ensuring full network compatibility. The differences are in local policy (what your node relays) and features (GUI, wallet, RPC). Your node currently validates the blockchain exactly the same as Core; the one caveat is the RDTS softfork shipped in v29.3, which the standard build will enforce when it activates (~September 2026) — see the [BIP-110/RDTS section](#bip-110--rdts).
 
 ### Who maintains Bitcoin Knots?
 
@@ -55,7 +55,7 @@ The ~40,000 lines figure is roughly accurate when counting insertions (~36k). Th
 - ~70% is GUI, tests, and docs (zero consensus risk)
 - ~25% is wallet, RPC, policy (affects your node only)
 - Only ~4% (~1,400 lines) is consensus-adjacent
-- **0% changes consensus rules** — Knots validates identically to Core (this analysis covers v29.2; v29.3 later added the opt-in, off-by-default RDTS softfork)
+- **0% changes consensus rules** — Knots validates identically to Core (this analysis covers v29.2; v29.3 later added the RDTS softfork — see below)
 
 **What's in the "consensus-adjacent" code?**
 - `bitcoinconsensus`: **Restored Core code** removed in v28 — already reviewed
@@ -68,7 +68,7 @@ See [Code Analysis](/architecture/code-analysis) for the full breakdown.
 
 | Feature | Bitcoin Core | Bitcoin Knots |
 |---------|--------------|---------------|
-| Consensus Rules | Standard | **Identical by default** (v29.3 adds opt-in RDTS) |
+| Consensus Rules | Standard | **Identical** (v29.3 adds RDTS on a scheduled activation) |
 | Legacy Wallet | Removed (v30) | **Maintained** |
 | OP_RETURN Limit | Removed (v30) | **Configurable** |
 | Inscription Filtering | No | **Yes (default on)** |
@@ -84,7 +84,7 @@ See [Code Analysis](/architecture/code-analysis) for the full breakdown.
 - What features are **available** (GUI, RPC, wallet)
 - What **defaults** are used
 
-By default, your Knots node validates blocks identically to Core. Since v29.3.knots20260508, there is one **explicitly opt-in** exception: the BIP-110/RDTS softfork, which is off by default, requires confirmation to enable, and is also offered as a separate build without it. If RDTS were to activate without broad hashrate support, enforcing nodes could diverge from non-enforcing nodes — see the [BIP-110/RDTS section](#bip-110--rdts) below.
+Today, your Knots node validates blocks identically to Core. Since v29.3.knots20260508 there is one scheduled exception: the standard build includes the BIP-110/RDTS softfork and will enforce it when it activates (~September 2026). The build asks for your explicit confirmation, and a separate build without RDTS (29.3.knots20260507) is offered for users who don't want enforcement. If RDTS activates without broad hashrate support, enforcing nodes could diverge from non-enforcing nodes — see the [BIP-110/RDTS section](#bip-110--rdts) below.
 
 ### Can I run Knots and Core on the same network?
 
@@ -109,7 +109,7 @@ The **Reduced Data Temporary Softfork** (RDTS) is a proposed temporary softfork 
 
 ### Does Knots enforce RDTS?
 
-**Only if you explicitly opt in.** Knots v29.3.knots20260508 ships with RDTS support, but enforcement is **off by default**. To enable it, you must either confirm the GUI prompt shown at startup or add `consensusrules=rdts` to your `bitcoin.conf`. A build of the same version without RDTS support (29.3.knots20260507) is also available for users who don't want it.
+**Depends on which build you run.** The standard v29.3.knots20260508 build enforces the RDTS deployment on its schedule — that is a property of the build, not of your configuration. What the software asks for is explicit *confirmation*: the GUI shows a prompt at startup (and exits if you decline), while `bitcoind` runs and enforces but logs a warning every hour until you add `consensusrules=rdts` to `bitcoin.conf`. If you don't want RDTS enforcement at all, run the parallel build without RDTS support (29.3.knots20260507). Full details: [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 
 ### How would RDTS activate?
 
@@ -119,7 +119,7 @@ As of late June 2026, signaling remains minimal — around **0.31% of hashrate**
 
 ### Is RDTS controversial?
 
-Yes. Critics — including Adam Back and Jameson Lopp — have warned that activating a softfork with minority hashrate support risks a **chain split**: nodes enforcing RDTS could end up following a different chain than the rest of the network. Supporters argue the upgrade fixes long-standing data-abuse vectors. If you enable RDTS, understand that you are opting in to enforcing rules the majority of the network may not enforce.
+Yes. Critics — including Adam Back and Jameson Lopp — have warned that activating a softfork with minority hashrate support risks a **chain split**: nodes enforcing RDTS could end up following a different chain than the rest of the network. Supporters argue the upgrade fixes long-standing data-abuse vectors. If you run an RDTS-enforcing build, understand that after activation it may enforce rules the majority of the network does not.
 
 ---
 

@@ -16,7 +16,7 @@ Based on Bitcoin Core 29.3.
 
 ### Highlights
 
-- **Opt-in BIP-110/RDTS support**: This build can enforce the Reduced Data Temporary Softfork, but only with explicit confirmation — via a GUI prompt at startup or `consensusrules=rdts` in `bitcoin.conf`. A build without RDTS support (29.3.knots20260507) is also available.
+- **BIP-110/RDTS support**: This build enforces the Reduced Data Temporary Softfork on its deployment schedule and asks for explicit confirmation — via a GUI prompt at startup or `consensusrules=rdts` in `bitcoin.conf` (bitcoind warns hourly until confirmed). A build without RDTS enforcement (29.3.knots20260507) is also available. See [BIP-110 / RDTS Integration](/patches/consensus/bip110).
 - **RAM-aware `dbcache` default**: When `-dbcache` is not set explicitly, Knots now auto-selects a value between 100 MiB and 2 GiB based on system memory (#34641)
 - **`sweepprivkeys` extended**: now also finds segwit (p2wpkh) and taproot (p2tr) UTXOs, in addition to p2pk and p2pkh (knots#296)
 - **"Sweep private key" GUI dialog** added to the File menu (knots#297)
@@ -28,7 +28,7 @@ Based on Bitcoin Core 29.3.
 ### Changes
 
 #### Consensus
-- knots#238: Reduced Data Temporary Softfork (RDTS), implemented as a modified BIP9 temporary deployment (opt-in)
+- knots#238: Reduced Data Temporary Softfork (RDTS), implemented as a modified BIP9 temporary deployment (confirmation required; non-RDTS build published in parallel)
 
 #### Policy
 - knots#272: Penalize effective fee for sub-dust outputs
