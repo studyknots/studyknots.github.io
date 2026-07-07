@@ -197,8 +197,8 @@ function ComparisonSection() {
               </tr>
               <tr>
                 <td>OP_RETURN Policy</td>
-                <td>Fixed</td>
-                <td>Configurable</td>
+                <td>No limit by default (100 kB)</td>
+                <td>83-byte default, deeply configurable</td>
               </tr>
               <tr>
                 <td>Mempool Filtering</td>
@@ -207,13 +207,13 @@ function ComparisonSection() {
               </tr>
               <tr>
                 <td>Dark Mode</td>
-                <td>No</td>
-                <td>Yes</td>
+                <td>Partial</td>
+                <td>Full support</td>
               </tr>
               <tr>
-                <td>Embedded Tor</td>
-                <td>No</td>
-                <td>Yes</td>
+                <td>Tor Integration</td>
+                <td>Manual setup</td>
+                <td>Automatic launch</td>
               </tr>
               <tr>
                 <td>UPnP</td>
